@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="de">
+<!DOCTYPE html>
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,30 +23,44 @@
     .tab{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #263045;background:#121927;color:var(--text);cursor:pointer;font-size:13px}
     .tab.active{background:#1b2538}
     .sticky-header{position:sticky;top:0;z-index:30;background:var(--panel);padding:12px;border-bottom:1px solid #1d2230;box-shadow:0 8px 14px rgba(0,0,0,.25)}
-    .spacer{height:12px}/* Panels */
-.panels{padding:0 12px 12px}
-.panel{display:none;overflow-y:auto;max-height:calc(100vh - 280px);padding-top:8px}
-.panel.active{display:block}
+    .spacer{height:12px}
 
-.upgrades{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.upg{background:#101420;border:1px solid #1b2130;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
-.upg h3{margin:0;font-size:16px}
-.upg .cost,.upg .owned{font-size:12px;color:var(--muted)}
-.upg button{margin-top:auto;border:0;border-radius:10px;padding:10px 12px;background:#1e2a40;color:var(--text);cursor:pointer}
-.upg button.can{background:#20324a}
-.upg button.cannot{opacity:.6;cursor:not-allowed}
+    /* Panels */
+    .panels{padding:0 12px 12px}
+    .panel{display:none;overflow-y:auto;max-height:calc(100vh - 280px);padding-top:8px}
+    .panel.active{display:block}
 
-.footer{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:12px;flex-wrap:wrap}
-.pill{padding:6px 10px;border-radius:999px;border:1px solid #263045;background:#121927;color:var(--text);cursor:pointer}
+    .upgrades{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+    .upg{background:#101420;border:1px solid #1b2130;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+    .upg h3{margin:0;font-size:16px}
+    .upg .cost,.upg .owned{font-size:12px;color:var(--muted)}
+    .upg button{margin-top:auto;border:0;border-radius:10px;padding:10px 12px;background:#1e2a40;color:var(--text);cursor:pointer}
+    .upg button.can{background:#20324a}
+    .upg button.cannot{opacity:.6;cursor:not-allowed}
 
-.hr{height:1px;background:#1b2130;margin:12px 0}
+    .footer{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:12px;flex-wrap:wrap}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid #263045;background:#121927;color:var(--text);cursor:pointer}
 
-/* Prestige */
-.prestige{background:#101420;border:1px dashed #2a3550;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .hr{height:1px;background:#1b2130;margin:12px 0}
 
+    /* Prestige */
+    .prestige{background:#101420;border:1px dashed #2a3550;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;justify-content:space-between}
   </style>
 </head>
 <body>
+  <div id="errorBanner" style="display:none;position:fixed;top:0;left:0;right:0;background:#8b0000;color:#fff;padding:8px 12px;z-index:9999;font:14px/1.4 system-ui">Fehler beim Laden. Details in der Konsole.</div>
+  <script>
+    (function(){
+      function showErr(msg){
+        var el=document.getElementById('errorBanner');
+        if(el){ el.style.display='block'; el.textContent=msg; }
+        console.error('[DEBUG]', msg);
+      }
+      window.addEventListener('error', function(e){ showErr('Fehler: '+(e.message||e.error||'Unbekannt')+' @ '+(e.filename||'')+':'+(e.lineno||'')); });
+      window.addEventListener('unhandledrejection', function(e){ showErr('Unhandled promise: '+(e.reason&&e.reason.message?e.reason.message:String(e.reason))); });
+      document.addEventListener('DOMContentLoaded', function(){ console.log('[DEBUG] DOM ready'); });
+    })();
+  </script>
   <div class="app">
     <div class="card">
       <div class="sticky-header">
@@ -62,47 +77,50 @@
             <button class="tab" id="tabAchievements">Erfolge</button>
           </div>
         </div>
-      </div><div class="spacer"></div>
-
-  <div class="panels">
-    <div id="panelUpgrades" class="panel active">
-      <div class="upgrades" id="upgrades"></div>
-    </div>
-    <div id="panelResearch" class="panel">
-      <div class="upgrades" id="research"></div>
-    </div>
-    <div id="panelAchievements" class="panel">
-      <div class="upgrades" id="achievements"></div>
-    </div>
-
-    <div class="hr"></div>
-    <div class="section">
-      <div class="section-title" style="color:var(--muted);font-size:13px;margin:8px 0 6px">Prestige</div>
-      <div class="prestige">
-        <div>
-          <div class="badge">Erkenntnispunkte (EP)</div>
-          <strong class="mono"><span id="ep">0</span> EP</strong>
-          <div class="badge">Globaler Produktions‑Multiplikator: <span class="mono" id="mult">1.00×</span></div>
-        </div>
-        <div>
-          <div class="badge">Bedingung: Gesamtressourcen ≥ <span id="prestigeReq">50.000</span></div>
-          <button class="pill" id="prestigeBtn" disabled>Prestige auslösen</button>
-        </div>
       </div>
-      <div class="footer">
-        <div>Auto‑Speichern aktiv • Offline‑Fortschritt unterstützt</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="pill" id="exportBtn">Export</button>
-          <button class="pill" id="importBtn">Import</button>
-          <button class="pill" id="saveBtn">Speichern</button>
-          <button class="pill" id="resetBtn">Zurücksetzen</button>
+
+      <div class="spacer"></div>
+
+      <div class="panels">
+        <div id="panelUpgrades" class="panel active">
+          <div class="upgrades" id="upgrades"></div>
+        </div>
+        <div id="panelResearch" class="panel">
+          <div class="upgrades" id="research"></div>
+        </div>
+        <div id="panelAchievements" class="panel">
+          <div class="upgrades" id="achievements"></div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="section">
+          <div class="section-title" style="color:var(--muted);font-size:13px;margin:8px 0 6px">Prestige</div>
+          <div class="prestige">
+            <div>
+              <div class="badge">Erkenntnispunkte (EP)</div>
+              <strong class="mono"><span id="ep">0</span> EP</strong>
+              <div class="badge">Globaler Produktions‑Multiplikator: <span class="mono" id="mult">1.00×</span></div>
+            </div>
+            <div>
+              <div class="badge">Bedingung: Gesamtressourcen ≥ <span id="prestigeReq">50.000</span></div>
+              <button class="pill" id="prestigeBtn" disabled>Prestige auslösen</button>
+            </div>
+          </div>
+          <div class="footer">
+            <div>Auto‑Speichern aktiv • Offline‑Fortschritt unterstützt</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <button class="pill" id="exportBtn">Export</button>
+              <button class="pill" id="importBtn">Import</button>
+              <button class="pill" id="saveBtn">Speichern</button>
+              <button class="pill" id="resetBtn">Zurücksetzen</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-  </div><script>
+<script>
 (function(){
   // ---------- Helpers ----------
   const fmt=n=>{if(!isFinite(n))return'0';if(n>=1e12)return(n/1e12).toFixed(2)+'T';if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(2)+'K';return(Math.floor(n*100)/100).toString()};
@@ -309,4 +327,93 @@
     {id:'tenK',name:'Wachstum',desc:'Erreiche 10.000 Gesamtressourcen',test:s=> (s.stein+s.holz+s.metall+s.kohle+s.stahl+s.totalEarned)>=10000,bonus:0.01},
   ];
   function checkAchievements(){
-    let gained=false; for(const a of achieves){ if(!state.achievements[a.
+    let gained=false; for(const a of achieves){ if(!state.achievements[a.id] && a.test(state)){ state.achievements[a.id]=true; state.permBonus+=a.bonus; gained=true; } }
+    if(gained) save();
+  }
+  function renderAchievements(){
+    achieveEl.innerHTML=''; const frag=document.createDocumentFragment();
+    for(const a of achieves){ const owned=!!state.achievements[a.id]; const card=document.createElement('div'); card.className='upg';
+      const h3=document.createElement('h3'); h3.textContent=a.name; card.appendChild(h3);
+      const p=document.createElement('div'); p.textContent=a.desc+(owned?' — erreicht ✅':''); p.style.fontSize='13px'; card.appendChild(p);
+      const b=document.createElement('div'); b.className='owned'; b.textContent= owned? 'Bonus aktiv: +1% global' : 'Bonus bei Erreichen: +1% global'; card.appendChild(b);
+      frag.appendChild(card);
+    }
+    achieveEl.appendChild(frag);
+  }
+
+  function renderAll(){ renderStats(); renderUpgrades(); }
+
+  // ---------- Game Loop (with recipes) ----------
+  function tick(){
+    const now=Date.now(); let dt=(now-state.lastTs)/1000; state.lastTs=now; const cap=1+state.research.offlineCap; dt=Math.min(dt,10*cap); const mA=autoMult();
+    const add=(amt)=>{state.totalEarned+=amt; return amt};
+    state.stein += add(state.rpsStein*mA*dt);
+    state.holz  += add(state.rpsHolz*mA*dt);
+    state.metall+= add(state.rpsMetall*mA*dt);
+    state.kohle += add(state.rpsKohle*mA*dt);
+    // Energie: 1 Kohle -> 5 Energie
+    if(state.unlocks.energie && state.rpsEnergie>0){ const desired=state.rpsEnergie*mA*dt; const maxByFuel=state.kohle*5; const actual=Math.min(desired,maxByFuel); state.kohle=Math.max(0,state.kohle-actual/5); state.energie+=add(actual); }
+    // Stahl: 2 Metall + 1 Kohle -> 1 Stahl
+    if(state.unlocks.stahl && state.rpsStahl>0){ const desired=state.rpsStahl*mA*dt; const actual=Math.max(0,Math.min(desired,state.metall/2,state.kohle/1)); state.metall=Math.max(0,state.metall-actual*2); state.kohle=Math.max(0,state.kohle-actual); state.stahl+=add(actual); }
+    // Wissen: 2 Energie -> 1 Wissen
+    if(state.unlocks.wissen && state.rpsWissen>0){ const desired=state.rpsWissen*mA*dt; const actual=Math.min(desired,state.energie/2); state.energie=Math.max(0,state.energie-actual*2); state.wissen+=add(actual); }
+    checkAchievements(); renderStats();
+  }
+
+  // ---------- Save/Load ----------
+  function save(){ localStorage.setItem('stone_idle_save_v2', JSON.stringify(state)); }
+  function load(){
+    try{
+      const raw = localStorage.getItem('stone_idle_save_v2');
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      Object.assign(state, DEFAULT, data);
+      // Backwards‑compatible init (ohne moderne Operatoren)
+      if(!state.upgrades) state.upgrades={};
+      if(!state.upgrades.stone) state.upgrades.stone={};
+      if(!state.upgrades.wood) state.upgrades.wood={};
+      if(!state.upgrades.metal) state.upgrades.metal={};
+      if(!state.upgrades.coal) state.upgrades.coal={};
+      if(!state.upgrades.steel) state.upgrades.steel={};
+      if(!state.upgrades.energy) state.upgrades.energy={};
+      if(!state.upgrades.science) state.upgrades.science={};
+      if(!state.unlocks) state.unlocks={holz:false,metall:false,kohle:false,stahl:false,energie:false,wissen:false};
+      if(!state.research) state.research={clickBoost:0,autoBoost:0,cheaper:0,offlineCap:0};
+      if(!state.achievements) state.achievements={};
+      // Guards
+      if(state.unlocks.holz && (!state.rpcHolz || state.rpcHolz<=0)) state.rpcHolz=1;
+      if(state.unlocks.metall && (!state.rpcMetall || state.rpcMetall<=0)) state.rpcMetall=1;
+      // Offline gain (simple)
+      const last = data.lastTs || Date.now();
+      const delta = Math.max(0, (Date.now()-last)/1000);
+      if(delta>0){
+        const cap = 1 + (state.research.offlineCap||0);
+        const eff = Math.min(delta, 10*cap);
+        const mA = (1+state.ep*0.01)*(1+state.permBonus)*(1+state.autoBonus)*(1+(state.research.autoBoost||0)*0.25);
+        state.stein += state.rpsStein*mA*eff;
+        state.holz  += state.rpsHolz*mA*eff;
+        state.metall+= state.rpsMetall*mA*eff;
+        state.kohle += state.rpsKohle*mA*eff;
+        state.stahl += state.rpsStahl*mA*eff;
+        state.energie += state.rpsEnergie*mA*eff;
+        state.wissen  += state.rpsWissen*mA*eff;
+      }
+      state.lastTs = Date.now();
+    }catch(e){ console.warn('Load error', e); }
+  }); const payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); navigator.clipboard?.writeText(payload).catch(()=>{}); alert('Exportiert (Anfang):
+'+payload.slice(0,96)+'…'); });
+  importBtn.addEventListener('click',()=>{ const str=prompt('Export‑String einfügen:'); if(!str) return; try{ const json=decodeURIComponent(escape(atob(str))); localStorage.setItem('stone_idle_save_v2',json); Object.assign(state,JSON.parse(json)); renderAll(); alert('Import OK'); }catch(e){ alert('Import fehlgeschlagen: '+e.message); }});
+  prestigeBtn.addEventListener('click',()=>doPrestige());
+
+  // Tabs
+  function setTab(which){ [tabUpg,tabRes,tabAch].forEach(b=>b.classList.remove('active')); [panelUpg,panelRes,panelAch].forEach(p=>p.classList.remove('active')); if(which==='upg'){tabUpg.classList.add('active');panelUpg.classList.add('active');} if(which==='res'){tabRes.classList.add('active');panelRes.classList.add('active'); renderResearch();} if(which==='ach'){tabAch.classList.add('active');panelAch.classList.add('active'); renderAchievements();} }
+  tabUpg.addEventListener('click',()=>setTab('upg'));
+  tabRes.addEventListener('click',()=>setTab('res'));
+  tabAch.addEventListener('click',()=>setTab('ach'));
+
+  // Init
+  load(); renderAll(); setInterval(()=>tick(),200); setInterval(()=>save(),10000);
+})();
+</script>
+</body>
+</html>
