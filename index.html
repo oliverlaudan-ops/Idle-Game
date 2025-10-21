@@ -41,7 +41,7 @@
 <body>
   <div id="errorBanner" style="display:none;position:fixed;top:0;left:0;right:0;background:#8b0000;color:#fff;padding:8px 12px;z-index:9999;font:14px/1.4 system-ui">Fehler beim Laden. Details in der Konsole.</div>
 
-  <div class="app">
+  <div class="app" data-app="1">
     <div class="card">
       <div class="sticky-header">
         <div class="section">
@@ -98,6 +98,20 @@
   </div>
 
 <script>
+// Früh installierter Fehlerfänger (läuft auch wenn Main-Script nicht parsed)
+(function(){
+  function banner(msg){
+    try{var el=document.getElementById('errorBanner'); if(el){ el.style.display='block'; el.textContent=msg; }}catch(_){ }
+    try{console.error('[BOOT]', msg);}catch(_){ }
+  }
+  window.addEventListener('error', function(e){ banner('Fehler (früh): '+(e.message||e.error||'Unbekannt')+' @ '+(e.filename||'')+':'+(e.lineno||'')); });
+  window.addEventListener('unhandledrejection', function(e){ banner('Unhandled (früh): '+(e.reason&&e.reason.message?e.reason.message:String(e.reason))); });
+  document.addEventListener('DOMContentLoaded', function(){ console.log('[BOOT] DOM ready'); });
+})();
+</script>
+
+<script>
+try{
 (function(){
   // ---------- Fehlerfänger ----------
   function showErr(msg){
@@ -367,6 +381,11 @@
   // ---------- Init ----------
   load(); renderAll(); setInterval(function(){tick();},200); setInterval(function(){save();},10000);
 })();
+}
+catch(e){
+  var el=document.getElementById('errorBanner'); if(el){ el.style.display='block'; el.textContent='Init-Fehler: '+(e.message||e); }
+  console.error('[INIT]', e);
+}
 </script>
 </body>
 </html>
