@@ -45,7 +45,7 @@
     <div class="card">
       <div class="sticky-header">
         <div class="section">
-          <h1 style="margin:0 0 6px;font-size:20px">From Stone to Civilization <span style="color:var(--muted);font-size:13px">Minimaler Text‑Idle‑Prototyp</span></h1>
+          <h1 style="margin:0 0 6px;font-size:20px">From Stone to Civilization <span style="color:var(--muted);font-size:13px">Minimaler Text-Idle-Prototyp</span></h1>
           <div class="row" id="resourceStats"></div>
           <div class="row" id="clickRow" style="margin-top:10px">
             <div class="col"><button class="big-btn" id="clickStein">🪨 Stein sammeln (+<span id="rpcStein">1</span>)</button></div>
@@ -79,10 +79,10 @@
             <div>
               <div class="badge">Erkenntnispunkte (EP)</div>
               <strong class="mono"><span id="ep">0</span> EP</strong>
-              <div class="badge">Globaler Produktions‑Multiplikator: <span class="mono" id="mult">1.00×</span></div>
+              <div class="badge">Globaler Produktions-Multiplikator: <span class="mono" id="mult">1.00x</span></div>
             </div>
             <div>
-              <div class="badge">Bedingung: Gesamtressourcen ≥ <span id="prestigeReq">50.000</span></div>
+              <div class="badge">Bedingung: Gesamtressourcen &ge; <span id="prestigeReq">50.000</span></div>
               <button class="tab" id="prestigeBtn" disabled>Prestige auslösen</button>
             </div>
           </div>
@@ -148,7 +148,7 @@ try{
   };
   var coalUpgrades={
     schaechte:{id:'schaechte',name:'Schächte',desc:'+1 Kohle/Sek',baseCost:8000,mult:1.2,apply:function(s){s.rpsKohle+=1;}},
-    foerderband:{id:'foerderband',name:'Förderband',desc:'+25% Auto‑Produktion',baseCost:15000,mult:1.3,apply:function(s){s.autoBonus+=0.25;}},
+    foerderband:{id:'foerderband',name:'Förderband',desc:'+25% Auto-Produktion',baseCost:15000,mult:1.3,apply:function(s){s.autoBonus+=0.25;}},
     kohlekraft:{id:'kohlekraft',name:'Kohlekraftwerk',desc:'Schaltet ENERGIE frei',baseCost:18000,mult:2.0,single:true,apply:function(s){ s.unlocks.energie=true; }},
     fabrik:{id:'fabrik',name:'Fabrik',desc:'Schaltet STAHL frei',baseCost:20000,mult:2.2,single:true,apply:function(s){ s.unlocks.stahl=true; }}
   };
@@ -159,12 +159,12 @@ try{
   };
   var steelUpgrades={
     stahlwerk:{id:'stahlwerk',name:'Stahlwerk',desc:'+1 Stahl/Sek (verbraucht Metall & Kohle)',baseCost:25000,mult:1.25,apply:function(s){s.rpsStahl+=1;}},
-    hochofen:{id:'hochofen',name:'Hochofen',desc:'+50% Gesamt‑Effizienz',baseCost:50000,mult:1.35,apply:function(s){s.permBonus+=0.5;}}
+    hochofen:{id:'hochofen',name:'Hochofen',desc:'+50% Gesamt-Effizienz',baseCost:50000,mult:1.35,apply:function(s){s.permBonus+=0.5;}}
   };
   var scienceUpgrades={
     uni:{id:'uni',name:'Universität',desc:'+1 Wissen/Sek (verbraucht Energie)',baseCost:26000,mult:1.25,apply:function(s){s.rpsWissen+=1;}},
-    rechen:{id:'rechen',name:'Rechenzentrum',desc:'+25% Auto‑Produktion',baseCost:32000,mult:1.3,apply:function(s){s.autoBonus+=0.25;}},
-    quant:{id:'quant',name:'Quantenlabor',desc:'+25% Klick‑Produktion',baseCost:42000,mult:1.35,apply:function(s){s.research.clickBoost+=1;}}
+    rechen:{id:'rechen',name:'Rechenzentrum',desc:'+25% Auto-Produktion',baseCost:32000,mult:1.3,apply:function(s){s.autoBonus+=0.25;}},
+    quant:{id:'quant',name:'Quantenlabor',desc:'+25% Klick-Produktion',baseCost:42000,mult:1.35,apply:function(s){s.research.clickBoost+=1;}}
   };
 
   // ---------- State ----------
@@ -225,7 +225,7 @@ try{
     var r1=document.createElement('div'); r1.className='badge'; r1.textContent='Rate (pro Sek.)'; right.appendChild(r1);
     var r2=document.createElement('b'); r2.className='mono'; r2.textContent='+'+(Math.round(perSec*100)/100).toFixed(2); right.appendChild(r2);
     if(perClick!=null){
-      var r3=document.createElement('div'); r3.className='badge'; r3.textContent='Klick‑Wert'; right.appendChild(r3);
+      var r3=document.createElement('div'); r3.className='badge'; r3.textContent='Klick-Wert'; right.appendChild(r3);
       var r4=document.createElement('b'); r4.className='mono'; r4.textContent='+'+fmt(perClick); right.appendChild(r4);
     }
     return wrap;
@@ -246,7 +246,7 @@ try{
     rpcHolzEl.textContent=fmt(state.rpcHolz*mC);
     holzClickCol.style.display=state.unlocks.holz?'':'none';
 
-    epEl.textContent=state.ep; multEl.textContent=globalMult().toFixed(2)+'×';
+    epEl.textContent=state.ep; multEl.textContent=globalMult().toFixed(2)+'x';
     var total=state.stein+state.holz+state.metall+state.kohle+state.stahl+state.energie+state.wissen+state.totalEarned;
     prestigeBtn.disabled=(total<PRESTIGE_REQ);
   }
@@ -290,10 +290,10 @@ try{
 
   // Research & Achievements
   var researchCatalog={
-    clickBoost:{id:'clickBoost',name:'Stärkerer Klick',desc:'+25% Klick‑Produktion pro Stufe (EP)',cost:2},
-    autoBoost:{id:'autoBoost',name:'Bessere Automatisierung',desc:'+25% Auto‑Produktion pro Stufe (EP)',cost:2},
-    cheaper:{id:'cheaper',name:'Effiziente Baupläne',desc:'−5% Upgrade‑Kosten pro Stufe (min 40%)',cost:3},
-    offlineCap:{id:'offlineCap',name:'Besserer Leerlauf',desc:'+100% Offline‑Fortschritt pro Stufe',cost:1}
+    clickBoost:{id:'clickBoost',name:'Stärkerer Klick',desc:'+25% Klick-Produktion pro Stufe (EP)',cost:2},
+    autoBoost:{id:'autoBoost',name:'Bessere Automatisierung',desc:'+25% Auto-Produktion pro Stufe (EP)',cost:2},
+    cheaper:{id:'cheaper',name:'Effiziente Baupläne',desc:'−5% Upgrade-Kosten pro Stufe (min 40%)',cost:3},
+    offlineCap:{id:'offlineCap',name:'Besserer Leerlauf',desc:'+100% Offline-Fortschritt pro Stufe',cost:1}
   };
   function renderResearch(){
     researchEl.innerHTML=''; var frag=document.createDocumentFragment();
@@ -370,7 +370,7 @@ try{
   resetBtn.addEventListener('click',function(){ if(confirm('Wirklich alles zurücksetzen?')){ localStorage.removeItem('stone_idle_save_v2'); Object.assign(state,JSON.parse(JSON.stringify(DEFAULT))); renderAll(); }});
   exportBtn.addEventListener('click',function(){ save(); var payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(payload).catch(function(){}); } }catch(_){ } alert('Exportiert (Anfang):
 '+payload.slice(0,96)+'…'); });
-  importBtn.addEventListener('click',function(){ var str=prompt('Export‑String einfügen:'); if(!str) return; try{ var json=decodeURIComponent(escape(atob(str))); localStorage.setItem('stone_idle_save_v2',json); Object.assign(state,JSON.parse(json)); renderAll(); alert('Import OK'); }catch(e){ alert('Import fehlgeschlagen: '+e.message); }});
+  importBtn.addEventListener('click',function(){ var str=prompt('Export-String einfügen:'); if(!str) return; try{ var json=decodeURIComponent(escape(atob(str))); localStorage.setItem('stone_idle_save_v2',json); Object.assign(state,JSON.parse(json)); renderAll(); alert('Import OK'); }catch(e){ alert('Import fehlgeschlagen: '+e.message); }});
   prestigeBtn.addEventListener('click',function(){ doPrestige(); });
 
   function setTab(which){ tabUpg.classList.remove('active'); tabRes.classList.remove('active'); tabAch.classList.remove('active'); panelUpg.classList.remove('active'); panelRes.classList.remove('active'); panelAch.classList.remove('active'); if(which==='upg'){tabUpg.classList.add('active');panelUpg.classList.add('active');} if(which==='res'){tabRes.classList.add('active');panelRes.classList.add('active'); renderResearch();} if(which==='ach'){tabAch.classList.add('active');panelAch.classList.add('active'); renderAchievements();} }
