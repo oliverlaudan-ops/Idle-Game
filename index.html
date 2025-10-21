@@ -1,159 +1,391 @@
-<script>
-// early error banner
-(function(){function b(m){try{var el=document.getElementById('errorBanner');if(el){el.style.display='block';el.textContent=m;}}catch(_){};try{console.error('[BOOT]',m);}catch(_){}}
-window.addEventListener('error',function(e){b('Fehler: '+(e.message||e.error||'Unbekannt')+' @ '+(e.filename||'')+':'+(e.lineno||''));});
-window.addEventListener('unhandledrejection',function(e){b('Unhandled: '+(e.reason&&e.reason.message?e.reason.message:String(e.reason)));});
-})();
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>From Stone to Civilization — Idle</title>
+  <style>
+    :root{--bg:#0f1115;--panel:#151924;--text:#e6e9ef;--muted:#97a0af;--accent:#3ea6ff}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:#0b0d12;color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto}
+    .app{max-width:900px;margin:16px auto;padding:0 12px}
+    .card{background:var(--panel);border:1px solid #1d2230;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);overflow:hidden}
+    .section{padding:14px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:stretch}
+    .col{flex:1 1 260px}
+    .stat{background:#101420;border:1px solid #1b2130;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center}
+    .badge{font-size:12px;color:var(--muted)}
+    .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+    .big-btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:16px;background:#1b2334;color:var(--text);cursor:pointer}
+    .small-btn{width:100%;border:0;border-radius:12px;padding:10px;font-size:14px;background:#162033;color:var(--text);cursor:pointer}
+    .tabs{display:flex;gap:8px;margin-top:10px}
+    .tab{flex:1;padding:8px 10px;border-radius:10px;border:1px solid #263045;background:#121927;color:var(--text);cursor:pointer;font-size:13px}
+    .tab.active{background:#1b2538}
+    .sticky-header{position:sticky;top:0;z-index:30;background:var(--panel);padding:12px;border-bottom:1px solid #1d2230;box-shadow:0 8px 14px rgba(0,0,0,.25)}
+    .spacer{height:12px}
+    .panels{padding:0 12px 12px}
+    .panel{display:none;overflow-y:auto;max-height:calc(100vh - 280px);padding-top:8px}
+    .panel.active{display:block}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+    .card-sm{background:#101420;border:1px solid #1b2130;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+    .card-sm h3{margin:0;font-size:16px}
+    .muted{font-size:12px;color:var(--muted)}
+    .buy{margin-top:auto;border:0;border-radius:10px;padding:10px 12px;background:#1e2a40;color:var(--text);cursor:pointer}
+    .buy.can{background:#20324a}
+    .buy.cannot{opacity:.6;cursor:not-allowed}
+    .hr{height:1px;background:#1b2130;margin:12px 0}
+    .prestige{background:#101420;border:1px dashed #2a3550;border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+  </style>
+</head>
+<body>
+  <div id="errorBanner" style="display:none;position:fixed;top:0;left:0;right:0;background:#8b0000;color:#fff;padding:8px 12px;z-index:9999;font:14px/1.4 system-ui">Fehler beim Laden. Details in der Konsole.</div>
 
+  <div class="app" data-app="1">
+    <div class="card">
+      <div class="sticky-header">
+        <div class="section">
+          <h1 style="margin:0 0 6px;font-size:20px">From Stone to Civilization <span style="color:var(--muted);font-size:13px">Minimaler Text-Idle-Prototyp</span></h1>
+          <div class="row" id="resourceStats"></div>
+          <div class="row" id="clickRow" style="margin-top:10px">
+            <div class="col"><button class="big-btn" id="clickStein">🪨 Stein sammeln (+<span id="rpcStein">1</span>)</button></div>
+            <div class="col" id="holzClickCol" style="display:none"><button class="small-btn" id="clickHolz">🌲 Holz hacken (+<span id="rpcHolz">0</span>)</button></div>
+          </div>
+          <div class="tabs">
+            <button class="tab active" id="tabUpgrades">Upgrades</button>
+            <button class="tab" id="tabResearch">Forschung</button>
+            <button class="tab" id="tabAchievements">Erfolge</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="panels">
+        <div id="panelUpgrades" class="panel active">
+          <div class="grid" id="upgrades"></div>
+        </div>
+        <div id="panelResearch" class="panel">
+          <div class="grid" id="research"></div>
+        </div>
+        <div id="panelAchievements" class="panel">
+          <div class="grid" id="achievements"></div>
+        </div>
+
+        <div class="hr"></div>
+        <div class="section">
+          <div class="muted" style="margin:8px 0 6px">Prestige</div>
+          <div class="prestige">
+            <div>
+              <div class="badge">Erkenntnispunkte (EP)</div>
+              <strong class="mono"><span id="ep">0</span> EP</strong>
+              <div class="badge">Globaler Produktions-Multiplikator: <span class="mono" id="mult">1.00x</span></div>
+            </div>
+            <div>
+              <div class="badge">Bedingung: Gesamtressourcen &ge; <span id="prestigeReq">50.000</span></div>
+              <button class="tab" id="prestigeBtn" disabled>Prestige auslösen</button>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="tab" id="exportBtn">Export</button>
+            <button class="tab" id="importBtn">Import</button>
+            <button class="tab" id="saveBtn">Speichern</button>
+            <button class="tab" id="resetBtn">Zurücksetzen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Früh installierter Fehlerfänger (läuft auch wenn Main-Script nicht parsed)
+(function(){
+  function banner(msg){
+    try{var el=document.getElementById('errorBanner'); if(el){ el.style.display='block'; el.textContent=msg; }}catch(_){ }
+    try{console.error('[BOOT]', msg);}catch(_){ }
+  }
+  window.addEventListener('error', function(e){ banner('Fehler (früh): '+(e.message||e.error||'Unbekannt')+' @ '+(e.filename||'')+':'+(e.lineno||'')); });
+  window.addEventListener('unhandledrejection', function(e){ banner('Unhandled (früh): '+(e.reason&&e.reason.message?e.reason.message:String(e.reason))); });
+  document.addEventListener('DOMContentLoaded', function(){ console.log('[BOOT] DOM ready'); });
+})();
+</script>
+
+<script>
 try{
 (function(){
-// ---------- helpers ----------
-function fmt(n){if(!isFinite(n))return'0';if(n>=1e12)return(n/1e12).toFixed(2)+'T';if(n>=1e9)return(n/1e9).toFixed(2)+'B';if(n>=1e6)return(n/1e6).toFixed(2)+'M';if(n>=1e3)return(n/1e3).toFixed(2)+'K';return(Math.floor(n*100)/100)+'';}
-
-// ---------- state ----------
-var DEFAULT={
-  stein:0, holz:0, metall:0, kohle:0, stahl:0, energie:0, wissen:0,
-  rpsStein:0, rpsHolz:0, rpsMetall:0, rpsKohle:0, rpsStahl:0, rpsEnergie:0, rpsWissen:0,
-  rpcStein:1, rpcHolz:0, rpcMetall:0,
-  totalEarned:0, ep:0, permBonus:0, autoBonus:0,
-  unlocks:{holz:false, metall:false, kohle:false, stahl:false, energie:false, wissen:false},
-  upgrades:{stone:{},wood:{},metal:{},coal:{},steel:{},energy:{},science:{}},
-  research:{clickBoost:0,autoBoost:0,cheaper:0,offlineCap:0},
-  achievements:{},
-  lastTs:Date.now()
-};
-var state=JSON.parse(JSON.stringify(DEFAULT));
-var PRESTIGE_REQ=50000;
-
-// ---------- dom ----------
-var resStats=document.getElementById('resourceStats');
-var clickSteinBtn=document.getElementById('clickStein');
-var clickHolzBtn=document.getElementById('clickHolz');
-var holzClickCol=document.getElementById('holzClickCol');
-var rpcSteinEl=document.getElementById('rpcStein');
-var rpcHolzEl=document.getElementById('rpcHolz');
-var upgradesEl=document.getElementById('upgrades');
-var researchEl=document.getElementById('research');
-var achieveEl=document.getElementById('achievements');
-var saveBtn=document.getElementById('saveBtn');
-var resetBtn=document.getElementById('resetBtn');
-var exportBtn=document.getElementById('exportBtn');
-var importBtn=document.getElementById('importBtn');
-var epEl=document.getElementById('ep');
-var multEl=document.getElementById('mult');
-var prestigeBtn=document.getElementById('prestigeBtn');
-var prestigeReqEl=document.getElementById('prestigeReq');
-var tabUpg=document.getElementById('tabUpgrades');
-var tabRes=document.getElementById('tabResearch');
-var tabAch=document.getElementById('tabAchievements');
-var panelUpg=document.getElementById('panelUpgrades');
-var panelRes=document.getElementById('panelResearch');
-var panelAch=document.getElementById('panelAchievements');
-prestigeReqEl.textContent=PRESTIGE_REQ.toLocaleString('de-DE');
-
-// ---------- math ----------
-function gMult(){return(1+state.ep*0.01)*(1+state.permBonus);}
-function cMult(){return gMult()*(1+state.research.clickBoost*0.25);}
-function aMult(){return gMult()*(1+state.autoBonus)*(1+state.research.autoBoost*0.25);}
-function kMult(){return Math.max(0.4,1-state.research.cheaper*0.05);}
-
-// ---------- ui ----------
-function statCard(label,value,perSec,perClick){
-  var wrap=document.createElement('div');wrap.className='col';
-  var card=document.createElement('div');card.className='stat';wrap.appendChild(card);
-  var L=document.createElement('div');var R=document.createElement('div');R.style.textAlign='right';card.appendChild(L);card.appendChild(R);
-  var b1=document.createElement('div');b1.className='badge';b1.textContent='Ressource';L.appendChild(b1);
-  var b2=document.createElement('b');b2.className='mono';b2.textContent=label+': '+fmt(value);L.appendChild(b2);
-  var r1=document.createElement('div');r1.className='badge';r1.textContent='Rate (pro Sek.)';R.appendChild(r1);
-  var r2=document.createElement('b');r2.className='mono';r2.textContent='+'+(Math.round(perSec*100)/100).toFixed(2);R.appendChild(r2);
-  if(perClick!=null){var r3=document.createElement('div');r3.className='badge';r3.textContent='Klick-Wert';R.appendChild(r3);
-  var r4=document.createElement('b');r4.className='mono';r4.textContent='+'+fmt(perClick);R.appendChild(r4);}
-  return wrap;
-}
-function renderStats(){
-  resStats.innerHTML='';
-  var mC=cMult(),mA=aMult();
-  resStats.appendChild(statCard('Stein',state.stein,state.rpsStein*mA,state.rpcStein*mC));
-  if(state.unlocks.holz) resStats.appendChild(statCard('Holz',state.holz,state.rpsHolz*mA,state.rpcHolz*mC));
-  rpcSteinEl.textContent=fmt(state.rpcStein*mC);
-  rpcHolzEl.textContent=fmt(state.rpcHolz*mC);
-  holzClickCol.style.display=state.unlocks.holz?'':'none';
-  epEl.textContent=state.ep; multEl.textContent=gMult().toFixed(2)+'x';
-  var total=state.stein+state.holz+state.metall+state.kohle+state.stahl+state.energie+state.wissen+state.totalEarned;
-  prestigeBtn.disabled=(total<PRESTIGE_REQ);
-}
-function renderUpgrades(){ // minimal starter set (keine Unicode in Strings)
-  upgradesEl.innerHTML='';
-  var grid=document.createDocumentFragment();
-  function card(title,desc,costLbl,costVal,canBuy,onBuy){
-    var c=document.createElement('div');c.className='card-sm';
-    var h=document.createElement('h3');h.textContent=title;c.appendChild(h);
-    var p=document.createElement('div');p.className='muted';p.textContent=desc;c.appendChild(p);
-    var k=document.createElement('div');k.className='muted';k.textContent='Kosten: '+fmt(costVal)+' '+costLbl;c.appendChild(k);
-    var b=document.createElement('button');b.className='buy '+(canBuy?'can':'cannot');b.textContent=canBuy?'Kaufen':'Nicht genug'; if(canBuy){b.onclick=onBuy;} c.appendChild(b);
-    return c;
+  // ---------- Fehlerfänger ----------
+  function showErr(msg){
+    var el=document.getElementById('errorBanner');
+    if(el){ el.style.display='block'; el.textContent=msg; }
+    console.error('[DEBUG]', msg);
   }
-  // Faustkeil
-  var fkCost=10; var fkCan=state.stein>=fkCost;
-  grid.appendChild(card('Faustkeil','+1 Stein/Klick','Stein',fkCost,fkCan,function(){state.stein-=fkCost; state.rpcStein+=1; renderAll();}));
-  // Werkbank (Holz freischalten, 1 Holz/Klick)
-  var wbCost=250; var wbCan=state.stein>=wbCost && !state.unlocks.holz;
-  grid.appendChild(card('Werkbank','Schaltet HOLZ frei','Stein',wbCost,wbCan,function(){state.stein-=wbCost; state.unlocks.holz=true; if(!state.rpcHolz||state.rpcHolz<=0) state.rpcHolz=1; renderAll();}));
-  upgradesEl.appendChild(grid);
-}
-function renderResearch(){ researchEl.innerHTML='(Demo)'; }
-function renderAchievements(){ achieveEl.innerHTML='(Demo)'; }
-function renderAll(){ renderStats(); renderUpgrades(); }
+  window.addEventListener('error', function(e){ showErr('Fehler: '+(e.message||e.error||'Unbekannt')+' @ '+(e.filename||'')+':'+(e.lineno||'')); });
+  window.addEventListener('unhandledrejection', function(e){ showErr('Unhandled promise: '+(e.reason&&e.reason.message?e.reason.message:String(e.reason))); });
 
-// ---------- tick ----------
-function tick(){
-  var now=Date.now(); var dt=(now-state.lastTs)/1000; state.lastTs=now;
-  if(dt>10) dt=10;
-  var mA=aMult();
-  function add(a){ state.totalEarned+=a; return a; }
-  state.stein+=add(state.rpsStein*mA*dt);
-  if(state.unlocks.holz) state.holz+=add(state.rpsHolz*mA*dt);
-  renderStats();
-}
+  // ---------- Helpers ----------
+  function fmt(n){ if(!isFinite(n)) return '0'; if(n>=1e12) return (n/1e12).toFixed(2)+'T'; if(n>=1e9) return (n/1e9).toFixed(2)+'B'; if(n>=1e6) return (n/1e6).toFixed(2)+'M'; if(n>=1e3) return (n/1e3).toFixed(2)+'K'; return (Math.floor(n*100)/100)+''; }
 
-// ---------- save/load ----------
-function save(){ try{localStorage.setItem('stone_idle_save_v2',JSON.stringify(state));}catch(e){} }
-function load(){
-  try{
-    var raw=localStorage.getItem('stone_idle_save_v2'); if(!raw) return;
-    var data=JSON.parse(raw); for(var k in data){ state[k]=data[k]; }
-    if(!state.unlocks) state.unlocks={holz:false,metall:false,kohle:false,stahl:false,energie:false,wissen:false};
-    if(state.unlocks.holz && (!state.rpcHolz||state.rpcHolz<=0)) state.rpcHolz=1;
-  }catch(e){}
-}
+  // ---------- Kataloge ----------
+  var stoneUpgrades={
+    faustkeil:{id:'faustkeil',name:'Faustkeil',desc:'+1 Stein/Klick',baseCost:10,mult:1.15,apply:function(s){s.rpcStein+=1;}},
+    steinspalter:{id:'steinspalter',name:'Steinspalter',desc:'+0.2 Stein/Sek',baseCost:30,mult:1.16,apply:function(s){s.rpsStein+=0.2;}},
+    arbeiter:{id:'arbeiter',name:'Arbeiter',desc:'+1 Stein/Sek',baseCost:120,mult:1.18,apply:function(s){s.rpsStein+=1;}},
+    steinmine:{id:'steinmine',name:'Steinmine',desc:'+8 Stein/Sek',baseCost:520,mult:1.22,apply:function(s){s.rpsStein+=8;}},
+    werkbank:{id:'werkbank',name:'Werkbank',desc:'Schaltet HOLZ frei',baseCost:250,mult:2.5,single:true,apply:function(s){ s.unlocks.holz=true; if(!s.rpcHolz||s.rpcHolz<=0) s.rpcHolz=1; }}
+  };
+  var woodUpgrades={
+    axt:{id:'axt',name:'Axt',desc:'+1 Holz/Klick',baseCost:100,mult:1.15,apply:function(s){s.rpcHolz+=1;}},
+    holzfaeller:{id:'holzfaeller',name:'Holzfäller',desc:'+0.8 Holz/Sek',baseCost:240,mult:1.18,apply:function(s){s.rpsHolz+=0.8;}},
+    saegewerk:{id:'saegewerk',name:'Sägewerk',desc:'+6 Holz/Sek',baseCost:520,mult:1.22,apply:function(s){s.rpsHolz+=6;}},
+    ofen:{id:'ofen',name:'Ofen',desc:'Effizienz +10% global',baseCost:1500,mult:1.35,apply:function(s){s.permBonus+=0.10;}},
+    schmiede:{id:'schmiede',name:'Schmiede',desc:'Schaltet METALL frei',baseCost:2200,mult:2.0,single:true,apply:function(s){ s.unlocks.metall=true; if(!s.rpcMetall||s.rpcMetall<=0) s.rpcMetall=1; }}
+  };
+  var metalUpgrades={
+    picke:{id:'picke',name:'Eiserne Picke',desc:'+1 Metall/Klick',baseCost:1000,mult:1.15,apply:function(s){s.rpcMetall+=1;}},
+    bergwerk:{id:'bergwerk',name:'Bergwerk',desc:'+1.5 Metall/Sek',baseCost:2500,mult:1.18,apply:function(s){s.rpsMetall+=1.5;}},
+    giesserei:{id:'giesserei',name:'Gießerei',desc:'+10 Metall/Sek',baseCost:7500,mult:1.22,apply:function(s){s.rpsMetall+=10;}},
+    kohlegrube:{id:'kohlegrube',name:'Kohlegrube',desc:'Schaltet KOHLE frei',baseCost:12000,mult:2.0,single:true,apply:function(s){ s.unlocks.kohle=true; }}
+  };
+  var coalUpgrades={
+    schaechte:{id:'schaechte',name:'Schächte',desc:'+1 Kohle/Sek',baseCost:8000,mult:1.2,apply:function(s){s.rpsKohle+=1;}},
+    foerderband:{id:'foerderband',name:'Förderband',desc:'+25% Auto-Produktion',baseCost:15000,mult:1.3,apply:function(s){s.autoBonus+=0.25;}},
+    kohlekraft:{id:'kohlekraft',name:'Kohlekraftwerk',desc:'Schaltet ENERGIE frei',baseCost:18000,mult:2.0,single:true,apply:function(s){ s.unlocks.energie=true; }},
+    fabrik:{id:'fabrik',name:'Fabrik',desc:'Schaltet STAHL frei',baseCost:20000,mult:2.2,single:true,apply:function(s){ s.unlocks.stahl=true; }}
+  };
+  var energyUpgrades={
+    generator:{id:'generator',name:'Generator',desc:'+5 Energie/Sek (verbraucht Kohle)',baseCost:16000,mult:1.25,apply:function(s){s.rpsEnergie+=5;}},
+    trafo:{id:'trafo',name:'Transformator',desc:'+10% globale Effizienz',baseCost:22000,mult:1.3,apply:function(s){s.permBonus+=0.1;}},
+    labor:{id:'labor',name:'Forschungslabor',desc:'Schaltet WISSEN frei',baseCost:24000,mult:2.0,single:true,apply:function(s){ s.unlocks.wissen=true; }}
+  };
+  var steelUpgrades={
+    stahlwerk:{id:'stahlwerk',name:'Stahlwerk',desc:'+1 Stahl/Sek (verbraucht Metall & Kohle)',baseCost:25000,mult:1.25,apply:function(s){s.rpsStahl+=1;}},
+    hochofen:{id:'hochofen',name:'Hochofen',desc:'+50% Gesamt-Effizienz',baseCost:50000,mult:1.35,apply:function(s){s.permBonus+=0.5;}}
+  };
+  var scienceUpgrades={
+    uni:{id:'uni',name:'Universität',desc:'+1 Wissen/Sek (verbraucht Energie)',baseCost:26000,mult:1.25,apply:function(s){s.rpsWissen+=1;}},
+    rechen:{id:'rechen',name:'Rechenzentrum',desc:'+25% Auto-Produktion',baseCost:32000,mult:1.3,apply:function(s){s.autoBonus+=0.25;}},
+    quant:{id:'quant',name:'Quantenlabor',desc:'+25% Klick-Produktion',baseCost:42000,mult:1.35,apply:function(s){s.research.clickBoost+=1;}}
+  };
 
-// ---------- tab ----------
-function setTab(which){
-  tabUpg.classList.remove('active');tabRes.classList.remove('active');tabAch.classList.remove('active');
-  panelUpg.classList.remove('active');panelRes.classList.remove('active');panelAch.classList.remove('active');
-  if(which==='upg'){tabUpg.classList.add('active');panelUpg.classList.add('active');}
-  if(which==='res'){tabRes.classList.add('active');panelRes.classList.add('active');}
-  if(which==='ach'){tabAch.classList.add('active');panelAch.classList.add('active');}
-}
+  // ---------- State ----------
+  var DEFAULT={
+    stein:0,holz:0,metall:0,kohle:0,stahl:0,energie:0,wissen:0,
+    rpsStein:0,rpsHolz:0,rpsMetall:0,rpsKohle:0,rpsStahl:0,rpsEnergie:0,rpsWissen:0,
+    rpcStein:1,rpcHolz:0,rpcMetall:0,
+    totalEarned:0,ep:0,permBonus:0,autoBonus:0,
+    unlocks:{holz:false,metall:false,kohle:false,stahl:false,energie:false,wissen:false},
+    upgrades:{stone:{},wood:{},metal:{},coal:{},steel:{},energy:{},science:{}},
+    research:{clickBoost:0,autoBoost:0,cheaper:0,offlineCap:0},
+    achievements:{},
+    lastTs:Date.now()
+  };
+  var state=JSON.parse(JSON.stringify(DEFAULT));
 
-// ---------- events ----------
-clickSteinBtn.addEventListener('click',function(){ var add=state.rpcStein*cMult(); state.stein+=add; state.totalEarned+=add; renderStats(); console.log('[CLICK STEIN]',add); });
-clickHolzBtn.addEventListener('click',function(){ var add=state.rpcHolz*cMult(); state.holz+=add; state.totalEarned+=add; renderStats(); });
-saveBtn.addEventListener('click',function(){ save(); renderAll(); });
-resetBtn.addEventListener('click',function(){ if(confirm('Wirklich alles zuruecksetzen?')){ localStorage.removeItem('stone_idle_save_v2'); state=JSON.parse(JSON.stringify(DEFAULT)); renderAll(); }});
-exportBtn.addEventListener('click',function(){ save(); var payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(payload).catch(function(){});} }catch(_){ } alert('Export (Anfang):\\n'+payload.slice(0,96)+'...'); });
-importBtn.addEventListener('click',function(){ var str=prompt('Export-String einfuegen:'); if(!str) return; try{ var json=decodeURIComponent(escape(atob(str))); localStorage.setItem('stone_idle_save_v2',json); var data=JSON.parse(json); for(var k in data){ state[k]=data[k]; } renderAll(); alert('Import OK'); }catch(e){ alert('Import fehlgeschlagen: '+e.message); }});
-tabUpg.addEventListener('click',function(){ setTab('upg'); });
-tabRes.addEventListener('click',function(){ setTab('res'); });
-tabAch.addEventListener('click',function(){ setTab('ach'); });
+  // ---------- DOM ----------
+  var resStats=document.getElementById('resourceStats');
+  var clickSteinBtn=document.getElementById('clickStein');
+  var clickHolzBtn=document.getElementById('clickHolz');
+  var holzClickCol=document.getElementById('holzClickCol');
+  var rpcSteinEl=document.getElementById('rpcStein');
+  var rpcHolzEl=document.getElementById('rpcHolz');
+  var upgradesEl=document.getElementById('upgrades');
+  var researchEl=document.getElementById('research');
+  var achieveEl=document.getElementById('achievements');
+  var saveBtn=document.getElementById('saveBtn');
+  var resetBtn=document.getElementById('resetBtn');
+  var exportBtn=document.getElementById('exportBtn');
+  var importBtn=document.getElementById('importBtn');
+  var epEl=document.getElementById('ep');
+  var multEl=document.getElementById('mult');
+  var prestigeBtn=document.getElementById('prestigeBtn');
+  var prestigeReqEl=document.getElementById('prestigeReq');
+  var tabUpg=document.getElementById('tabUpgrades');
+  var tabRes=document.getElementById('tabResearch');
+  var tabAch=document.getElementById('tabAchievements');
+  var panelUpg=document.getElementById('panelUpgrades');
+  var panelRes=document.getElementById('panelResearch');
+  var panelAch=document.getElementById('panelAchievements');
 
-// ---------- init ----------
-load(); renderAll();
-setInterval(function(){tick();},200);
-setInterval(function(){save();},10000);
+  var PRESTIGE_REQ=50000; if(prestigeReqEl){ prestigeReqEl.textContent=PRESTIGE_REQ.toLocaleString('de-DE'); }
+
+  // ---------- Multipliers ----------
+  function globalMult(){ return (1+state.ep*0.01)*(1+state.permBonus); }
+  function clickMult(){ return globalMult()*(1+state.research.clickBoost*0.25); }
+  function autoMult(){ return globalMult()*(1+state.autoBonus)*(1+state.research.autoBoost*0.25); }
+  function costMult(){ return Math.max(0.4,1-state.research.cheaper*0.05); }
+
+  // ---------- UI ----------
+  function statCard(label,value,perSec,perClick){
+    var wrap=document.createElement('div'); wrap.className='col';
+    var card=document.createElement('div'); card.className='stat'; wrap.appendChild(card);
+    var left=document.createElement('div'); card.appendChild(left);
+    var right=document.createElement('div'); right.style.textAlign='right'; card.appendChild(right);
+    var b1=document.createElement('div'); b1.className='badge'; b1.textContent='Ressource'; left.appendChild(b1);
+    var b2=document.createElement('b'); b2.className='mono'; b2.textContent=label+': '+fmt(value); left.appendChild(b2);
+    var r1=document.createElement('div'); r1.className='badge'; r1.textContent='Rate (pro Sek.)'; right.appendChild(r1);
+    var r2=document.createElement('b'); r2.className='mono'; r2.textContent='+'+(Math.round(perSec*100)/100).toFixed(2); right.appendChild(r2);
+    if(perClick!=null){
+      var r3=document.createElement('div'); r3.className='badge'; r3.textContent='Klick-Wert'; right.appendChild(r3);
+      var r4=document.createElement('b'); r4.className='mono'; r4.textContent='+'+fmt(perClick); right.appendChild(r4);
+    }
+    return wrap;
+  }
+
+  function renderStats(){
+    resStats.innerHTML='';
+    var mC=clickMult(), mA=autoMult();
+    resStats.appendChild(statCard('Stein',state.stein,state.rpsStein*mA,state.rpcStein*mC));
+    if(state.unlocks.holz) resStats.appendChild(statCard('Holz',state.holz,state.rpsHolz*mA,state.rpcHolz*mC));
+    if(state.unlocks.metall) resStats.appendChild(statCard('Metall',state.metall,state.rpsMetall*mA,state.rpcMetall*mC));
+    if(state.unlocks.kohle) resStats.appendChild(statCard('Kohle',state.kohle,state.rpsKohle*mA,null));
+    if(state.unlocks.stahl) resStats.appendChild(statCard('Stahl',state.stahl,state.rpsStahl*mA,null));
+    if(state.unlocks.energie) resStats.appendChild(statCard('Energie',state.energie,state.rpsEnergie*mA,null));
+    if(state.unlocks.wissen) resStats.appendChild(statCard('Wissen',state.wissen,state.rpsWissen*mA,null));
+
+    if(rpcSteinEl){ rpcSteinEl.textContent=fmt(state.rpcStein*mC); }
+    if(rpcHolzEl){ rpcHolzEl.textContent=fmt(state.rpcHolz*mC); }
+    if(holzClickCol){ holzClickCol.style.display=state.unlocks.holz?'':'none'; }
+
+    epEl.textContent=state.ep; multEl.textContent=globalMult().toFixed(2)+'x';
+    var total=state.stein+state.holz+state.metall+state.kohle+state.stahl+state.energie+state.wissen+state.totalEarned;
+    prestigeBtn.disabled=(total<PRESTIGE_REQ);
+  }
+
+  function calcCost(base,mult,owned){ return Math.floor(base*Math.pow(mult,owned)); }
+  function buildCard(upg,owned,canAfford,label,onBuy){
+    var card=document.createElement('div'); card.className='card-sm'; card.title=upg.desc;
+    var h3=document.createElement('h3'); h3.textContent=upg.name; card.appendChild(h3);
+    var p=document.createElement('div'); p.textContent=upg.desc; p.className='muted'; card.appendChild(p);
+    var shown=Math.floor(upg._cost*costMult());
+    var c=document.createElement('div'); c.className='muted'; c.textContent='Kosten: '+fmt(shown)+' '+label; card.appendChild(c);
+    var o=document.createElement('div'); o.className='muted'; o.textContent='Besitz: '+owned; card.appendChild(o);
+    var btn=document.createElement('button');
+    btn.className='buy';
+    var soldOut = !!upg.single && owned>=1;
+    btn.textContent = soldOut ? 'Gekauft' : (canAfford ? 'Kaufen' : 'Nicht genug');
+    if(soldOut){ btn.disabled=true; btn.className='buy cannot'; }
+    else { btn.className = 'buy ' + (canAfford?'can':'cannot'); btn.onclick=function(){ onBuy(); }; }
+    card.appendChild(btn);
+    return card;
+  }
+
+  function renderUpgrades(){
+    upgradesEl.innerHTML=''; var frag=document.createDocumentFragment();
+    function addGroup(cat,store,currency,getBal){
+      for(var key in cat){ if(!cat.hasOwnProperty(key)) continue; var upg=cat[key]; var owned=(state.upgrades[store][key]||0); upg._cost=calcCost(upg.baseCost,upg.mult,owned); var cost=Math.floor(upg._cost*costMult()); var can=getBal()>=cost;
+        frag.appendChild(buildCard(upg,owned,can,currency,function(){ if(getBal()<cost) return; var cur=currency.toLowerCase();
+          if(cur==='stein') state.stein-=cost; else if(cur==='holz') state.holz-=cost; else if(cur==='metall') state.metall-=cost; else if(cur==='kohle') state.kohle-=cost; else if(cur==='stahl') state.stahl-=cost; else if(cur==='energie') state.energie-=cost; else if(cur==='wissen') state.wissen-=cost;
+          state.upgrades[store][key]=owned+1; cat[key].apply(state); save(); renderAll(); }));
+      }
+    }
+    addGroup(stoneUpgrades,'stone','Stein',function(){return state.stein;});
+    if(state.unlocks.holz) addGroup(woodUpgrades,'wood','Holz',function(){return state.holz;});
+    if(state.unlocks.metall) addGroup(metalUpgrades,'metal','Metall',function(){return state.metall;});
+    if(state.unlocks.kohle) addGroup(coalUpgrades,'coal','Kohle',function(){return state.kohle;});
+    if(state.unlocks.energie) addGroup(energyUpgrades,'energy','Energie',function(){return state.energie;});
+    if(state.unlocks.stahl) addGroup(steelUpgrades,'steel','Stahl',function(){return state.stahl;});
+    if(state.unlocks.wissen) addGroup(scienceUpgrades,'science','Wissen',function(){return state.wissen;});
+    upgradesEl.appendChild(frag);
+  }
+
+  // Research & Achievements
+  var researchCatalog={
+    clickBoost:{id:'clickBoost',name:'Stärkerer Klick',desc:'+25% Klick-Produktion pro Stufe (EP)',cost:2},
+    autoBoost:{id:'autoBoost',name:'Bessere Automatisierung',desc:'+25% Auto-Produktion pro Stufe (EP)',cost:2},
+    cheaper:{id:'cheaper',name:'Effiziente Baupläne',desc:'−5% Upgrade-Kosten pro Stufe (min 40%)',cost:3},
+    offlineCap:{id:'offlineCap',name:'Besserer Leerlauf',desc:'+100% Offline-Fortschritt pro Stufe',cost:1}
+  };
+  function renderResearch(){
+    researchEl.innerHTML=''; var frag=document.createDocumentFragment();
+    for(var key in researchCatalog){ if(!researchCatalog.hasOwnProperty(key)) continue; var r=researchCatalog[key]; var owned=state.research[key]||0; var card=document.createElement('div'); card.className='card-sm';
+      var h3=document.createElement('h3'); h3.textContent=r.name; card.appendChild(h3);
+      var p=document.createElement('div'); p.textContent=r.desc; p.className='muted'; card.appendChild(p);
+      var c=document.createElement('div'); c.className='muted'; c.textContent='Kosten: '+r.cost+' EP'; card.appendChild(c);
+      var o=document.createElement('div'); o.className='muted'; o.textContent='Stufe: '+owned; card.appendChild(o);
+      var can=state.ep>=r.cost; var btn=document.createElement('button'); btn.textContent=can?'Forschen':'Zu wenig EP'; btn.className='buy '+(can?'can':'cannot'); btn.onclick=(function(k,c){ return function(){ if(state.ep<c) return; state.ep-=c; state.research[k]=(state.research[k]||0)+1; save(); renderAll(); renderResearch(); }; })(key,r.cost); card.appendChild(btn); frag.appendChild(card);
+    }
+    researchEl.appendChild(frag);
+  }
+
+  var achieves=[
+    {id:'firstClick',name:'Erster Stein',desc:'Sammle zum ersten Mal Stein',test:function(s){return s.totalEarned>0;},bonus:0.01},
+    {id:'woodUnlock',name:'Holz freigeschaltet',desc:'Kaufe die Werkbank',test:function(s){return s.unlocks.holz;},bonus:0.01},
+    {id:'thousand',name:'Aufschwung',desc:'Erreiche 1.000 Gesamtressourcen',test:function(s){return (s.stein+s.holz+s.metall+s.kohle+s.stahl+s.totalEarned)>=1000;},bonus:0.01},
+    {id:'tenK',name:'Wachstum',desc:'Erreiche 10.000 Gesamtressourcen',test:function(s){return (s.stein+s.holz+s.metall+s.kohle+s.stahl+s.totalEarned)>=10000;},bonus:0.01}
+  ];
+  function checkAchievements(){
+    var gained=false; for(var i=0;i<achieves.length;i++){ var a=achieves[i]; if(!state.achievements[a.id] && a.test(state)){ state.achievements[a.id]=true; state.permBonus+=a.bonus; gained=true; } }
+    if(gained) save();
+  }
+  function renderAchievements(){
+    achieveEl.innerHTML=''; var frag=document.createDocumentFragment();
+    for(var i=0;i<achieves.length;i++){ var a=achieves[i]; var owned=!!state.achievements[a.id]; var card=document.createElement('div'); card.className='card-sm';
+      var h3=document.createElement('h3'); h3.textContent=a.name; card.appendChild(h3);
+      var p=document.createElement('div'); p.textContent=a.desc+(owned?' — erreicht ✅':''); p.className='muted'; card.appendChild(p);
+      var b=document.createElement('div'); b.className='muted'; b.textContent= owned? 'Bonus aktiv: +1% global' : 'Bonus bei Erreichen: +1% global'; card.appendChild(b);
+      frag.appendChild(card);
+    }
+    achieveEl.appendChild(frag);
+  }
+
+  function renderAll(){ renderStats(); renderUpgrades(); }
+
+  // ---------- Game Loop (mit Rezepten) ----------
+  function tick(){
+    var now=Date.now(); var dt=(now-state.lastTs)/1000; state.lastTs=now; var cap=1+(state.research.offlineCap||0); if(dt>10*cap) dt=10*cap; var mA=autoMult();
+    function add(amt){ state.totalEarned+=amt; return amt; }
+    state.stein += add(state.rpsStein*mA*dt);
+    state.holz  += add(state.rpsHolz*mA*dt);
+    state.metall+= add(state.rpsMetall*mA*dt);
+    state.kohle += add(state.rpsKohle*mA*dt);
+    // Energie: 1 Kohle -> 5 Energie
+    if(state.unlocks.energie && state.rpsEnergie>0){ var desired=state.rpsEnergie*mA*dt; var maxByFuel=state.kohle*5; var actual=Math.min(desired,maxByFuel); state.kohle=Math.max(0,state.kohle-actual/5); state.energie+=add(actual); }
+    // Stahl: 2 Metall + 1 Kohle -> 1 Stahl
+    if(state.unlocks.stahl && state.rpsStahl>0){ var desiredS=state.rpsStahl*mA*dt; var actualS=Math.max(0,Math.min(desiredS,state.metall/2,state.kohle/1)); state.metall=Math.max(0,state.metall-actualS*2); state.kohle=Math.max(0,state.kohle-actualS); state.stahl+=add(actualS); }
+    // Wissen: 2 Energie -> 1 Wissen
+    if(state.unlocks.wissen && state.rpsWissen>0){ var desiredW=state.rpsWissen*mA*dt; var actualW=Math.min(desiredW,state.energie/2); state.energie=Math.max(0,state.energie-actualW*2); state.wissen+=add(actualW); }
+    checkAchievements(); renderStats();
+  }
+
+  // ---------- Save/Load ----------
+  function save(){ try{ localStorage.setItem('stone_idle_save_v2', JSON.stringify(state)); }catch(e){ console.warn('save fail',e); } }
+  function load(){
+    try{
+      var raw=localStorage.getItem('stone_idle_save_v2'); if(!raw) return; var data=JSON.parse(raw); Object.assign(state,DEFAULT,data);
+      if(!state.upgrades) state.upgrades={}; if(!state.upgrades.stone) state.upgrades.stone={}; if(!state.upgrades.wood) state.upgrades.wood={}; if(!state.upgrades.metal) state.upgrades.metal={}; if(!state.upgrades.coal) state.upgrades.coal={}; if(!state.upgrades.steel) state.upgrades.steel={}; if(!state.upgrades.energy) state.upgrades.energy={}; if(!state.upgrades.science) state.upgrades.science={};
+      if(!state.unlocks) state.unlocks={holz:false,metall:false,kohle:false,stahl:false,energie:false,wissen:false}; if(!state.research) state.research={clickBoost:0,autoBoost:0,cheaper:0,offlineCap:0}; if(!state.achievements) state.achievements={};
+      if(state.unlocks.holz && (!state.rpcHolz||state.rpcHolz<=0)) state.rpcHolz=1; if(state.unlocks.metall && (!state.rpcMetall||state.rpcMetall<=0)) state.rpcMetall=1;
+      var last=data.lastTs||Date.now(); var delta=Math.max(0,(Date.now()-last)/1000); if(delta>0){ var cap=1+(state.research.offlineCap||0); var eff=Math.min(delta,10*cap); var mA=autoMult(); state.stein+=state.rpsStein*mA*eff; state.holz+=state.rpsHolz*mA*eff; state.metall+=state.rpsMetall*mA*eff; state.kohle+=state.rpsKohle*mA*eff; state.stahl+=state.rpsStahl*mA*eff; state.energie+=state.rpsEnergie*mA*eff; state.wissen+=state.rpsWissen*mA*eff; }
+      state.lastTs=Date.now();
+    }catch(e){ console.warn('Load error',e); }
+  }
+
+  // ---------- Prestige ----------
+  function doPrestige(){ var total=state.stein+state.holz+state.metall+state.kohle+state.stahl+state.energie+state.wissen+state.totalEarned; var gain=Math.floor(Math.max(0,Math.log10(Math.max(1,total))-4)); if(gain<=0) return; if(!confirm('Prestige auslösen und '+gain+' EP erhalten?')) return; state.ep+=gain; var keep={ep:state.ep}; Object.assign(state,JSON.parse(JSON.stringify(DEFAULT)),keep); state.lastTs=Date.now(); save(); renderAll(); }
+
+  // ---------- Events ----------
+  clickSteinBtn.addEventListener('click',function(){ var add=state.rpcStein*clickMult(); state.stein+=add; state.totalEarned+=add; checkAchievements(); renderStats(); console.log('[DEBUG] Stein-Klick', add); });
+  clickHolzBtn.addEventListener('click',function(){ var add=state.rpcHolz*clickMult(); state.holz+=add; state.totalEarned+=add; checkAchievements(); renderStats(); });
+  saveBtn.addEventListener('click',function(){ save(); renderAll(); });
+  resetBtn.addEventListener('click',function(){ if(confirm('Wirklich alles zurücksetzen?')){ localStorage.removeItem('stone_idle_save_v2'); Object.assign(state,JSON.parse(JSON.stringify(DEFAULT))); renderAll(); }});
+  exportBtn.addEventListener('click',function(){ save(); var payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(payload).catch(function(){}); } }catch(_){ } alert('Exportiert (Anfang):
+'+payload.slice(0,96)+'…'); });
+  importBtn.addEventListener('click',function(){ var str=prompt('Export-String einfügen:'); if(!str) return; try{ var json=decodeURIComponent(escape(atob(str))); localStorage.setItem('stone_idle_save_v2',json); Object.assign(state,JSON.parse(json)); renderAll(); alert('Import OK'); }catch(e){ alert('Import fehlgeschlagen: '+e.message); }});
+  prestigeBtn.addEventListener('click',function(){ doPrestige(); });
+
+  function setTab(which){ tabUpg.classList.remove('active'); tabRes.classList.remove('active'); tabAch.classList.remove('active'); panelUpg.classList.remove('active'); panelRes.classList.remove('active'); panelAch.classList.remove('active'); if(which==='upg'){tabUpg.classList.add('active');panelUpg.classList.add('active');} if(which==='res'){tabRes.classList.add('active');panelRes.classList.add('active'); renderResearch();} if(which==='ach'){tabAch.classList.add('active');panelAch.classList.add('active'); renderAchievements();} }
+  tabUpg.addEventListener('click',function(){ setTab('upg'); });
+  tabRes.addEventListener('click',function(){ setTab('res'); });
+  tabAch.addEventListener('click',function(){ setTab('ach'); });
+
+  // ---------- Init ----------
+  load(); renderAll(); setInterval(function(){tick();},200); setInterval(function(){save();},10000);
 })();
-}catch(e){
+}
+catch(e){
   var el=document.getElementById('errorBanner'); if(el){ el.style.display='block'; el.textContent='Init-Fehler: '+(e.message||e); }
   console.error('[INIT]', e);
 }
 </script>
+</body>
+</html>
