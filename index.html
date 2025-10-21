@@ -344,7 +344,7 @@ try{
     if(state.unlocks.stahl && state.rpsStahl>0){ var desiredS=state.rpsStahl*mA*dt; var actualS=Math.max(0,Math.min(desiredS,state.metall/2,state.kohle/1)); state.metall=Math.max(0,state.metall-actualS*2); state.kohle=Math.max(0,state.kohle-actualS); state.stahl+=add(actualS); }
     // Wissen: 2 Energie -> 1 Wissen
     if(state.unlocks.wissen && state.rpsWissen>0){ var desiredW=state.rpsWissen*mA*dt; var actualW=Math.min(desiredW,state.energie/2); state.energie=Math.max(0,state.energie-actualW*2); state.wissen+=add(actualW); }
-    checkAchievements(); renderStats();
+    checkAchievements(); renderAll();
   }
 
   // ---------- Save/Load ----------
@@ -364,8 +364,8 @@ try{
   function doPrestige(){ var total=state.stein+state.holz+state.metall+state.kohle+state.stahl+state.energie+state.wissen+state.totalEarned; var gain=Math.floor(Math.max(0,Math.log10(Math.max(1,total))-4)); if(gain<=0) return; if(!confirm('Prestige auslösen und '+gain+' EP erhalten?')) return; state.ep+=gain; var keep={ep:state.ep}; Object.assign(state,JSON.parse(JSON.stringify(DEFAULT)),keep); state.lastTs=Date.now(); save(); renderAll(); }
 
   // ---------- Events ----------
-  clickSteinBtn.addEventListener('click',function(){ var add=state.rpcStein*clickMult(); state.stein+=add; state.totalEarned+=add; checkAchievements(); renderStats(); console.log('[DEBUG] Stein-Klick', add); });
-  clickHolzBtn.addEventListener('click',function(){ var add=state.rpcHolz*clickMult(); state.holz+=add; state.totalEarned+=add; checkAchievements(); renderStats(); });
+  clickSteinBtn.addEventListener('click',function(){ var add=state.rpcStein*clickMult(); state.stein+=add; state.totalEarned+=add; checkAchievements(); renderAll(); console.log('[DEBUG] Stein-Klick', add); });
+  clickHolzBtn.addEventListener('click',function(){ var add=state.rpcHolz*clickMult(); state.holz+=add; state.totalEarned+=add; checkAchievements(); renderAll(); });
   saveBtn.addEventListener('click',function(){ save(); renderAll(); });
   resetBtn.addEventListener('click',function(){ if(confirm('Wirklich alles zurücksetzen?')){ localStorage.removeItem('stone_idle_save_v2'); Object.assign(state,JSON.parse(JSON.stringify(DEFAULT))); renderAll(); }});
   exportBtn.addEventListener('click',function(){ save(); var payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(payload).catch(function(){}); } }catch(_){ } alert('Exportiert (Anfang):\n' +payload.slice(0,96)+'…'); });
