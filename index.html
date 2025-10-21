@@ -368,8 +368,7 @@ try{
   clickHolzBtn.addEventListener('click',function(){ var add=state.rpcHolz*clickMult(); state.holz+=add; state.totalEarned+=add; checkAchievements(); renderStats(); });
   saveBtn.addEventListener('click',function(){ save(); renderAll(); });
   resetBtn.addEventListener('click',function(){ if(confirm('Wirklich alles zurücksetzen?')){ localStorage.removeItem('stone_idle_save_v2'); Object.assign(state,JSON.parse(JSON.stringify(DEFAULT))); renderAll(); }});
-  exportBtn.addEventListener('click',function(){ save(); var payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(payload).catch(function(){}); } }catch(_){ } alert('Exportiert (Anfang):
-'+payload.slice(0,96)+'…'); });
+  exportBtn.addEventListener('click',function(){ save(); var payload=btoa(unescape(encodeURIComponent(localStorage.getItem('stone_idle_save_v2')))); try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(payload).catch(function(){}); } }catch(_){ } alert('Exportiert (Anfang):'\n +payload.slice(0,96)+'…'); });
   importBtn.addEventListener('click',function(){ var str=prompt('Export-String einfügen:'); if(!str) return; try{ var json=decodeURIComponent(escape(atob(str))); localStorage.setItem('stone_idle_save_v2',json); Object.assign(state,JSON.parse(json)); renderAll(); alert('Import OK'); }catch(e){ alert('Import fehlgeschlagen: '+e.message); }});
   prestigeBtn.addEventListener('click',function(){ doPrestige(); });
 
