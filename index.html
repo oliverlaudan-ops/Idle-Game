@@ -269,24 +269,58 @@ try{
     return card;
   }
 
-  function renderUpgrades(){
-    upgradesEl.innerHTML=''; var frag=document.createDocumentFragment();
-    function addGroup(cat,store,currency,getBal){
-      for(var key in cat){ if(!cat.hasOwnProperty(key)) continue; var upg=cat[key]; var owned=(state.upgrades[store][key]||0); upg._cost=calcCost(upg.baseCost,upg.mult,owned); var cost=Math.floor(upg._cost*costMult()); var can=getBal()>=cost;
-        frag.appendChild(buildCard(upg,owned,can,currency,function(){ if(getBal()<cost) return; var cur=currency.toLowerCase();
-          if(cur==='stein') state.stein-=cost; else if(cur==='holz') state.holz-=cost; else if(cur==='metall') state.metall-=cost; else if(cur==='kohle') state.kohle-=cost; else if(cur==='stahl') state.stahl-=cost; else if(cur==='energie') state.energie-=cost; else if(cur==='wissen') state.wissen-=cost;
-          state.upgrades[store][key]=owned+1; cat[key].apply(state); save(); renderAll(); }));
-      }
+ function renderUpgrades() {
+  upgradesEl.innerHTML = '';
+  var grid = document.createDocumentFragment();
+
+  function card(title, desc, costLbl, costVal, canBuy, onBuy) {
+    var c = document.createElement('div');
+    c.className = 'card-sm';
+    var h = document.createElement('h3');
+    h.textContent = title;
+    c.appendChild(h);
+    var p = document.createElement('div');
+    p.className = 'muted';
+    p.textContent = desc;
+    c.appendChild(p);
+    var k = document.createElement('div');
+    k.className = 'muted';
+    k.textContent = 'Kosten: ' + fmt(costVal) + ' ' + costLbl;
+    c.appendChild(k);
+    var b = document.createElement('button');
+    b.setAttribute('type', 'button');
+    var soldOut = !!upg.single && owned >= 1;
+
+    b.textContent = soldOut ? 'Gekauft' : (canBuy ? 'Kaufen' : 'Nicht genug');
+    if (soldOut) {
+      b.disabled = true;
+      b.className = 'buy cannot';
+    } else {
+      b.className = 'buy ' + (canBuy ? 'can' : 'cannot');
+      b.onclick = function () {
+        console.log('[BUY]', upg.id, 'owned=', owned, 'canAfford=', canAfford, 'shownCost=', shown);
+        onBuy(); // make sure onBuy is triggered
+        renderStats(); // refresh stats after purchase
+        renderAll(); // update the whole UI, so button state is properly updated
+      };
     }
-    addGroup(stoneUpgrades,'stone','Stein',function(){return state.stein;});
-    if(state.unlocks.holz) addGroup(woodUpgrades,'wood','Holz',function(){return state.holz;});
-    if(state.unlocks.metall) addGroup(metalUpgrades,'metal','Metall',function(){return state.metall;});
-    if(state.unlocks.kohle) addGroup(coalUpgrades,'coal','Kohle',function(){return state.kohle;});
-    if(state.unlocks.energie) addGroup(energyUpgrades,'energy','Energie',function(){return state.energie;});
-    if(state.unlocks.stahl) addGroup(steelUpgrades,'steel','Stahl',function(){return state.stahl;});
-    if(state.unlocks.wissen) addGroup(scienceUpgrades,'science','Wissen',function(){return state.wissen;});
-    upgradesEl.appendChild(frag);
+    c.appendChild(b);
+    return c;
   }
+  // Faustkeil example
+  var fkCost = 10;
+  var fkCan = state.stein >= fkCost;
+  grid.appendChild(card('Faustkeil', '+1 Stein/Klick', 'Stein', fkCost, fkCan, function () {
+    console.log('[BUY FAUSTKEIL] Before Purchase, state.stein =', state.stein);
+    state.stein -= fkCost;
+    state.rpcStein += 1; // increase the click value
+    console.log('[BUY FAUSTKEIL] After Purchase, state.rpcStein =', state.rpcStein);
+    renderAll(); // ensure the UI is updated
+  }));
+
+  upgradesEl.appendChild(grid);
+}
+
 
   // Research & Achievements
   var researchCatalog={
