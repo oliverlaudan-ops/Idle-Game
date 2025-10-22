@@ -273,52 +273,58 @@ try{
   upgradesEl.innerHTML = '';
   var grid = document.createDocumentFragment();
 
-  function card(title, desc, costLbl, costVal, canBuy, onBuy) {
-    var c = document.createElement('div');
-    c.className = 'card-sm';
-    var h = document.createElement('h3');
-    h.textContent = title;
-    c.appendChild(h);
-    var p = document.createElement('div');
-    p.className = 'muted';
-    p.textContent = desc;
-    c.appendChild(p);
-    var k = document.createElement('div');
-    k.className = 'muted';
-    k.textContent = 'Kosten: ' + fmt(costVal) + ' ' + costLbl;
-    c.appendChild(k);
-    var b = document.createElement('button');
-    b.setAttribute('type', 'button');
-    var soldOut = !!upg.single && owned >= 1;
+  // Beispiel für Upgrades (diese sollten wahrscheinlich irgendwo global definiert sein)
+  var upgrades = [
+    {id: 'faustkeil', name: 'Faustkeil', desc: '+1 Stein/Klick', cost: 10, apply: function() { state.rpcStein += 1; }},
+    {id: 'steinmine', name: 'Steinmine', desc: '+8 Stein/Sek', cost: 520, apply: function() { state.rpsStein += 8; }}
+  ];
 
-    b.textContent = soldOut ? 'Gekauft' : (canBuy ? 'Kaufen' : 'Nicht genug');
-    if (soldOut) {
-      b.disabled = true;
-      b.className = 'buy cannot';
-    } else {
-      b.className = 'buy ' + (canBuy ? 'can' : 'cannot');
-      b.onclick = function () {
-        console.log('[BUY]', upg.id, 'owned=', owned, 'canAfford=', canAfford, 'shownCost=', shown);
-        onBuy(); // make sure onBuy is triggered
-        renderStats(); // refresh stats after purchase
-        renderAll(); // update the whole UI, so button state is properly updated
-      };
-    }
-    c.appendChild(b);
-    return c;
-  }
-  // Faustkeil example
-  var fkCost = 10;
-  var fkCan = state.stein >= fkCost;
-  grid.appendChild(card('Faustkeil', '+1 Stein/Klick', 'Stein', fkCost, fkCan, function () {
-    console.log('[BUY FAUSTKEIL] Before Purchase, state.stein =', state.stein);
-    state.stein -= fkCost;
-    state.rpcStein += 1; // increase the click value
-    console.log('[BUY FAUSTKEIL] After Purchase, state.rpcStein =', state.rpcStein);
-    renderAll(); // ensure the UI is updated
-  }));
+  // Durchlaufe alle Upgrades
+  upgrades.forEach(function(upg) {
+    // Berechne, ob der Benutzer das Upgrade kaufen kann
+    var canAfford = state.stein >= upg.cost;
+    var card = buildCard(upg, state[upg.id] || 0, canAfford, 'Stein', function () {
+      if (state.stein < upg.cost) return;
+      state.stein -= upg.cost; // Abziehen der Kosten
+      upg.apply(); // Effekt anwenden (z. B. +1 Stein/Klick)
+      renderAll(); // UI aktualisieren
+    });
+    grid.appendChild(card);
+  });
 
   upgradesEl.appendChild(grid);
+}
+
+function buildCard(upg, owned, canAfford, label, onBuy) {
+  var card = document.createElement('div');
+  card.className = 'card-sm';
+  var h3 = document.createElement('h3');
+  h3.textContent = upg.name;
+  card.appendChild(h3);
+
+  var p = document.createElement('div');
+  p.className = 'muted';
+  p.textContent = upg.desc;
+  card.appendChild(p);
+
+  var k = document.createElement('div');
+  k.className = 'muted';
+  k.textContent = 'Kosten: ' + fmt(upg.cost) + ' ' + label;
+  card.appendChild(k);
+
+  var o = document.createElement('div');
+  o.className = 'muted';
+  o.textContent = 'Besitz: ' + owned;
+  card.appendChild(o);
+
+  var btn = document.createElement('button');
+  btn.setAttribute('type', 'button');
+  btn.textContent = canAfford ? 'Kaufen' : 'Nicht genug';
+  btn.className = canAfford ? 'buy can' : 'buy cannot';
+  btn.onclick = onBuy;
+  card.appendChild(btn);
+
+  return card;
 }
 
 
