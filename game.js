@@ -23,6 +23,11 @@ const renderStats = () => {
   document.getElementById('holzStats').textContent = `Holz: ${state.holz}`;
 };
 
+// Aktualisiert den Button-Text mit dem aktuellen rpcStein-Wert
+const updateClickButtonText = () => {
+  clickSteinBtn.textContent = `🪨 Stein sammeln (+${state.rpcStein})`;
+};
+
 // Funktion zum Rendern der Upgrades
 const renderUpgrades = () => {
   const upgradeGrid = document.getElementById('upgrade-grid');
@@ -37,6 +42,7 @@ const renderUpgrades = () => {
       upg.baseCost = Math.floor(upg.baseCost * upg.mult); // Kosten des Upgrades erhöhen
       renderStats(); // Stats aktualisieren
       renderUpgrades(); // UI mit neuen Preisen aktualisieren
+      updateClickButtonText(); // ← Button aktualisieren, wenn sich rpcStein geändert hat
     });
     upgradeGrid.appendChild(card); // Karte hinzufügen
   });
@@ -79,6 +85,7 @@ function buildCard(upg, amount, canBuy, resourceType, onClick) {
 const renderAll = () => {
   renderStats();
   renderUpgrades();
+  updateClickButtonText(); // ← Button-Text mit aktuellem Wert
 };
 
 // Eventlistener für Stein sammeln
