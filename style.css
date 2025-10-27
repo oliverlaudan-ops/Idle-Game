@@ -64,7 +64,9 @@ button{
 .primary:hover{ filter: brightness(.95); }
 .primary:active{ transform: translateY(1px); }
 
-#steinBtn{
+/* beide Action-Buttons gleich stylen */
+#steinBtn,
+#holzBtn{
   display:inline-flex;
   align-items:center;
   gap:.5rem;
@@ -73,10 +75,21 @@ button{
   border:1px solid rgba(148,163,184,.25);
   border-radius: 999px;
   padding: 10px 16px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
 }
-#steinBtn:hover{ border-color: rgba(148,163,184,.45); }
-#steinBtn:active{ transform: translateY(1px); }
+
+#steinBtn:hover,
+#holzBtn:hover{
+  border-color: rgba(148,163,184,.45);
+}
+
+#steinBtn:active,
+#holzBtn:active{
+  transform: translateY(1px);
+}
+
+/* kleiner Abstand, falls die Buttons nebeneinander stehen */
+#holzBtn{ margin-left:8px; }
 
 /* =========
    Cards / Panels
@@ -186,9 +199,10 @@ button{
 .muted{ color: var(--muted); }
 
 /* Mobile Tweaks */
+/* Mobile: beide Buttons vollbreit zentrieren */
 @media (max-width: 540px){
   .app{ padding: 0 14px 30px; }
-  #steinBtn{ width:100%; justify-content:center; }
-  .row{ gap:12px; }
-  .card-sm{ min-width: 100%; }
+  #steinBtn,
+  #holzBtn{ width:100%; justify-content:center; }
+  #holzBtn{ margin-left:0; margin-top:10px; }
 }
