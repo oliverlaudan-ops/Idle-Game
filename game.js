@@ -220,7 +220,7 @@ setInterval(() => {
   // nur Stats aktualisieren reicht; Upgrades nur neu, wenn Kaufbarkeit kippt – ist ok,
   // aber für „weich“ -> full render:
   renderAll();
-}, 1000);
+}, 100);
 
 // ---------- Boot ----------
 document.addEventListener('DOMContentLoaded', renderAll);
