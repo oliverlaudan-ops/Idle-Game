@@ -1,6 +1,6 @@
 :root {
-  --bg: #0f1115;
-  --panel: #151921;
+  --bg: #0f1115 !important;
+  --panel: #151921 !important;
 }
 
 * {
@@ -14,7 +14,7 @@ body {
 
 body {
   margin: 0;
-  background: #0b0d12;
+  background: #0b0d12 !important;
 }
 
 .app {
@@ -40,7 +40,7 @@ body {
 }
 
 .stat {
-  background: #101420;
+  background: #101420 !important;
   border-radius: 12px;
   padding: 6px;
   font-size: 12px;
@@ -60,7 +60,7 @@ body {
 }
 
 .muted {
-  color: #757575;
+  color: #757575 !important;
 }
 
 .buy {
@@ -73,16 +73,16 @@ body {
 }
 
 .buy.can {
-  background-color: #42b249;
+  background-color: #42b249 !important;
   color: white;
 }
 
 .buy.cannot {
-  background-color: #6e6e6e;
+  background-color: #6e6e6e !important;
   color: white;
   cursor: not-allowed;
 }
 
 .buy:hover {
-  background-color: #2a8d2b;
+  background-color: #2a8d2b !important;
 }
