@@ -85,7 +85,7 @@ const renderAll = () => {
 clickSteinBtn.addEventListener('click', () => {
   state.stein += state.rpcStein;
   state.totalEarned += state.rpcStein;
-  renderStats();
+  renderAll();
 });
 
 // Eventlistener für Prestige
