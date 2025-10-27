@@ -1,88 +1,194 @@
-:root {
-  --bg: #0f1115 !important;
-  --panel: #151921 !important;
+/* =========
+   Base / Theme
+   ========= */
+:root{
+  --bg:#0b0d12;          /* Seitenhintergrund */
+  --panel:#111826;       /* Karten/Paneels */
+  --panel-2:#0f172a;     /* dunkleres Panel */
+  --muted:#94a3b8;       /* Sekundärtext */
+  --text:#e5e7eb;        /* Primärtext */
+  --accent:#3b82f6;      /* Blau */
+  --accent-2:#22c55e;    /* Grün */
+  --danger:#ef4444;      /* Rot */
+  --ring:rgba(59,130,246,.35);
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+  --radius:14px;
 }
 
-* {
-  box-sizing: border-box;
+*{ box-sizing: border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font: 500 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
 }
 
-html,
-body {
-  height: 100%;
+/* =========
+   Layout
+   ========= */
+.app{
+  max-width: 980px;
+  margin: 28px auto;
+  padding: 0 20px 40px;
 }
 
-body {
-  margin: 0;
-  background: #0b0d12 !important;
+h1{
+  margin: 0 0 18px;
+  font-size: 28px;
+  letter-spacing:.2px;
+}
+h2{
+  margin: 22px 0 10px;
+  font-size: 18px;
+  color: var(--muted);
+  font-weight: 600;
 }
 
-.app {
-  max-width: 900px;
-  margin: 16px;
+/* =========
+   Buttons
+   ========= */
+button{
+  -webkit-tap-highlight-color: transparent;
+  appearance:none;
+  border:0;
+  outline:0;
+  cursor:pointer;
+  font: inherit;
 }
 
-.card {
+.primary{
+  background: var(--accent);
+  color: #fff;
+}
+.primary:hover{ filter: brightness(.95); }
+.primary:active{ transform: translateY(1px); }
+
+#steinBtn{
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  background: linear-gradient(180deg, #1e293b, #0f172a);
+  color:#e2e8f0;
+  border:1px solid rgba(148,163,184,.25);
+  border-radius: 999px;
+  padding: 10px 16px;
+  box-shadow: var(--shadow);
+}
+#steinBtn:hover{ border-color: rgba(148,163,184,.45); }
+#steinBtn:active{ transform: translateY(1px); }
+
+/* =========
+   Cards / Panels
+   ========= */
+.card{
   background: var(--panel);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 14px;
-  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  border:1px solid rgba(148,163,184,.15);
+}
+.card-sm{
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-width: 240px;
+  max-width: 280px;
+  box-shadow: var(--shadow);
+  border:1px solid rgba(148,163,184,.12);
+}
+.card-sm h3{
+  margin:0 0 8px;
+  font-size:16px;
+}
+.card-sm .muted{
+  color: var(--muted);
+  margin: 6px 0;
 }
 
-.row {
-  display: flex;
-  gap: 12px;
+/* =========
+   Grid
+   ========= */
+.row{
+  display:flex;
   flex-wrap: wrap;
+  gap: 16px;
 }
 
-.col {
-  flex: 1 1 260px;
-}
-
-.stat {
-  background: #101420 !important;
-  border-radius: 12px;
-  padding: 6px;
-  font-size: 12px;
-  color: var(--bg) !important;
-}
-
-.badge {
-  font-size: 12px;
-  color: var(--bg);
-}
-
-.card-sm {
-  background: var(--panel);
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
-}
-
-.muted {
-  color: #757575 !important;
-}
-
-.buy {
+/* =========
+   Upgrade Buttons
+   ========= */
+.buy{
   margin-top: 12px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.3s;
+  font-weight: 600;
+  transition: transform .05s ease, filter .2s ease, background .2s ease, border-color .2s ease;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 6px 18px rgba(0,0,0,.35);
+  border:1px solid transparent;
 }
 
-.buy.can {
-  background-color: #42b249 !important;
-  color: white;
+.buy.can{
+  background: linear-gradient(180deg, #16a34a, #15803d);
+  color:#fff;
+}
+.buy.can:hover{ filter: brightness(1.02); }
+.buy.can:active{ transform: translateY(1px); }
+
+.buy.cannot{
+  background: linear-gradient(180deg, #334155, #1f2937);
+  color:#9ca3af;
+  cursor:not-allowed;
+  border-color: rgba(148,163,184,.25);
 }
 
-.buy.cannot {
-  background-color: #6e6e6e !important;
-  color: white;
-  cursor: not-allowed;
+/* =========
+   Stats
+   ========= */
+#stats .stat{
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #cbd5e1;        /* <— nicht mehr zu dunkel */
+  border:1px solid rgba(148,163,184,.12);
+  margin: 10px 0;
+  box-shadow: var(--shadow);
 }
 
-.buy:hover {
-  background-color: #2a8d2b !important;
+/* =========
+   Prestige Block
+   ========= */
+#prestige .stat{
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border:1px solid rgba(148,163,184,.12);
+  border-radius:12px;
+  padding:10px 12px;
+  color:#cbd5e1;
+  box-shadow: var(--shadow);
+}
+#prestigeBtn{
+  margin-top:10px;
+  background: linear-gradient(180deg, #6366f1, #4f46e5);
+  color:#fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+#prestigeBtn:disabled{
+  background:#334155;
+  color:#94a3b8;
+  cursor:not-allowed;
+}
+
+/* =========
+   Helpers
+   ========= */
+.muted{ color: var(--muted); }
+
+/* Mobile Tweaks */
+@media (max-width: 540px){
+  .app{ padding: 0 14px 30px; }
+  #steinBtn{ width:100%; justify-content:center; }
+  .row{ gap:12px; }
+  .card-sm{ min-width: 100%; }
 }
