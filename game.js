@@ -52,8 +52,16 @@ const prestigeBtn   = document.getElementById('prestigeBtn');
 
 // ---------- Render: Stats ----------
 const renderStats = () => {
+  // bestehende große Stats
   document.getElementById('steinStats').textContent = `Stein: ${fmt(state.stein)}  (+${fmt(state.rpsStein)}/s)`;
   document.getElementById('holzStats').textContent  = `Holz: ${fmt(state.holz)}  (+${fmt(state.rpsHolz)}/s)`;
+
+  // NEU: kompakte Statsbar oben
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('sbStein', fmt(state.stein));
+  set('sbHolz',  fmt(state.holz));
+  set('sbSteinRate', `+${fmt(state.rpsStein)}/s`);
+  set('sbHolzRate',  `+${fmt(state.rpsHolz)}/s`);
 };
 
 // ---------- Buttons dynamisch ----------
