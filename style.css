@@ -206,3 +206,56 @@ button{
   #holzBtn{ width:100%; justify-content:center; }
   #holzBtn{ margin-left:0; margin-top:10px; }
 }
+/* ======= Sticky Statsbar oben ======= */
+.statsbar{
+  position: sticky;
+  top: 12px;                 /* Abstand zum oberen Rand */
+  z-index: 30;
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  margin: 8px 0 14px;
+  background: linear-gradient(180deg, var(--panel), var(--panel-2));
+  border: 1px solid rgba(148,163,184,.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  backdrop-filter: blur(2px);
+}
+
+.sb-item{
+  display:flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(15,23,42,.35);
+  border:1px solid rgba(148,163,184,.12);
+  border-radius: 10px;
+}
+
+.sb-label{
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing:.2px;
+}
+
+.sb-value{
+  font-weight: 700;
+  color:#e5e7eb;
+}
+
+.sb-rate{
+  color:#93c5fd; /* leichtes Blau für die Rate */
+  font-weight:600;
+  font-size: .95em;
+}
+
+@media (max-width: 540px){
+  .statsbar{ 
+    top: 8px;
+    flex-direction: column; 
+    gap: 8px; 
+    padding: 8px 10px; 
+  }
+  .sb-item{ justify-content: space-between; }
+}
+
