@@ -1,110 +1,219 @@
-// Spielzustand und Funktionen
+// ---------- Spielzustand ----------
 const state = {
   stein: 0,
   holz: 0,
-  rpcStein: 1,
-  rpcHolz: 0,
+
+  rpcStein: 1,   // Stein pro Klick
+  rpcHolz: 0,    // Holz pro Klick (0 bis Werkbank)
+
+  rpsStein: 0,   // Stein pro Sekunde
+  rpsHolz: 0,    // Holz pro Sekunde
+
   totalEarned: 0,
+
+  unlocks: { holz: false },   // wird durch Werkbank freigeschaltet
+  owned: {},                  // Stückzahlen je Upgrade-ID
 };
 
-// Upgrades
+// ---------- Upgrades ----------
 const upgrades = [
-  { id: 'faustkeil', name: 'Faustkeil', desc: '+1 Stein/Klick', baseCost: 10, mult: 1.15, apply: () => state.rpcStein++ },
-  { id: 'werkbank', name: 'Werkbank', desc: 'Schaltet Holz frei', baseCost: 250, mult: 2.5, apply: () => (state.rpcHolz = 1) },
+  // STEIN
+  { id:'faustkeil',  group:'stein', res:'stein', name:'Faustkeil',  desc:'+1 Stein/Klick',  baseCost:10,  mult:1.15,
+    apply:s=>{ s.rpcStein += 1; } },
+
+  { id:'steinspalter', group:'stein', res:'stein', name:'Steinspalter', desc:'+0.2 Stein/Sek', baseCost:30, mult:1.16,
+    apply:s=>{ s.rpsStein += 0.2; } },
+
+  { id:'arbeiter', group:'stein', res:'stein', name:'Arbeiter', desc:'+1 Stein/Sek', baseCost:120, mult:1.18,
+    apply:s=>{ s.rpsStein += 1; } },
+
+  { id:'steinmine', group:'stein', res:'stein', name:'Steinmine', desc:'+8 Stein/Sek', baseCost:520, mult:1.22,
+    apply:s=>{ s.rpsStein += 8; } },
+
+  // SCHALTET HOLZ FREI
+  { id:'werkbank', group:'stein', res:'stein', name:'Werkbank', desc:'Schaltet HOLZ frei', baseCost:250, mult:2.5, single:true,
+    apply:s=>{ s.unlocks.holz = true; if (s.rpcHolz <= 0) s.rpcHolz = 1; } },
+
+  // HOLZ (sichtbar erst nach Werkbank)
+  { id:'axt', group:'holz', res:'holz', requiresUnlock:'holz', name:'Axt', desc:'+1 Holz/Klick', baseCost:120, mult:1.18,
+    apply:s=>{ s.rpcHolz += 1; } },
+
+  { id:'holzfaeller', group:'holz', res:'holz', requiresUnlock:'holz', name:'Holzfäller', desc:'+0.8 Holz/Sek', baseCost:240, mult:1.2,
+    apply:s=>{ s.rpsHolz += 0.8; } },
+
+  { id:'saegewerk', group:'holz', res:'holz', requiresUnlock:'holz', name:'Sägewerk', desc:'+6 Holz/Sek', baseCost:520, mult:1.22,
+    apply:s=>{ s.rpsHolz += 6; } },
 ];
 
-// DOM-Elemente referenzieren
+// ---------- DOM ----------
 const clickSteinBtn = document.getElementById('steinBtn');
-const prestigeBtn = document.getElementById('prestigeBtn');
+const clickHolzBtn  = document.getElementById('holzBtn');
+const prestigeBtn   = document.getElementById('prestigeBtn');
 
-// Funktion zum Rendern der Statistiken
+// ---------- Render: Stats ----------
 const renderStats = () => {
-  document.getElementById('steinStats').textContent = `Stein: ${state.stein}`;
-  document.getElementById('holzStats').textContent = `Holz: ${state.holz}`;
+  document.getElementById('steinStats').textContent = `Stein: ${fmt(state.stein)}  (+${fmt(state.rpsStein)}/s)`;
+  document.getElementById('holzStats').textContent  = `Holz: ${fmt(state.holz)}  (+${fmt(state.rpsHolz)}/s)`;
 };
 
-// Aktualisiert den Button-Text mit dem aktuellen rpcStein-Wert
-const updateClickButtonText = () => {
-  clickSteinBtn.textContent = `🪨 Stein sammeln (+${state.rpcStein})`;
+// ---------- Buttons dynamisch ----------
+const updateClickButtons = () => {
+  clickSteinBtn.textContent = `🪨 Stein sammeln (+${fmt(state.rpcStein)})`;
+  if (state.unlocks.holz || state.rpcHolz > 0) {
+    clickHolzBtn.style.display = '';
+    clickHolzBtn.textContent = `🌲 Holz hacken (+${fmt(state.rpcHolz)})`;
+  } else {
+    clickHolzBtn.style.display = 'none';
+  }
 };
 
-// Funktion zum Rendern der Upgrades
+// ---------- Upgrade-Grid ----------
 const renderUpgrades = () => {
   const upgradeGrid = document.getElementById('upgrade-grid');
-  upgradeGrid.innerHTML = ''; // Vorherige Upgrades entfernen
+  upgradeGrid.innerHTML = '';
 
   upgrades.forEach(upg => {
-    const canBuy = state.stein >= upg.baseCost; // Überprüfen, ob der Spieler genug hat
-    const card = buildCard(upg, state[upg.id] || 0, canBuy, 'Stein', function () {
-      if (state.stein < upg.baseCost) return; // Wenn nicht genug Stein vorhanden, nichts tun
-      state.stein -= upg.baseCost; // Abziehen der Kosten
-      upg.apply(); // Anwenden des Effekts
-      upg.baseCost = Math.floor(upg.baseCost * upg.mult); // Kosten des Upgrades erhöhen
-      renderStats(); // Stats aktualisieren
-      renderUpgrades(); // UI mit neuen Preisen aktualisieren
-      updateClickButtonText(); // ← Button aktualisieren, wenn sich rpcStein geändert hat
-    });
-    upgradeGrid.appendChild(card); // Karte hinzufügen
+    // Sichtbarkeit (z.B. Holz erst nach Werkbank)
+    if (upg.requiresUnlock && !state.unlocks[upg.requiresUnlock]) return;
+
+    const costShown = Math.floor(getCurrentCost(upg));
+    const canBuy = (state[upg.res] >= costShown) && !(upg.single && (state.owned[upg.id]||0) >= 1);
+    const card = buildCard(
+      upg,
+      state.owned[upg.id] || 0,
+      canBuy,
+      (upg.res === 'stein' ? 'Stein' : 'Holz'),
+      costShown,
+      () => buy(upg, costShown)
+    );
+    upgradeGrid.appendChild(card);
   });
 };
 
-// Funktion zum Erstellen der Upgrade-Karten
-function buildCard(upg, amount, canBuy, resourceType, onClick) {
+// Kostenfortschritt je Upgrade
+function getCurrentCost(upg){
+  const owned = state.owned[upg.id] || 0;
+  return upg.baseCost * Math.pow(upg.mult, owned);
+}
+
+// Kaufvorgang
+function buy(upg, shownCost){
+  // Guard
+  if (upg.single && (state.owned[upg.id]||0) >= 1) return;
+  if (state[upg.res] < shownCost) return;
+
+  // Bezahlen
+  state[upg.res] -= shownCost;
+
+  // Effekt
+  upg.apply(state);
+
+  // Besitz zählen
+  state.owned[upg.id] = (state.owned[upg.id] || 0) + 1;
+
+  // UI
+  renderAll();
+}
+
+// ---------- Kartenbau ----------
+function buildCard(upg, owned, canBuy, resLabel, shownCost, onBuy){
   const card = document.createElement('div');
-  card.classList.add('card');
+  card.className = 'card-sm';
 
-  const name = document.createElement('h3');
-  name.textContent = upg.name;
-  card.appendChild(name);
+  const h3 = document.createElement('h3');
+  h3.textContent = upg.name;
+  card.appendChild(h3);
 
-  const description = document.createElement('p');
-  description.textContent = upg.desc;
-  card.appendChild(description);
+  const d1 = document.createElement('div');
+  d1.className = 'muted';
+  d1.textContent = upg.desc;
+  card.appendChild(d1);
 
-  const cost = document.createElement('p');
-  cost.textContent = `Kosten: ${upg.baseCost} ${resourceType}`;
-  card.appendChild(cost);
+  const d2 = document.createElement('div');
+  d2.className = 'muted';
+  d2.textContent = `Kosten: ${fmt(shownCost)} ${resLabel}`;
+  card.appendChild(d2);
 
-  const buyButton = document.createElement('button');
-  buyButton.classList.add('buy');
-  buyButton.textContent = canBuy ? 'Kaufen' : 'Nicht genug';
-  buyButton.disabled = !canBuy;
+  if (upg.single){
+    const d3 = document.createElement('div');
+    d3.className = 'muted';
+    d3.textContent = `Besitz: ${owned ? '1 (einmalig)' : '0'}`;
+    card.appendChild(d3);
+  } else {
+    const d3 = document.createElement('div');
+    d3.className = 'muted';
+    d3.textContent = `Besitz: ${owned}`;
+    card.appendChild(d3);
+  }
 
-  buyButton.addEventListener('click', () => {
-    if (canBuy) {
-      onClick(); // Wenn der Button klickbar ist, den Upgrade-Effekt anwenden
-    }
-  });
-
-  card.appendChild(buyButton);
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  if (upg.single && owned >= 1){
+    btn.textContent = 'Gekauft';
+    btn.disabled = true;
+    btn.className = 'buy cannot';
+  } else {
+    btn.textContent = canBuy ? 'Kaufen' : 'Nicht genug';
+    btn.disabled = !canBuy;
+    btn.className = 'buy ' + (canBuy ? 'can' : 'cannot');
+    btn.onclick = onBuy;
+  }
+  card.appendChild(btn);
 
   return card;
 }
 
-// Funktion zum Rendern aller Inhalte (Stats und Upgrades)
+// ---------- Render-All ----------
 const renderAll = () => {
   renderStats();
   renderUpgrades();
-  updateClickButtonText(); // ← Button-Text mit aktuellem Wert
+  updateClickButtons();
 };
 
-// Eventlistener für Stein sammeln
+// ---------- Format ----------
+function fmt(n){
+  // einfache kompakte Formatierung
+  if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(2)+'K';
+  return (Math.round(n*100)/100).toString();
+}
+
+// ---------- Click Events ----------
 clickSteinBtn.addEventListener('click', () => {
   state.stein += state.rpcStein;
   state.totalEarned += state.rpcStein;
   renderAll();
 });
 
-// Eventlistener für Prestige
+clickHolzBtn.addEventListener('click', () => {
+  if (!state.unlocks.holz && state.rpcHolz<=0) return;
+  state.holz += state.rpcHolz;
+  state.totalEarned += state.rpcHolz;
+  renderAll();
+});
+
 prestigeBtn.addEventListener('click', () => {
   if (state.stein >= 50000) {
     alert('Prestige ausgelöst!');
-    state.stein = 0;
-    state.holz = 0;
-    state.rpcStein = 1;
+    // Hard-Reset (einfach gehalten)
+    const keep = { }; // hier später EP-Mechanik einbauen
+    Object.assign(state, {
+      stein:0, holz:0, rpcStein:1, rpcHolz:0, rpsStein:0, rpsHolz:0,
+      totalEarned:0, unlocks:{holz:false}, owned:{}
+    }, keep);
     renderAll();
   }
 });
 
-// Initiales Rendering, wenn das DOM bereit ist
-document.addEventListener("DOMContentLoaded", renderAll);
+// ---------- Passive Produktion (Tick) ----------
+setInterval(() => {
+  if (state.rpsStein > 0) state.stein += state.rpsStein;
+  if (state.rpsHolz  > 0) state.holz  += state.rpsHolz;
+  // nur Stats aktualisieren reicht; Upgrades nur neu, wenn Kaufbarkeit kippt – ist ok,
+  // aber für „weich“ -> full render:
+  renderAll();
+}, 1000);
+
+// ---------- Boot ----------
+document.addEventListener('DOMContentLoaded', renderAll);
+renderAll();
