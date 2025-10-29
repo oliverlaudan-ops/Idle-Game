@@ -260,3 +260,34 @@ button{
   .sb-item{ justify-content: space-between; }
 }
 
+/* ======= Sticky Statsbar: Meta rechts ======= */
+.sb-spacer{ flex:1; }
+.sb-meta{ display:flex; gap:8px; align-items:center; }
+.sb-badge{
+  padding:6px 10px;
+  border-radius:10px;
+  background:rgba(148,163,184,.12);
+  border:1px solid rgba(148,163,184,.2);
+  color:#cbd5e1;
+  font-weight:600;
+  box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+.sb-badge.sb-ok{ color:#a7f3d0; border-color:rgba(16,185,129,.35); }
+
+/* Pulse/Flash Effekte */
+@keyframes pulseGlow{
+  0%{ box-shadow:0 0 0 rgba(59,130,246,0); }
+  35%{ box-shadow:0 0 18px rgba(59,130,246,.55); }
+  100%{ box-shadow:0 0 0 rgba(59,130,246,0); }
+}
+@keyframes flash{
+  0%{ filter:brightness(1); }
+  50%{ filter:brightness(1.35); }
+  100%{ filter:brightness(1); }
+}
+.pulse{ animation: pulseGlow .6s ease-out; }
+.flash{ animation: flash .5s ease-in-out; }
+
+/* optional: unterschiedliche Pulse-Farben */
+.sb-item.stein.pulse{ box-shadow:0 0 18px rgba(59,130,246,.55); }  /* blau */
+.sb-item.holz.pulse { box-shadow:0 0 18px rgba(34,197,94,.55); }  /* grün */
