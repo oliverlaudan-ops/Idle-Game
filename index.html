@@ -18,14 +18,21 @@
     <!-- NEU: pro-Klick-Badge -->
     <span id="sbSteinClick" class="sb-badge mini">+0/click</span>
   </div>
-  <div class="sb-item" id="sbHolzItem">
+  
+  <div class="sb-item" id="sbHolzItem style="display:none;">
     <span class="sb-label">Holz</span>
     <span id="sbHolz" class="sb-value">0</span>
     <span id="sbHolzRate" class="sb-rate">+0/s</span>
     <!-- NEU: pro-Klick-Badge -->
     <span id="sbHolzClick" class="sb-badge mini">+0/click</span>
   </div>
-
+  
+  <div class="sb-item" id="sbMetallItem" style="display:none;">
+    <span class="sb-label">Metall</span>
+    <span id="sbMetall" class="sb-value">0</span>
+    <span id="sbMetallRate" class="sb-rate">+0/s</span>
+    <span id="sbMetallClick" class="sb-badge mini">+0/click</span>
+  </div>
    <!-- rechts: Live-Infos -->
   <div class="sb-spacer"></div>
   <div class="sb-meta">
@@ -36,6 +43,7 @@
 
       <button id="steinBtn">🪨 Stein sammeln (+1)</button>
       <button id="holzBtn" style="display:none; margin-left:8px;">🌲 Holz hacken (+0)</button>
+      <button id="metallBtn" style="display:none;">⛏️ Metall abbauen (+0)</button>
 
       <div id="upgrades">
         <h2>Upgrades</h2>
