@@ -9,17 +9,24 @@
   <body>
     <div class="app">
       <h1>From Stone to Civilization</h1>
-      <!-- kompakte Statsbar oben -->
+     <!-- kompakte Statsbar oben -->
 <div class="statsbar" id="statsBar">
-  <div class="sb-item">
+  <div class="sb-item" id="sbSteinItem">
     <span class="sb-label">Stein</span>
     <span id="sbStein" class="sb-value">0</span>
     <span id="sbSteinRate" class="sb-rate">+0/s</span>
   </div>
-  <div class="sb-item">
+  <div class="sb-item" id="sbHolzItem">
     <span class="sb-label">Holz</span>
     <span id="sbHolz" class="sb-value">0</span>
     <span id="sbHolzRate" class="sb-rate">+0/s</span>
+  </div>
+
+  <!-- rechts: Live-Infos -->
+  <div class="sb-spacer"></div>
+  <div class="sb-meta">
+    <span id="sbTick"  class="sb-badge">Tick 1.0s</span>
+    <span id="sbSave"  class="sb-badge sb-ok">Autosave</span>
   </div>
 </div>
 
