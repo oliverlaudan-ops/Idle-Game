@@ -33,6 +33,26 @@ state.totalHolz  = state.totalHolz  || 0;
 // vorherige Werte für Pulsevergleich
 let prev = { stein: 0, holz: 0 };
 
+// Helper-Funktion
+function isResourceUnlocked(res){
+  if (res === 'stein')  return true;
+  if (res === 'holz')   return !!state.unlocks.holz;
+  if (res === 'metall') return !!state.unlocks.metall;
+  return true;
+}
+// Unlock-Upgrades (mit unlockerFor) sollen sichtbar sein,
+// sobald ihre Voraussetzung (requiresUnlock) erfüllt ist.
+function shouldShow(upg){
+  const visibleByRes     = isResourceUnlocked(upg.res);
+  const isUnlocker       = !!upg.unlockerFor;
+  const unlockReqOk      = !upg.requiresUnlock || !!state.unlocks[upg.requiresUnlock];
+
+  // normale Upgrades: Ressource muss freigeschaltet sein
+  // Unlock-Upgrades: Voraussetzung erfüllt? => zeigen, auch wenn Ziel-Ressource noch zu ist
+  if (isUnlocker) return unlockReqOk;
+  return visibleByRes && unlockReqOk;
+}
+
 // ---------- Upgrades ----------
 const upgrades = [
   // STEIN
@@ -158,27 +178,44 @@ const updateClickButtons = () => {
 
 
 // ---------- Upgrade-Grid ----------
-const renderUpgrades = () => {
-  const upgradeGrid = document.getElementById('upgrade-grid');
-  upgradeGrid.innerHTML = '';
+const list = upgrades.filter(shouldShow);
+list.forEach(upg => {
+  const owned = state.owned[upg.id] || 0;
+  const price = Math.floor(upg.baseCost * Math.pow(upg.mult || 1, owned));
+  const pool  = upg.res === 'stein' ? state.stein
+              : upg.res === 'holz'  ? state.holz
+              : upg.res === 'metall'? state.metall
+              : 0;
 
-  upgrades.forEach(upg => {
-    // Sichtbarkeit (z.B. Holz erst nach Werkbank)
-    if (upg.requiresUnlock && !state.unlocks[upg.requiresUnlock]) return;
+  const canBuy = pool >= price && (!upg.single || owned === 0);
+  const btnText = upg.single && owned > 0 ? 'Gekauft' : (canBuy ? 'Kaufen' : 'Nicht genug');
 
-    const costShown = Math.floor(getCurrentCost(upg));
-    const canBuy = (state[upg.res] >= costShown) && !(upg.single && (state.owned[upg.id]||0) >= 1);
-    const card = buildCard(
-      upg,
-      state.owned[upg.id] || 0,
-      canBuy,
-      (upg.res === 'stein' ? 'Stein' : 'Holz'),
-      costShown,
-      () => buy(upg, costShown)
-    );
-    upgradeGrid.appendChild(card);
-  });
-};
+  const card = buildCard(
+    upg,
+    owned,
+    canBuy,
+    upg.res.toUpperCase(),
+    () => {
+      if (!canBuy) return;
+      // bezahlen
+      if (upg.res === 'stein')  state.stein  -= price;
+      if (upg.res === 'holz')   state.holz   -= price;
+      if (upg.res === 'metall') state.metall -= price;
+
+      // anwenden
+      upg.apply(state);
+      state.owned[upg.id] = (state.owned[upg.id] || 0) + 1;
+
+      // UI aktualisieren (Buttons/Stats)
+      updateClickButtons();
+      renderAll();
+    }
+  );
+
+  // Karte an Grid anhängen
+  upgradeGrid.appendChild(card);
+});
+
 
 // Kostenfortschritt je Upgrade
 function getCurrentCost(upg){
