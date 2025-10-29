@@ -15,6 +15,16 @@ const state = {
   owned: {},                  // Stückzahlen je Upgrade-ID
 };
 
+// Tick-Konstante
+const TICK_MS = 1000;
+
+// zusätzliche Totals (für Tooltips)
+state.totalStein = state.totalStein || 0;
+state.totalHolz  = state.totalHolz  || 0;
+
+// vorherige Werte für Pulsevergleich
+let prev = { stein: 0, holz: 0 };
+
 // ---------- Upgrades ----------
 const upgrades = [
   // STEIN
@@ -52,17 +62,29 @@ const prestigeBtn   = document.getElementById('prestigeBtn');
 
 // ---------- Render: Stats ----------
 const renderStats = () => {
-  // bestehende große Stats
+  // große Stats unten
   document.getElementById('steinStats').textContent = `Stein: ${fmt(state.stein)}  (+${fmt(state.rpsStein)}/s)`;
   document.getElementById('holzStats').textContent  = `Holz: ${fmt(state.holz)}  (+${fmt(state.rpsHolz)}/s)`;
 
-  // NEU: kompakte Statsbar oben
+  // Statsbar oben
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   set('sbStein', fmt(state.stein));
   set('sbHolz',  fmt(state.holz));
   set('sbSteinRate', `+${fmt(state.rpsStein)}/s`);
   set('sbHolzRate',  `+${fmt(state.rpsHolz)}/s`);
+
+  // Pulse bei Zuwachs
+  const sItem = document.getElementById('sbSteinItem');
+  const hItem = document.getElementById('sbHolzItem');
+  if (state.stein > prev.stein) { sItem?.classList.add('stein'); pulse(sItem); }
+  if (state.holz  > prev.holz ) { hItem?.classList.add('holz');  pulse(hItem); }
+  prev.stein = state.stein;
+  prev.holz  = state.holz;
+
+  updateTooltips();
+  updateMeta();
 };
+
 
 // ---------- Buttons dynamisch ----------
 const updateClickButtons = () => {
@@ -171,6 +193,36 @@ function buildCard(upg, owned, canBuy, resLabel, shownCost, onBuy){
   return card;
 }
 
+const pulse = (el, cls='pulse') => {
+  if(!el) return;
+  el.classList.remove(cls);
+  // reflow trick, damit Animation erneut startet
+  void el.offsetWidth;
+  el.classList.add(cls);
+};
+
+const updateTooltips = () => {
+  const steinTip = `pro Klick: +${fmt(state.rpcStein)}\npro Sekunde: +${fmt(state.rpsStein)}\ngesamt produziert: ${fmt(state.totalStein)}`;
+  const holzTip  = `pro Klick: +${fmt(state.rpcHolz)}\npro Sekunde: +${fmt(state.rpsHolz)}\ngesamt produziert: ${fmt(state.totalHolz)}`;
+  const sItem = document.getElementById('sbSteinItem');
+  const hItem = document.getElementById('sbHolzItem');
+  if (sItem) sItem.title = steinTip;
+  if (hItem) hItem.title  = holzTip;
+};
+
+const updateMeta = () => {
+  const tick = document.getElementById('sbTick');
+  if (tick) tick.textContent = `Tick ${(TICK_MS/1000).toFixed(1)}s`;
+};
+
+// Autosave-Feedback (du kannst hier deinen echten Save-Hook triggern)
+const showAutosave = () => {
+  const el = document.getElementById('sbSave');
+  if (!el) return;
+  pulse(el,'flash');
+};
+
+
 // ---------- Render-All ----------
 const renderAll = () => {
   renderStats();
@@ -190,6 +242,7 @@ function fmt(n){
 clickSteinBtn.addEventListener('click', () => {
   state.stein += state.rpcStein;
   state.totalEarned += state.rpcStein;
+  state.totalStein  += state.rpcStein;   // NEU
   renderAll();
 });
 
@@ -197,6 +250,7 @@ clickHolzBtn.addEventListener('click', () => {
   if (!state.unlocks.holz && state.rpcHolz<=0) return;
   state.holz += state.rpcHolz;
   state.totalEarned += state.rpcHolz;
+  state.totalHolz  += state.rpcHolz;     // NEU
   renderAll();
 });
 
@@ -215,12 +269,14 @@ prestigeBtn.addEventListener('click', () => {
 
 // ---------- Passive Produktion (Tick) ----------
 setInterval(() => {
-  if (state.rpsStein > 0) state.stein += state.rpsStein;
-  if (state.rpsHolz  > 0) state.holz  += state.rpsHolz;
-  // nur Stats aktualisieren reicht; Upgrades nur neu, wenn Kaufbarkeit kippt – ist ok,
-  // aber für „weich“ -> full render:
+  if (state.rpsStein > 0) { state.stein += state.rpsStein; state.totalStein += state.rpsStein; }
+  if (state.rpsHolz  > 0) { state.holz  += state.rpsHolz;  state.totalHolz  += state.rpsHolz;  }
   renderAll();
-}, 1000);
+}, TICK_MS);
+
+// optional: Autosave-Feedback alle 30s
+setInterval(() => { showAutosave(); /* save() wäre hier ideal */ }, 30000);
+
 
 // ---------- Boot ----------
 document.addEventListener('DOMContentLoaded', renderAll);
