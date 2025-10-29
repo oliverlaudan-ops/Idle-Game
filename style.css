@@ -291,3 +291,24 @@ button{
 /* optional: unterschiedliche Pulse-Farben */
 .sb-item.stein.pulse{ box-shadow:0 0 18px rgba(59,130,246,.55); }  /* blau */
 .sb-item.holz.pulse { box-shadow:0 0 18px rgba(34,197,94,.55); }  /* grün */
+
+/* Mini-Badges in der Statsbar (pro Klick) */
+.sb-badge.mini{
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 8px;
+  background: rgba(148,163,184,.10);
+  border: 1px solid rgba(148,163,184,.18);
+  color: #e5e7eb;
+}
+
+/* Auf sehr kleinen Bildschirmen kompakter anordnen */
+@media (max-width: 540px){
+  .sb-item{
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+  .sb-badge.mini{
+    order: 3;           /* unter die Rate schieben */
+  }
+}
