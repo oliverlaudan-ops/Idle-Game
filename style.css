@@ -312,3 +312,48 @@ button{
     order: 3;           /* unter die Rate schieben */
   }
 }
+
+/* App-Container zentrieren */
+.app{
+  max-width: 1100px;        /* je nach Geschmack 900–1200 */
+  margin: 0 auto;           /* zentriert */
+  padding: 16px;
+}
+
+/* Action-Buttons in einer Reihe zentriert */
+.actions{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;       /* oder center, wenn du beide Buttons mittig willst */
+  margin: 8px 0 14px;
+}
+
+/* Upgrades-Grid bekommt gleichmäßige Breite & hübsches Alignment */
+#upgrade-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+  align-items: stretch;
+}
+
+/* Karten optisch konsistent */
+.card-sm{
+  background: var(--panel);
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+
+/* Sticky-Statsbar bleibt oben, aber bricht Layout nicht auf */
+.statsbar{
+  position: sticky;
+  top: 12px;
+  z-index: 30;
+  margin: 8px 0 14px;
+}
+
+/* Falls irgendwo eine zweite sb-meta außerhalb der Statsbar existierte – sicherheitshalber killen */
+.statsbar + .sb-meta { display: none !important; }
+
