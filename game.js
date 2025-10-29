@@ -2,17 +2,25 @@
 const state = {
   stein: 0,
   holz: 0,
+  metall: 0,            // NEU
 
-  rpcStein: 1,   // Stein pro Klick
-  rpcHolz: 0,    // Holz pro Klick (0 bis Werkbank)
+  rpcStein: 1,
+  rpcHolz: 0,
+  rpcMetall: 0,         // NEU
 
-  rpsStein: 0,   // Stein pro Sekunde
-  rpsHolz: 0,    // Holz pro Sekunde
+  rpsStein: 0,
+  rpsHolz: 0,
+  rpsMetall: 0,         // NEU
 
   totalEarned: 0,
 
-  unlocks: { holz: false },   // wird durch Werkbank freigeschaltet
-  owned: {},                  // Stückzahlen je Upgrade-ID
+  unlocks: { holz: false, metall: false }, // NEU: metall
+  owned: {},
+  
+  // (falls noch nicht vorhanden; für Tooltips)
+  totalStein: 0,
+  totalHolz: 0,
+  totalMetall: 0,       // NEU
 };
 
 // Tick-Konstante
@@ -53,11 +61,34 @@ const upgrades = [
 
   { id:'saegewerk', group:'holz', res:'holz', requiresUnlock:'holz', name:'Sägewerk', desc:'+6 Holz/Sek', baseCost:520, mult:1.22,
     apply:s=>{ s.rpsHolz += 6; } },
+
+    // --- Metall-Chain ---
+  // Unlock über Holz-Kosten:
+  { id:'schmiede', group:'metall', res:'holz', requiresUnlock:'holz',
+    name:'Schmiede', desc:'Schaltet METALL frei', baseCost:4400, mult:1.35, single:true,
+    apply:s=>{ s.unlocks.metall = true; if (s.rpcMetall <= 0) s.rpcMetall = 1; }
+  },
+
+  { id:'eisernePicke', group:'metall', res:'metall', requiresUnlock:'metall',
+    name:'Eiserne Picke', desc:'+1 Metall/Klick', baseCost:1000, mult:1.22,
+    apply:s=>{ s.rpcMetall += 1; }
+  },
+
+  { id:'bergwerk', group:'metall', res:'metall', requiresUnlock:'metall',
+    name:'Bergwerk', desc:'+1.5 Metall/Sek', baseCost:2500, mult:1.24,
+    apply:s=>{ s.rpsMetall += 1.5; }
+  },
+
+  { id:'giesserei', group:'metall', res:'metall', requiresUnlock:'metall',
+    name:'Gießerei', desc:'+10 Metall/Sek', baseCost:12000, mult:1.28,
+    apply:s=>{ s.rpsMetall += 10; }
+  },
 ];
 
 // ---------- DOM ----------
 const clickSteinBtn = document.getElementById('steinBtn');
 const clickHolzBtn  = document.getElementById('holzBtn');
+const clickMetallBtn= document.getElementById('metallBtn'); // NEU
 const prestigeBtn   = document.getElementById('prestigeBtn');
 
 // ---------- Render: Stats ----------
@@ -85,6 +116,20 @@ const renderStats = () => {
   prev.stein = state.stein;
   prev.holz  = state.holz;
 
+  // Statsbar oben – Metall
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('sbMetall', fmt(state.metall));
+  set('sbMetallRate', `+${fmt(state.rpsMetall)}/s`);
+  set('sbMetallClick', `+${fmt(state.rpcMetall)}/click`);
+
+  // Sichtbarkeit Metall-Block + Pulse
+  const mItem = document.getElementById('sbMetallItem');
+  if (state.unlocks.metall || state.rpcMetall > 0 || state.rpsMetall > 0) {
+    if (mItem) mItem.style.display = '';
+    if (state.metall > (prev.metall ?? 0)) { mItem?.classList.add('metall'); pulse(mItem); }
+  }
+  prev.metall = state.metall;
+
   // Hover-Tooltips: pro Klick / Sek / total (bereits vorhanden – hier nochmal der Call)
   updateTooltips();
   updateMeta();
@@ -95,13 +140,22 @@ const renderStats = () => {
 // ---------- Buttons dynamisch ----------
 const updateClickButtons = () => {
   clickSteinBtn.textContent = `🪨 Stein sammeln (+${fmt(state.rpcStein)})`;
+
   if (state.unlocks.holz || state.rpcHolz > 0) {
     clickHolzBtn.style.display = '';
     clickHolzBtn.textContent = `🌲 Holz hacken (+${fmt(state.rpcHolz)})`;
   } else {
     clickHolzBtn.style.display = 'none';
   }
+
+  if (state.unlocks.metall || state.rpcMetall > 0) {
+    clickMetallBtn.style.display = '';
+    clickMetallBtn.textContent = `⛏️ Metall abbauen (+${fmt(state.rpcMetall)})`;
+  } else {
+    clickMetallBtn.style.display = 'none';
+  }
 };
+
 
 // ---------- Upgrade-Grid ----------
 const renderUpgrades = () => {
@@ -260,6 +314,14 @@ clickHolzBtn.addEventListener('click', () => {
   renderAll();
 });
 
+clickMetallBtn.addEventListener('click', () => {
+  if (!state.unlocks.metall && state.rpcMetall<=0) return;
+  state.metall += state.rpcMetall;
+  state.totalEarned += state.rpcMetall;
+  state.totalMetall += state.rpcMetall;
+  renderAll();
+});
+
 prestigeBtn.addEventListener('click', () => {
   if (state.stein >= 50000) {
     alert('Prestige ausgelöst!');
@@ -275,8 +337,9 @@ prestigeBtn.addEventListener('click', () => {
 
 // ---------- Passive Produktion (Tick) ----------
 setInterval(() => {
-  if (state.rpsStein > 0) { state.stein += state.rpsStein; state.totalStein += state.rpsStein; }
-  if (state.rpsHolz  > 0) { state.holz  += state.rpsHolz;  state.totalHolz  += state.rpsHolz;  }
+  if (state.rpsStein   > 0) { state.stein   += state.rpsStein;   state.totalStein   += state.rpsStein; }
+  if (state.rpsHolz    > 0) { state.holz    += state.rpsHolz;    state.totalHolz    += state.rpsHolz;  }
+  if (state.rpsMetall  > 0) { state.metall  += state.rpsMetall;  state.totalMetall  += state.rpsMetall; }
   renderAll();
 }, TICK_MS);
 
