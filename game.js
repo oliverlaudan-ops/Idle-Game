@@ -73,7 +73,11 @@ const renderStats = () => {
   set('sbSteinRate', `+${fmt(state.rpsStein)}/s`);
   set('sbHolzRate',  `+${fmt(state.rpsHolz)}/s`);
 
-  // Pulse bei Zuwachs
+  // NEU: Mini-Badges pro Klick
+  set('sbSteinClick', `+${fmt(state.rpcStein)}/click`);
+  set('sbHolzClick',  `+${fmt(state.rpcHolz)}/click`);
+
+  // Pulse bei Zuwachs (wie zuvor)
   const sItem = document.getElementById('sbSteinItem');
   const hItem = document.getElementById('sbHolzItem');
   if (state.stein > prev.stein) { sItem?.classList.add('stein'); pulse(sItem); }
@@ -81,9 +85,11 @@ const renderStats = () => {
   prev.stein = state.stein;
   prev.holz  = state.holz;
 
+  // Hover-Tooltips: pro Klick / Sek / total (bereits vorhanden – hier nochmal der Call)
   updateTooltips();
   updateMeta();
 };
+
 
 
 // ---------- Buttons dynamisch ----------
