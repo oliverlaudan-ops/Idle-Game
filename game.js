@@ -116,39 +116,39 @@ const renderStats = () => {
   // große Stats unten
   document.getElementById('steinStats').textContent = `Stein: ${fmt(state.stein)}  (+${fmt(state.rpsStein)}/s)`;
   document.getElementById('holzStats').textContent  = `Holz: ${fmt(state.holz)}  (+${fmt(state.rpsHolz)}/s)`;
+  document.getElementById('metallStats').textContent  = `Metall: ${fmt(state.metall)}  (+${fmt(state.rpsMetall)}/s)`;
 
   // Statsbar oben
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('sbStein', fmt(state.stein));
-  set('sbHolz',  fmt(state.holz));
-  set('sbSteinRate', `+${fmt(state.rpsStein)}/s`);
-  set('sbHolzRate',  `+${fmt(state.rpsHolz)}/s`);
+  // Statsbar oben
+const setText = (id, val) => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+};
 
-  // NEU: Mini-Badges pro Klick
-  set('sbSteinClick', `+${fmt(state.rpcStein)}/click`);
-  set('sbHolzClick',  `+${fmt(state.rpcHolz)}/click`);
+// Stein & Holz
+setText('sbStein', fmt(state.stein));
+setText('sbHolz', fmt(state.holz));
+setText('sbSteinRate', `+${fmt(state.rpsStein)}/s`);
+setText('sbHolzRate', `+${fmt(state.rpsHolz)}/s`);
+setText('sbSteinClick', `+${fmt(state.rpcStein)}/click`);
+setText('sbHolzClick', `+${fmt(state.rpcHolz)}/click`);
 
-  // Pulse bei Zuwachs (wie zuvor)
-  const sItem = document.getElementById('sbSteinItem');
-  const hItem = document.getElementById('sbHolzItem');
-  if (state.stein > prev.stein) { sItem?.classList.add('stein'); pulse(sItem); }
-  if (state.holz  > prev.holz ) { hItem?.classList.add('holz');  pulse(hItem); }
-  prev.stein = state.stein;
-  prev.holz  = state.holz;
+// Metall (NEU)
+setText('sbMetall', fmt(state.metall));
+setText('sbMetallRate', `+${fmt(state.rpsMetall)}/s`);
+setText('sbMetallClick', `+${fmt(state.rpcMetall)}/click`);
 
-  // Statsbar oben – Metall
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('sbMetall', fmt(state.metall));
-  set('sbMetallRate', `+${fmt(state.rpsMetall)}/s`);
-  set('sbMetallClick', `+${fmt(state.rpcMetall)}/click`);
-
-  // Sichtbarkeit Metall-Block + Pulse
-  const mItem = document.getElementById('sbMetallItem');
-  if (state.unlocks.metall || state.rpcMetall > 0 || state.rpsMetall > 0) {
-    if (mItem) mItem.style.display = '';
-    if (state.metall > (prev.metall ?? 0)) { mItem?.classList.add('metall'); pulse(mItem); }
+// Sichtbarkeit Metall-Block + Pulse
+const mItem = document.getElementById('sbMetallItem');
+if (state.unlocks.metall || state.rpcMetall > 0 || state.rpsMetall > 0) {
+  if (mItem) mItem.style.display = '';
+  if (state.metall > (prev.metall ?? 0)) {
+    mItem?.classList.add('metall');
+    pulse(mItem);
   }
-  prev.metall = state.metall;
+}
+prev.metall = state.metall;
+
 
   // Hover-Tooltips: pro Klick / Sek / total (bereits vorhanden – hier nochmal der Call)
   updateTooltips();
