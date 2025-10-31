@@ -1,359 +1,162 @@
-/* =========
-   Base / Theme
-   ========= */
+/* =========================
+   From Stone to Civilization
+   style.css – Clean Build
+   ========================= */
+
+/* ---- Theme ---- */
 :root{
-  --bg:#0b0d12;          /* Seitenhintergrund */
-  --panel:#111826;       /* Karten/Paneels */
-  --panel-2:#0f172a;     /* dunkleres Panel */
-  --muted:#94a3b8;       /* Sekundärtext */
-  --text:#e5e7eb;        /* Primärtext */
-  --accent:#3b82f6;      /* Blau */
-  --accent-2:#22c55e;    /* Grün */
-  --danger:#ef4444;      /* Rot */
-  --ring:rgba(59,130,246,.35);
-  --shadow:0 8px 24px rgba(0,0,0,.35);
-  --radius:14px;
+  --bg: #0b0d12;
+  --panel: #141a23;
+  --panel-2: #0f141c;
+  --text: #e8eef6;
+  --muted: #9aa6b2;
+
+  /* Accent Farbtöne (dezent) */
+  --accent-stone: #22304a;
+  --accent-wood:  #1a2c21;
+  --accent-metal: #1a2131;
+
+  --btn-green: #27b060;
+  --btn-green-h: #1f8e4e;
+  --btn-gray:  #5e6875;
 }
 
-*{ box-sizing: border-box; }
+*{ box-sizing:border-box; }
 html,body{ height:100%; }
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font: 500 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-/* =========
-   Layout
-   ========= */
 .app{
-  max-width: 980px;
-  margin: 28px auto;
-  padding: 0 20px 40px;
+  max-width: 1100px;
+  margin: 24px auto 48px;
+  padding: 0 16px;
 }
 
-h1{
-  margin: 0 0 18px;
-  font-size: 28px;
-  letter-spacing:.2px;
-}
-h2{
-  margin: 22px 0 10px;
-  font-size: 18px;
-  color: var(--muted);
-  font-weight: 600;
-}
+/* ---- Headings ---- */
+h1{ font-size: 32px; margin: 0 0 16px; letter-spacing: .2px; }
+h2{ font-size: 18px; margin: 24px 0 12px; color: var(--muted); }
+h3{ font-size: 17px; margin: 0 0 6px; }
 
-/* =========
-   Buttons
-   ========= */
-button{
-  -webkit-tap-highlight-color: transparent;
-  appearance:none;
-  border:0;
-  outline:0;
-  cursor:pointer;
-  font: inherit;
-}
-
-.primary{
-  background: var(--accent);
-  color: #fff;
-}
-.primary:hover{ filter: brightness(.95); }
-.primary:active{ transform: translateY(1px); }
-
-/* beide Action-Buttons gleich stylen */
-#steinBtn,
-#holzBtn{
-  display:inline-flex;
-  align-items:center;
-  gap:.5rem;
-  background: linear-gradient(180deg, #1e293b, #0f172a);
-  color:#e2e8f0;
-  border:1px solid rgba(148,163,184,.25);
-  border-radius: 999px;
-  padding: 10px 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-}
-
-#steinBtn:hover,
-#holzBtn:hover{
-  border-color: rgba(148,163,184,.45);
-}
-
-#steinBtn:active,
-#holzBtn:active{
-  transform: translateY(1px);
-}
-
-/* kleiner Abstand, falls die Buttons nebeneinander stehen */
-#holzBtn{ margin-left:8px; }
-
-/* =========
-   Cards / Panels
-   ========= */
-.card{
+/* ---- Panels / Cards ---- */
+.card, .card-sm{
   background: var(--panel);
-  border-radius: var(--radius);
-  padding: 14px;
-  box-shadow: var(--shadow);
-  border:1px solid rgba(148,163,184,.15);
-}
-.card-sm{
-  background: var(--panel);
-  border-radius: var(--radius);
+  border-radius: 16px;
   padding: 16px;
-  min-width: 240px;
-  max-width: 280px;
-  box-shadow: var(--shadow);
-  border:1px solid rgba(148,163,184,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
-.card-sm h3{
-  margin:0 0 8px;
-  font-size:16px;
-}
-.card-sm .muted{
-  color: var(--muted);
-  margin: 6px 0;
-}
+.card-sm{ padding: 18px; }
 
-/* =========
-   Grid
-   ========= */
-.row{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-/* =========
-   Upgrade Buttons
-   ========= */
-.buy{
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  transition: transform .05s ease, filter .2s ease, background .2s ease, border-color .2s ease;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 6px 18px rgba(0,0,0,.35);
-  border:1px solid transparent;
-}
-
-.buy.can{
-  background: linear-gradient(180deg, #16a34a, #15803d);
-  color:#fff;
-}
-.buy.can:hover{ filter: brightness(1.02); }
-.buy.can:active{ transform: translateY(1px); }
-
-.buy.cannot{
-  background: linear-gradient(180deg, #334155, #1f2937);
-  color:#9ca3af;
-  cursor:not-allowed;
-  border-color: rgba(148,163,184,.25);
-}
-
-/* =========
-   Stats
-   ========= */
-#stats .stat{
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border-radius: 12px;
-  padding: 10px 12px;
-  color: #cbd5e1;        /* <— nicht mehr zu dunkel */
-  border:1px solid rgba(148,163,184,.12);
-  margin: 10px 0;
-  box-shadow: var(--shadow);
-}
-
-/* =========
-   Prestige Block
-   ========= */
-#prestige .stat{
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border:1px solid rgba(148,163,184,.12);
-  border-radius:12px;
-  padding:10px 12px;
-  color:#cbd5e1;
-  box-shadow: var(--shadow);
-}
-#prestigeBtn{
-  margin-top:10px;
-  background: linear-gradient(180deg, #6366f1, #4f46e5);
-  color:#fff;
-  padding: 10px 14px;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-}
-#prestigeBtn:disabled{
-  background:#334155;
-  color:#94a3b8;
-  cursor:not-allowed;
-}
-
-/* =========
-   Helpers
-   ========= */
 .muted{ color: var(--muted); }
 
-/* Mobile Tweaks */
-/* Mobile: beide Buttons vollbreit zentrieren */
-@media (max-width: 540px){
-  .app{ padding: 0 14px 30px; }
-  #steinBtn,
-  #holzBtn{ width:100%; justify-content:center; }
-  #holzBtn{ margin-left:0; margin-top:10px; }
-}
-
-/* ======= Sticky Statsbar oben ======= */
-.statsbar{
-  position: sticky;
-  top: 12px;                 /* Abstand zum oberen Rand */
-  z-index: 30;
-  display: flex;
-  gap: 12px;
-  padding: 10px 12px;
-  margin: 8px 0 14px;
-  background: linear-gradient(180deg, var(--panel), var(--panel-2));
-  border: 1px solid rgba(148,163,184,.12);
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  backdrop-filter: blur(2px);
-}
-
-.sb-item{
-  display:flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 6px 10px;
-  background: rgba(15,23,42,.35);
-  border:1px solid rgba(148,163,184,.12);
-  border-radius: 10px;
-}
-
-.sb-label{
-  color: var(--muted);
-  font-weight: 600;
-  letter-spacing:.2px;
-}
-
-.sb-value{
-  font-weight: 700;
-  color:#e5e7eb;
-}
-
-.sb-rate{
-  color:#93c5fd; /* leichtes Blau für die Rate */
-  font-weight:600;
-  font-size: .95em;
-}
-
-@media (max-width: 540px){
-  .statsbar{ 
-    top: 8px;
-    flex-direction: column; 
-    gap: 8px; 
-    padding: 8px 10px; 
-  }
-  .sb-item{ justify-content: space-between; }
-}
-
-/* ======= Sticky Statsbar: Meta rechts ======= */
-.sb-spacer{ flex:1; }
-.sb-meta{ display:flex; gap:8px; align-items:center; }
-.sb-badge{
-  padding:6px 10px;
-  border-radius:10px;
-  background:rgba(148,163,184,.12);
-  border:1px solid rgba(148,163,184,.2);
-  color:#cbd5e1;
-  font-weight:600;
-  box-shadow: 0 6px 18px rgba(0,0,0,.25);
-}
-.sb-badge.sb-ok{ color:#a7f3d0; border-color:rgba(16,185,129,.35); }
-
-/* Pulse/Flash Effekte */
-@keyframes pulseGlow{
-  0%{ box-shadow:0 0 0 rgba(59,130,246,0); }
-  35%{ box-shadow:0 0 18px rgba(59,130,246,.55); }
-  100%{ box-shadow:0 0 0 rgba(59,130,246,0); }
-}
-@keyframes flash{
-  0%{ filter:brightness(1); }
-  50%{ filter:brightness(1.35); }
-  100%{ filter:brightness(1); }
-}
-.pulse{ animation: pulseGlow .6s ease-out; }
-.flash{ animation: flash .5s ease-in-out; }
-
-/* optional: unterschiedliche Pulse-Farben */
-.sb-item.stein.pulse{ box-shadow:0 0 18px rgba(59,130,246,.55); }  /* blau */
-.sb-item.holz.pulse { box-shadow:0 0 18px rgba(34,197,94,.55); }  /* grün */
-
-/* Mini-Badges in der Statsbar (pro Klick) */
-.sb-badge.mini{
-  padding: 4px 8px;
-  font-size: 12px;
-  border-radius: 8px;
-  background: rgba(148,163,184,.10);
-  border: 1px solid rgba(148,163,184,.18);
-  color: #e5e7eb;
-}
-
-/* Auf sehr kleinen Bildschirmen kompakter anordnen */
-@media (max-width: 540px){
-  .sb-item{
-    flex-wrap: wrap;
-    gap: 6px 10px;
-  }
-  .sb-badge.mini{
-    order: 3;           /* unter die Rate schieben */
-  }
-}
-
-/* App-Container zentrieren */
-.app{
-  max-width: 1100px;        /* je nach Geschmack 900–1200 */
-  margin: 0 auto;           /* zentriert */
-  padding: 16px;
-}
-
-/* Action-Buttons in einer Reihe zentriert */
-.actions{
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;       /* oder center, wenn du beide Buttons mittig willst */
-  margin: 8px 0 14px;
-}
-
-/* Upgrades-Grid bekommt gleichmäßige Breite & hübsches Alignment */
+/* ---- Grid für Upgrades ---- */
 #upgrade-grid{
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
-  align-items: stretch;
+  gap: 18px;
 }
 
-/* Karten optisch konsistent */
-.card-sm{
-  background: var(--panel);
-  padding: 14px;
+/* ---- Stat-Pills / Badges ---- */
+.badge, .pill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--text);
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.04);
+}
+
+/* Optional: obere Statsbar (falls vorhanden) */
+.statsbar, #sbBar{
+  position: sticky; top: 0; z-index: 40;
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center;
+  padding: 10px 12px;
+  margin: 4px 0 14px;
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.sb-item{ display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:12px; background:var(--panel); border:1px solid rgba(255,255,255,.05); }
+.sb-row{ display:flex; gap:8px; }
+.sb-sub{ font-size: 11px; color: var(--muted); }
+
+/* ---- Action Buttons (Click) ---- */
+/* gemeinsame Basis für Stein/Holz/Metall */
+#steinBtn, #holzBtn, #metallBtn{
+  appearance:none; border:none; cursor:pointer;
+  color: var(--text);
+  padding: 12px 18px;
+  border-radius: 16px;
+  font-size: 15px;
+  letter-spacing:.2px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+  transition: transform .08s ease, box-shadow .12s ease, background .2s ease;
+  margin-right: 10px;
+}
+
+#steinBtn{  background: var(--accent-stone); }
+#holzBtn{   background: var(--accent-wood);  }
+#metallBtn{ background: var(--accent-metal); }
+
+#steinBtn:hover, #holzBtn:hover, #metallBtn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 16px 36px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+#steinBtn:active, #holzBtn:active, #metallBtn:active{
+  transform: translateY(0);
+}
+
+/* ---- Kauf-Buttons auf Karten ---- */
+.buy{
+  margin-top: 14px;
+  padding: 10px 14px;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+  transition: filter .12s ease, transform .08s ease;
+}
+.buy.can   { background: var(--btn-green); }
+.buy.can:hover { filter: brightness(1.05); }
+.buy.can:active{ transform: translateY(1px); }
+
+.buy.cannot{
+  background: var(--btn-gray);
+  cursor: not-allowed;
+  opacity: .85;
 }
 
-/* Sticky-Statsbar bleibt oben, aber bricht Layout nicht auf */
-.statsbar{
-  position: sticky;
-  top: 12px;
-  z-index: 30;
-  margin: 8px 0 14px;
+/* ---- Stat-Balken (unterer Bereich, falls genutzt) ---- */
+.stat{
+  background: var(--panel-2);
+  border-radius: 12px;
+  padding: 8px 10px;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,.05);
 }
 
-/* Falls irgendwo eine zweite sb-meta außerhalb der Statsbar existierte – sicherheitshalber killen */
-.statsbar + .sb-meta { display: none !important; }
+/* ---- Kleinere Hilfen ---- */
+section{ margin-bottom: 18px; }
+.row{ display:flex; gap:12px; flex-wrap:wrap; }
+.center{ text-align:center; }
+.right{ text-align:right; }
 
+/* ---- Pulse-Animation bei Wert-Anstieg ---- */
+.pulse{ animation: pulse .3s ease; }
+@keyframes pulse{
+  0%{ box-shadow: 0 0 0 0 rgba(255,255,255,.25); }
+  100%{ box-shadow: 0 0 0 6px rgba(255,255,255,0); }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 720px){
+  h1{ font-size: 26px; }
+  #upgrade-grid{ grid-template-columns: 1fr; }
+  #steinBtn, #holzBtn, #metallBtn{ width: 100%; margin: 0 0 10px; }
+}
