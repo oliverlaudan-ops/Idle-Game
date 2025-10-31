@@ -157,6 +157,7 @@ h3{ font-size:17px; margin:0 0 6px; }
   border-radius:16px;
   font-size:15px; letter-spacing:.2px;
   margin-right:10px;
+  margin-top:8px;
   box-shadow:0 12px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
   transition:transform .08s ease, box-shadow .12s ease, background .2s ease;
 }
