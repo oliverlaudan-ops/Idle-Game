@@ -156,6 +156,87 @@ h3{ font-size: 17px; margin: 0 0 6px; }
   #sbSteinRate, #sbSteinClick, #sbHolzRate, #sbHolzClick, #sbMetallRate, #sbMetallClick{ padding: 3px 7px; }
 }
 
+/* ===== Statsbar – einzeilig, mit Rechtsblock (Tick/Autosave) ===== */
+
+#sbBar{
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 12px;
+  /* einzeilig halten – bei Platzmangel horizontal scrollen */
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+#sbBar::-webkit-scrollbar{ display: none; }
+
+/* Ressourcen-Pills (Container) */
+.sb-item,
+#sbSteinItem, #sbHolzItem, #sbMetallItem{
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: var(--panel);
+  box-shadow: 0 10px 26px rgba(0,0,0,.30);
+  white-space: nowrap;
+}
+
+/* dezenter Ressourcen-Glow */
+#sbSteinItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-stone); }
+#sbHolzItem { box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-wood); }
+#sbMetallItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-metal); }
+
+/* Icons per CSS – kein HTML-Text nötig */
+#sbSteinItem::before { content: "🪨"; font-size: 16px; }
+#sbHolzItem::before  { content: "🌲"; font-size: 16px; }
+#sbMetallItem::before{ content: "⛏️"; font-size: 16px; }
+
+/* Hauptwert + Subchips */
+#sbStein, #sbHolz, #sbMetall{
+  display:inline-flex; align-items:center;
+  padding: 4px 10px; border-radius: 10px;
+  background: var(--panel-2);
+  border: 1px solid rgba(255,255,255,.05);
+  font-weight: 600;
+}
+#sbSteinRate, #sbSteinClick,
+#sbHolzRate,  #sbHolzClick,
+#sbMetallRate,#sbMetallClick{
+  display:inline-flex; align-items:center;
+  padding: 4px 8px; border-radius: 10px;
+  background: #0f141c;
+  border: 1px solid rgba(255,255,255,.05);
+  font-size: 12px; color: var(--muted);
+}
+
+/* Rechtsblock: Tick & Autosave ans rechte Ende schieben */
+.sb-right{ margin-left: auto; display:flex; gap:10px; }
+#sbTick, #sbSave{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 6px 10px; border-radius: 10px;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid rgba(255,255,255,.05);
+  white-space: nowrap;
+}
+
+/* Pulse bei Updates */
+.pulse{ animation:pulse .28s ease; }
+@keyframes pulse{
+  0%{ box-shadow: 0 0 0 0 rgba(255,255,255,.28); }
+  100%{ box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+}
+
+/* Breakpoint: auf schmalen Screens in mehrere Zeilen umbrechen */
+@media (max-width: 860px){
+  #sbBar{ flex-wrap: wrap; overflow-x: visible; }
+  .sb-right{ margin-left: 0; width: 100%; justify-content: flex-end; }
+}
+
 /* ---- Action Buttons (Click) ---- */
 /* gemeinsame Basis für Stein/Holz/Metall */
 #steinBtn, #holzBtn, #metallBtn{
