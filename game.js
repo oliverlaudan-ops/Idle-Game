@@ -42,6 +42,7 @@ const DEFAULT = {
   // intern gefüllt:
   owned: {},            // Upgrade-Besitz
   unlocks: {},          // Upgrades/Ressourcen-Flags
+  effMult: 1,            // <— NEU: globaler Effizienz-Multiplikator (Ofen)
 };
 // dynamisch Felder für alle Ressourcen anlegen
 RESOURCES.forEach(r => {
@@ -90,6 +91,11 @@ const upgrades = [
     apply:s=>{ s['rps_holz'] += 0.8; } },
   { id:'saegewerk', res:'holz', requiresUnlock:'holz', name:'Sägewerk', desc:'+6 Holz/Sek', baseCost:520, mult:1.25,
     apply:s=>{ s['rps_holz'] += 6; } },
+   // --- Globaler Effizienz-Buff (kostet Holz) ---
+  { id: 'ofen', res: 'holz', requiresUnlock: 'holz', name: 'Ofen', desc: 'Effizienz +10% global', baseCost: 1500, mult: 1.35, 
+  apply: s => { s.effMult = +(s.effMult * 1.10).toFixed(6); } }
+   );
+
 
   // --- Metall freischalten (bezahlt mit Holz) ---
   { id:'schmiede', res:'holz', requiresUnlock:'holz', single:true,
