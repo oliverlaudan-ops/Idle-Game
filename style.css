@@ -244,3 +244,5 @@ section{ margin-bottom:18px; }
   }
 }
 
+#prestige .stat{ margin-bottom: 10px; }      /* Luft zwischen EP und Button */
+#prestige .btn{ width: fit-content; }        /* optional, schöner */
