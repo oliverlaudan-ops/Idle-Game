@@ -1,9 +1,9 @@
-/* =========================
-   From Stone to Civilization
-   style.css – Clean Build
-   ========================= */
+/* =========================================
+   From Stone to Civilization – style.css
+   Clean, cohesive, responsive UI
+   ========================================= */
 
-/* ---- Theme ---- */
+/* -------- Theme -------- */
 :root{
   --bg: #0b0d12;
   --panel: #141a23;
@@ -11,304 +11,218 @@
   --text: #e8eef6;
   --muted: #9aa6b2;
 
-  /* Accent Farbtöne (dezent) */
-  --accent-stone: #22304a;
-  --accent-wood:  #1a2c21;
-  --accent-metal: #1a2131;
+  /* dezente Akzent-Glows */
+  --accent-stone:#2a3752;
+  --accent-wood: #22382a;
+  --accent-metal:#24304a;
 
-  --btn-green: #27b060;
-  --btn-green-h: #1f8e4e;
-  --btn-gray:  #5e6875;
+  --btn-green:#27b060;
+  --btn-green-h:#1f8e4e;
+  --btn-gray:#5e6875;
 }
 
-*{ box-sizing:border-box; }
+*{ box-sizing: border-box; }
 html,body{ height:100%; }
 body{
   margin:0;
   background:var(--bg);
   color:var(--text);
-  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
 }
 
 .app{
-  max-width: 1100px;
-  margin: 24px auto 48px;
-  padding: 0 16px;
+  max-width:1100px;
+  margin:24px auto 48px;
+  padding:0 16px;
 }
 
-/* ---- Headings ---- */
-h1{ font-size: 32px; margin: 0 0 16px; letter-spacing: .2px; }
-h2{ font-size: 18px; margin: 24px 0 12px; color: var(--muted); }
-h3{ font-size: 17px; margin: 0 0 6px; }
+/* -------- Headings -------- */
+h1{ font-size:32px; margin:0 0 16px; letter-spacing:.2px; }
+h2{ font-size:18px; margin:24px 0 12px; color:var(--muted); }
+h3{ font-size:17px; margin:0 0 6px; }
+.muted{ color:var(--muted); }
 
-/* ---- Panels / Cards ---- */
-.card, .card-sm{
-  background: var(--panel);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+/* -------- Panels / Cards -------- */
+.card,.card-sm{
+  background:var(--panel);
+  border-radius:16px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.04);
 }
-.card-sm{ padding: 18px; }
+.card-sm{ padding:18px; }
 
-.muted{ color: var(--muted); }
-
-/* ---- Grid für Upgrades ---- */
+/* -------- Upgrade Grid -------- */
 #upgrade-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 18px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:18px;
 }
 
-/* ---- Stat-Pills / Badges ---- */
-.badge, .pill{
+/* -------- Badges / Pills -------- */
+.badge,.pill{
   display:inline-flex; align-items:center; gap:8px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  background: var(--panel-2);
-  color: var(--text);
-  font-size: 12px;
-  border: 1px solid rgba(255,255,255,.04);
+  padding:6px 10px;
+  border-radius:10px;
+  background:var(--panel-2);
+  color:var(--text);
+  font-size:12px;
+  border:1px solid rgba(255,255,255,.04);
 }
 
-/* ===== Statsbar (oben, sticky) – hübsch & kompakt ===== */
-
-:root{
-  --accent-stone:#2a3752;  /* Stein */
-  --accent-wood:#22382a;   /* Holz  */
-  --accent-metal:#24304a;  /* Metall */
-}
-
+/* =========================================
+   STATS BAR (oben, sticky) – einzeilig, mit
+   Tick & Autosave rechts
+   ========================================= */
 #sbBar{
-  position: sticky; top: 0; z-index: 50;
-  display: flex; flex-wrap: wrap; gap: 12px;
-  justify-content: center; align-items: center;
-  padding: 10px 14px;
-  margin: 0 0 16px;
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; gap:12px;
+  flex-wrap:nowrap;               /* einzeilig halten */
+  overflow-x:auto;                /* bei wenig Platz horizontal scrollen */
+  scrollbar-width:none; -ms-overflow-style:none;
+  padding:10px 14px; margin:0 0 16px;
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.05);
 }
+#sbBar::-webkit-scrollbar{ display:none; }
 
-/* einzelne Ressourcen-Pills */
-#sbSteinItem, #sbHolzItem, #sbMetallItem{
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.06);
-  background: var(--panel);
-  box-shadow: 0 10px 26px rgba(0,0,0,.30);
-}
-
-/* dezenter Ressourcen-Glow */
-#sbSteinItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-stone); }
-#sbHolzItem { box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-wood); }
-#sbMetallItem{box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-metal); }
-
-/* Icon vor den Titeln (keine HTML-Änderung nötig) */
-#sbSteinItem::before{ content:"🪨"; font-size:16px; }
-#sbHolzItem::before{  content:"🌲"; font-size:16px; }
-#sbMetallItem::before{content:"⛏️"; font-size:16px; }
-
-/* Titel (z. B. „Stein“) – nimm den statischen Text in HTML, falls vorhanden.
-   Falls du keinen sichtbaren Titel-Span hast, ist das auch okay – die Values/sub-Pills reichen. */
-.sb-title{ font-weight:600; opacity:.95; }
-
-/* Hauptwert-Chip (z. B. 1.53K) */
-#sbStein, #sbHolz, #sbMetall{
-  display:inline-flex; align-items:center;
-  padding: 4px 10px; border-radius: 10px;
-  background: var(--panel-2);
-  border: 1px solid rgba(255,255,255,.05);
-  font-weight: 600;
-}
-
-/* kleine Sub-Chips: +/s und +/click */
-#sbSteinRate, #sbSteinClick,
-#sbHolzRate,  #sbHolzClick,
-#sbMetallRate,#sbMetallClick{
-  display:inline-flex; align-items:center;
-  padding: 4px 8px; border-radius: 10px;
-  background: #0f141c;
-  border: 1px solid rgba(255,255,255,.05);
-  font-size: 12px; color: var(--muted);
-}
-
-/* Takt/AUTOSAVE-Badges rechts */
-#sbTick, #sbSave{
-  display:inline-flex; align-items:center; gap:8px;
-  padding: 6px 10px; border-radius: 10px;
-  background: var(--panel-2); color: var(--text);
-  border: 1px solid rgba(255,255,255,.05);
-}
-
-/* dezente Wert-Pulse bei Anstieg – nutzt .pulse-Klasse aus JS */
-.pulse{ animation:pulse .28s ease; }
-@keyframes pulse{
-  0%{ box-shadow: 0 0 0 0 rgba(255,255,255,.28); }
-  100%{ box-shadow: 0 0 0 8px rgba(255,255,255,0); }
-}
-
-/* responsiv */
-@media (max-width: 720px){
-  #sbBar{ gap: 8px; padding: 8px 10px; }
-  #sbSteinItem, #sbHolzItem, #sbMetallItem{ padding: 8px 10px; gap:8px; }
-  #sbStein, #sbHolz, #sbMetall{ padding: 3px 8px; }
-  #sbSteinRate, #sbSteinClick, #sbHolzRate, #sbHolzClick, #sbMetallRate, #sbMetallClick{ padding: 3px 7px; }
-}
-
-/* ===== Statsbar – einzeilig, mit Rechtsblock (Tick/Autosave) ===== */
-
-#sbBar{
-  position: sticky; top: 0; z-index: 50;
-  display: flex; align-items: center; gap: 12px;
-  /* einzeilig halten – bei Platzmangel horizontal scrollen */
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge legacy */
-  padding: 10px 14px;
-  margin: 0 0 16px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,255,255,.05);
-}
-#sbBar::-webkit-scrollbar{ display: none; }
-
-/* Ressourcen-Pills (Container) */
 .sb-item,
-#sbSteinItem, #sbHolzItem, #sbMetallItem{
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.06);
-  background: var(--panel);
-  box-shadow: 0 10px 26px rgba(0,0,0,.30);
-  white-space: nowrap;
+#sbSteinItem,#sbHolzItem,#sbMetallItem{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 10px 26px rgba(0,0,0,.30);
+  white-space:nowrap;
 }
 
 /* dezenter Ressourcen-Glow */
-#sbSteinItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-stone); }
-#sbHolzItem { box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-wood); }
-#sbMetallItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-metal); }
+#sbSteinItem{ box-shadow:0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-stone); }
+#sbHolzItem { box-shadow:0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-wood); }
+#sbMetallItem{ box-shadow:0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-metal); }
 
-/* Icons per CSS – kein HTML-Text nötig */
-#sbSteinItem::before { content: "🪨"; font-size: 16px; }
-#sbHolzItem::before  { content: "🌲"; font-size: 16px; }
-#sbMetallItem::before{ content: "⛏️"; font-size: 16px; }
+/* Icons per CSS – kein Extra-HTML nötig */
+#sbSteinItem::before { content:"🪨"; font-size:16px; }
+#sbHolzItem::before  { content:"🌲"; font-size:16px; }
+#sbMetallItem::before{ content:"⛏️"; font-size:16px; }
 
-/* Hauptwert + Subchips */
-#sbStein, #sbHolz, #sbMetall{
+/* Hauptwerte + Subchips */
+#sbStein,#sbHolz,#sbMetall{
   display:inline-flex; align-items:center;
-  padding: 4px 10px; border-radius: 10px;
-  background: var(--panel-2);
-  border: 1px solid rgba(255,255,255,.05);
-  font-weight: 600;
+  padding:4px 10px; border-radius:10px;
+  background:var(--panel-2);
+  border:1px solid rgba(255,255,255,.05);
+  font-weight:600;
 }
-#sbSteinRate, #sbSteinClick,
-#sbHolzRate,  #sbHolzClick,
+#sbSteinRate,#sbSteinClick,
+#sbHolzRate,#sbHolzClick,
 #sbMetallRate,#sbMetallClick{
   display:inline-flex; align-items:center;
-  padding: 4px 8px; border-radius: 10px;
-  background: #0f141c;
-  border: 1px solid rgba(255,255,255,.05);
-  font-size: 12px; color: var(--muted);
+  padding:4px 8px; border-radius:10px;
+  background:#0f141c;
+  border:1px solid rgba(255,255,255,.05);
+  font-size:12px; color:var(--muted);
 }
 
-/* Rechtsblock: Tick & Autosave ans rechte Ende schieben */
-.sb-right{ margin-left: auto; display:flex; gap:10px; }
-#sbTick, #sbSave{
+/* rechter Block: Tick & Autosave wirklich an den Rand */
+.sb-right{ margin-left:auto; display:flex; gap:10px; }
+#sbTick,#sbSave{
   display:inline-flex; align-items:center; gap:8px;
-  padding: 6px 10px; border-radius: 10px;
-  background: var(--panel-2); color: var(--text);
-  border: 1px solid rgba(255,255,255,.05);
-  white-space: nowrap;
+  padding:6px 10px; border-radius:10px;
+  background:var(--panel-2); color:var(--text);
+  border:1px solid rgba(255,255,255,.05);
+  white-space:nowrap;
 }
 
-/* Pulse bei Updates */
+/* Pulse bei Wert-Updates (JS setzt .pulse) */
 .pulse{ animation:pulse .28s ease; }
 @keyframes pulse{
-  0%{ box-shadow: 0 0 0 0 rgba(255,255,255,.28); }
-  100%{ box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+  0%{ box-shadow:0 0 0 0 rgba(255,255,255,.28); }
+  100%{ box-shadow:0 0 0 8px rgba(255,255,255,0); }
 }
 
-/* Breakpoint: auf schmalen Screens in mehrere Zeilen umbrechen */
-@media (max-width: 860px){
-  #sbBar{ flex-wrap: wrap; overflow-x: visible; }
-  .sb-right{ margin-left: 0; width: 100%; justify-content: flex-end; }
+/* Wrap-Verhalten auf sehr schmalen Screens */
+@media (max-width:860px){
+  #sbBar{ flex-wrap:wrap; overflow-x:visible; }
+  .sb-right{ margin-left:0; width:100%; justify-content:flex-end; }
 }
 
-/* ---- Action Buttons (Click) ---- */
-/* gemeinsame Basis für Stein/Holz/Metall */
-#steinBtn, #holzBtn, #metallBtn{
+/* -------- Action Buttons (Click) -------- */
+#steinBtn,#holzBtn,#metallBtn{
   appearance:none; border:none; cursor:pointer;
-  color: var(--text);
-  padding: 12px 18px;
-  border-radius: 16px;
-  font-size: 15px;
-  letter-spacing:.2px;
-  box-shadow: 0 12px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
-  transition: transform .08s ease, box-shadow .12s ease, background .2s ease;
-  margin-right: 10px;
+  color:var(--text);
+  padding:12px 18px;
+  border-radius:16px;
+  font-size:15px; letter-spacing:.2px;
+  margin-right:10px;
+  box-shadow:0 12px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+  transition:transform .08s ease, box-shadow .12s ease, background .2s ease;
+}
+#steinBtn { background:var(--accent-stone); }
+#holzBtn  { background:var(--accent-wood); }
+#metallBtn{ background:var(--accent-metal); }
+
+#steinBtn:hover,#holzBtn:hover,#metallBtn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 16px 36px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+#steinBtn:active,#holzBtn:active,#metallBtn:active{
+  transform:translateY(0);
 }
 
-#steinBtn{  background: var(--accent-stone); }
-#holzBtn{   background: var(--accent-wood);  }
-#metallBtn{ background: var(--accent-metal); }
-
-#steinBtn:hover, #holzBtn:hover, #metallBtn:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 16px 36px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
-}
-#steinBtn:active, #holzBtn:active, #metallBtn:active{
-  transform: translateY(0);
-}
-
-/* ---- Kauf-Buttons auf Karten ---- */
+/* -------- Upgrade-Card Buttons -------- */
 .buy{
-  margin-top: 14px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  color: #fff;
-  transition: filter .12s ease, transform .08s ease;
+  margin-top:14px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:none; cursor:pointer;
+  font-weight:600; color:#fff;
+  transition:filter .12s ease, transform .08s ease;
 }
-.buy.can   { background: var(--btn-green); }
-.buy.can:hover { filter: brightness(1.05); }
-.buy.can:active{ transform: translateY(1px); }
-
+.buy.can{ background:var(--btn-green); }
+.buy.can:hover{ filter:brightness(1.06); }
+.buy.can:active{ transform:translateY(1px); }
 .buy.cannot{
-  background: var(--btn-gray);
-  cursor: not-allowed;
-  opacity: .85;
+  background:var(--btn-gray);
+  cursor:not-allowed; opacity:.85;
 }
 
-/* ---- Stat-Balken (unterer Bereich, falls genutzt) ---- */
-.stat{
-  background: var(--panel-2);
-  border-radius: 12px;
-  padding: 8px 10px;
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,.05);
+/* -------- Alter Stats-Block unten ist überflüssig -------- */
+#stats{ display:none !important; }
+
+/* -------- Prestige-Bereich -------- */
+#prestige.card{ margin-top:24px; }
+#prestige .stat{
+  background:var(--panel-2);
+  border-radius:12px;
+  padding:8px 10px;
+  color:var(--text);
+  border:1px solid rgba(255,255,255,.05);
 }
 
-/* ---- Kleinere Hilfen ---- */
-section{ margin-bottom: 18px; }
+/* moderne Buttons allgemein */
+.btn{
+  appearance:none; border:none; cursor:pointer;
+  padding:10px 14px; border-radius:12px;
+  font-weight:600; color:#fff;
+  transition: transform .08s ease, filter .12s ease;
+}
+.btn:active{ transform: translateY(1px); }
+.btn-primary{ background:var(--btn-green); }
+.btn-primary:hover{ filter:brightness(1.06); }
+.btn-primary:disabled{ background:#536071; cursor:not-allowed; opacity:.85; }
+
+/* -------- Helpers -------- */
+section{ margin-bottom:18px; }
 .row{ display:flex; gap:12px; flex-wrap:wrap; }
 .center{ text-align:center; }
 .right{ text-align:right; }
 
-/* ---- Pulse-Animation bei Wert-Anstieg ---- */
-.pulse{ animation: pulse .3s ease; }
-@keyframes pulse{
-  0%{ box-shadow: 0 0 0 0 rgba(255,255,255,.25); }
-  100%{ box-shadow: 0 0 0 6px rgba(255,255,255,0); }
-}
-
-/* ---- Responsive ---- */
-@media (max-width: 720px){
-  h1{ font-size: 26px; }
-  #upgrade-grid{ grid-template-columns: 1fr; }
-  #steinBtn, #holzBtn, #metallBtn{ width: 100%; margin: 0 0 10px; }
+/* -------- Mobile Tweaks -------- */
+@media (max-width:720px){
+  h1{ font-size:26px; }
+  #upgrade-grid{ grid-template-columns:1fr; }
+  #steinBtn,#holzBtn,#metallBtn{ width:100%; margin:0 0 10px; }
 }
