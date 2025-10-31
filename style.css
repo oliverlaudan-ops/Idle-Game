@@ -283,3 +283,46 @@ html, body, .app { overflow: visible !important; }
   backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
+
+/* Der Wrapper ist der sticky-Container */
+#sbSticky{
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* Die Bar selbst kümmert sich nur um Layout */
+#sbBar{
+  position: relative;    /* für .sb-right absolute */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  overflow: visible;     /* kein eigener Overflow! */
+}
+
+/* Rechtsblock rechts andocken */
+#sbBar .sb-right{
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Mobile: Zeile umbrechen & Rechtsblock nach unten */
+@media (max-width: 860px){
+  #sbBar{
+    flex-wrap: wrap;
+    padding-right: 14px; /* Platz für Rechtsblock */
+  }
+  #sbBar .sb-right{
+    position: static;
+    transform: none;
+    margin-left: auto;
+    width: auto;
+  }
+}
+
