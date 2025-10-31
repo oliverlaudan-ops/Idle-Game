@@ -226,3 +226,21 @@ section{ margin-bottom:18px; }
   #upgrade-grid{ grid-template-columns:1fr; }
   #steinBtn,#holzBtn,#metallBtn{ width:100%; margin:0 0 10px; }
 }
+/* sbBar rechts zuverlässig anpinnen */
+#sbBar{ position: sticky; top:0; z-index:50; /* schon vorhanden */ 
+        position: relative; }              /* <— ergänzen */
+#sbBar .sb-right{
+  position: absolute;                      /* <— immer rechts im Balken */
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0;                          /* überschreibt evtl. altes margin-left:auto */
+}
+@media (max-width: 720px){
+  #sbBar .sb-right{
+    position: static;                      /* auf sehr schmalen Screens unter die Pills */
+    transform: none;
+    margin-left: auto;
+  }
+}
+
