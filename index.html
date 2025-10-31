@@ -2,10 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>From Stone to Civilization</title>
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -13,22 +10,17 @@
     <div class="app">
       <h1>From Stone to Civilization</h1>
 
-      <!-- ===== Statsbar (sticky) ===== -->
-<div id="sbBar">
-  <div id="sbItems"></div>  <!-- JS rendert die Pills hier hinein -->
-  <div class="sb-right">
-    <span id="sbTick">Tick 1.0s</span>
-    <span id="sbSave">Autosave</span>
-  </div>
-</div>
-
-
-      <!-- ===== Action-Buttons ===== -->
-      <div id="actions" class="row" style="margin-bottom: 12px">
-        <button id="steinBtn">🪨 Stein sammeln (+1)</button>
-        <button id="holzBtn" style="display: none">🌲 Holz hacken (+1)</button>
-        <button id="metallBtn" style="display: none">⛏️ Metall abbauen (+1)</button>
+      <!-- ===== Statsbar (sticky) – Ressourcen dynamisch ===== -->
+      <div id="sbBar">
+        <div id="sbItems"></div> <!-- JS rendert hier die Ressource-Pills -->
+        <div class="sb-right">
+          <span id="sbTick">Tick 1.0s</span>
+          <span id="sbSave">Autosave</span>
+        </div>
       </div>
+
+      <!-- ===== Action-Buttons – werden dynamisch erzeugt ===== -->
+      <div id="actions" class="row" style="margin-bottom: 12px"></div>
 
       <!-- ===== Upgrades ===== -->
       <section>
@@ -43,7 +35,7 @@
         <button id="prestigeBtn" class="btn btn-primary">Prestige auslösen</button>
       </section>
 
-      <!-- (optional) System-Buttons: falls von game.js verwendet -->
+      <!-- (optional) System-Buttons -->
       <div id="system-controls" class="row" style="gap: 10px; margin-top: 10px">
         <button id="exportBtn" class="pill">Export</button>
         <button id="importBtn" class="pill">Import</button>
