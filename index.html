@@ -2,65 +2,73 @@
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
     <title>From Stone to Civilization</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="app">
       <h1>From Stone to Civilization</h1>
-     <!-- kompakte Statsbar oben -->
-<div id="sbBar">
-  <div id="sbSteinItem" class="sb-item">
-    <span id="sbStein">0</span>
-    <span id="sbSteinRate">+0/s</span>
-    <span id="sbSteinClick">+0/click</span>
-  </div>
 
-  <div id="sbHolzItem" class="sb-item">
-    <span id="sbHolz">0</span>
-    <span id="sbHolzRate">+0/s</span>
-    <span id="sbHolzClick">+0/click</span>
-  </div>
+      <!-- ===== Statsbar (sticky) ===== -->
+      <div id="sbBar">
+        <div id="sbSteinItem" class="sb-item">
+          <span id="sbStein">0</span>
+          <span id="sbSteinRate">+0/s</span>
+          <span id="sbSteinClick">+0/click</span>
+        </div>
 
-  <div id="sbMetallItem" class="sb-item">
-    <span id="sbMetall">0</span>
-    <span id="sbMetallRate">+0/s</span>
-    <span id="sbMetallClick">+0/click</span>
-  </div>
+        <div id="sbHolzItem" class="sb-item">
+          <span id="sbHolz">0</span>
+          <span id="sbHolzRate">+0/s</span>
+          <span id="sbHolzClick">+0/click</span>
+        </div>
 
-  <!-- Rechtsblock -->
-  <div class="sb-right">
-    <span id="sbTick">Tick 1.0s</span>
-    <span id="sbSave">Autosave</span>
-  </div>
-</div>
+        <div id="sbMetallItem" class="sb-item">
+          <span id="sbMetall">0</span>
+          <span id="sbMetallRate">+0/s</span>
+          <span id="sbMetallClick">+0/click</span>
+        </div>
 
+        <!-- rechts andocken -->
+        <div class="sb-right">
+          <span id="sbTick">Tick 1.0s</span>
+          <span id="sbSave">Autosave</span>
+        </div>
+      </div>
 
-<!-- Action-Buttons -->
-      <button id="steinBtn" style="margin-left: 8px;">🪨 Stein sammeln (+1)</button>
-      <button id="holzBtn" style="display:none; margin-left:8px;">🌲 Holz hacken (+0)</button>
-      <button id="metallBtn" style="display:none; margin-left:8px;">⛏️ Metall abbauen (+0)</button>
+      <!-- ===== Action-Buttons ===== -->
+      <div id="actions" class="row" style="margin-bottom: 12px">
+        <button id="steinBtn">🪨 Stein sammeln (+1)</button>
+        <button id="holzBtn" style="display: none">🌲 Holz hacken (+1)</button>
+        <button id="metallBtn" style="display: none">⛏️ Metall abbauen (+1)</button>
+      </div>
 
-      <div id="upgrades">
+      <!-- ===== Upgrades ===== -->
+      <section>
         <h2>Upgrades</h2>
-        <div class="row" id="upgrade-grid"></div>
-      </div>
+        <div id="upgrade-grid"></div>
+      </section>
 
-      <div id="stats">
-        <h2>Stats</h2>
-        <div id="steinStats" class="stat">Stein: 0</div>
-        <div id="holzStats" class="stat">Holz: 0</div>
-      </div>
-
-      <div id="prestige">
+      <!-- ===== Prestige ===== -->
+      <section id="prestige" class="card">
         <h2>Prestige</h2>
         <div id="prestigeReq" class="stat">Erkenntnispunkte (EP): 0</div>
-        <button id="prestigeBtn">Prestige auslösen</button>
+        <button id="prestigeBtn" class="btn btn-primary">Prestige auslösen</button>
+      </section>
+
+      <!-- (optional) System-Buttons: falls von game.js verwendet -->
+      <div id="system-controls" class="row" style="gap: 10px; margin-top: 10px">
+        <button id="exportBtn" class="pill">Export</button>
+        <button id="importBtn" class="pill">Import</button>
+        <button id="saveBtn" class="pill">Speichern</button>
+        <button id="resetBtn" class="pill">Zurücksetzen</button>
       </div>
     </div>
 
-    <!-- Link zum externen JavaScript -->
     <script src="game.js"></script>
   </body>
 </html>
