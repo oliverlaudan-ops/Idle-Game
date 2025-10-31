@@ -10,35 +10,28 @@
     <div class="app">
       <h1>From Stone to Civilization</h1>
      <!-- kompakte Statsbar oben -->
-<div class="statsbar" id="statsBar">
-  <div class="sb-item" id="sbSteinItem">
-    <span class="sb-label">Stein</span>
-    <span id="sbStein" class="sb-value">0</span>
-    <span id="sbSteinRate" class="sb-rate">+0/s</span>
-    <!-- NEU: pro-Klick-Badge -->
-    <span id="sbSteinClick" class="sb-badge mini">+0/click</span>
+<div id="sbBar">
+  <div id="sbSteinItem">
+    <!-- optional: <span class="sb-title">Stein</span> -->
+    <span id="sbStein">0</span>
+    <span id="sbSteinRate">+0/s</span>
+    <span id="sbSteinClick">+0/click</span>
   </div>
-  
-  <div class="sb-item" id="sbHolzItem style="display:none;">
-    <span class="sb-label">Holz</span>
-    <span id="sbHolz" class="sb-value">0</span>
-    <span id="sbHolzRate" class="sb-rate">+0/s</span>
-    <!-- NEU: pro-Klick-Badge -->
-    <span id="sbHolzClick" class="sb-badge mini">+0/click</span>
+
+  <div id="sbHolzItem">
+    <span id="sbHolz">0</span>
+    <span id="sbHolzRate">+0/s</span>
+    <span id="sbHolzClick">+0/click</span>
   </div>
-  
-  <div class="sb-item" id="sbMetallItem" style="display:none;">
-    <span class="sb-label">Metall</span>
-    <span id="sbMetall" class="sb-value">0</span>
-    <span id="sbMetallRate" class="sb-rate">+0/s</span>
-    <span id="sbMetallClick" class="sb-badge mini">+0/click</span>
+
+  <div id="sbMetallItem">
+    <span id="sbMetall">0</span>
+    <span id="sbMetallRate">+0/s</span>
+    <span id="sbMetallClick">+0/click</span>
   </div>
-   <!-- rechts: Live-Infos -->
-  <div class="sb-spacer"></div>
-  <div class="sb-meta">
-    <span id="sbTick"  class="sb-badge">Tick 1.0s</span>
-    <span id="sbSave"  class="sb-badge sb-ok">Autosave</span>
-  </div>
+
+  <span id="sbTick">Tick 1.0s</span>
+  <span id="sbSave">Autosave</span>
 </div>
 
       <button id="steinBtn" style="margin-left: 8px;">🪨 Stein sammeln (+1)</button>
