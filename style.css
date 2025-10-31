@@ -70,20 +70,91 @@ h3{ font-size: 17px; margin: 0 0 6px; }
   border: 1px solid rgba(255,255,255,.04);
 }
 
-/* Optional: obere Statsbar (falls vorhanden) */
-.statsbar, #sbBar{
-  position: sticky; top: 0; z-index: 40;
-  display: flex; flex-wrap: wrap; gap: 10px;
-  justify-content: center;
-  padding: 10px 12px;
-  margin: 4px 0 14px;
-  background: color-mix(in srgb, var(--bg) 75%, transparent);
-  backdrop-filter: blur(4px);
+/* ===== Statsbar (oben, sticky) – hübsch & kompakt ===== */
+
+:root{
+  --accent-stone:#2a3752;  /* Stein */
+  --accent-wood:#22382a;   /* Holz  */
+  --accent-metal:#24304a;  /* Metall */
+}
+
+#sbBar{
+  position: sticky; top: 0; z-index: 50;
+  display: flex; flex-wrap: wrap; gap: 12px;
+  justify-content: center; align-items: center;
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(6px);
   border-bottom: 1px solid rgba(255,255,255,.05);
 }
-.sb-item{ display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:12px; background:var(--panel); border:1px solid rgba(255,255,255,.05); }
-.sb-row{ display:flex; gap:8px; }
-.sb-sub{ font-size: 11px; color: var(--muted); }
+
+/* einzelne Ressourcen-Pills */
+#sbSteinItem, #sbHolzItem, #sbMetallItem{
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: var(--panel);
+  box-shadow: 0 10px 26px rgba(0,0,0,.30);
+}
+
+/* dezenter Ressourcen-Glow */
+#sbSteinItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-stone); }
+#sbHolzItem { box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-wood); }
+#sbMetallItem{box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 0 1px rgba(255,255,255,.04), 0 0 22px 0 var(--accent-metal); }
+
+/* Icon vor den Titeln (keine HTML-Änderung nötig) */
+#sbSteinItem::before{ content:"🪨"; font-size:16px; }
+#sbHolzItem::before{  content:"🌲"; font-size:16px; }
+#sbMetallItem::before{content:"⛏️"; font-size:16px; }
+
+/* Titel (z. B. „Stein“) – nimm den statischen Text in HTML, falls vorhanden.
+   Falls du keinen sichtbaren Titel-Span hast, ist das auch okay – die Values/sub-Pills reichen. */
+.sb-title{ font-weight:600; opacity:.95; }
+
+/* Hauptwert-Chip (z. B. 1.53K) */
+#sbStein, #sbHolz, #sbMetall{
+  display:inline-flex; align-items:center;
+  padding: 4px 10px; border-radius: 10px;
+  background: var(--panel-2);
+  border: 1px solid rgba(255,255,255,.05);
+  font-weight: 600;
+}
+
+/* kleine Sub-Chips: +/s und +/click */
+#sbSteinRate, #sbSteinClick,
+#sbHolzRate,  #sbHolzClick,
+#sbMetallRate,#sbMetallClick{
+  display:inline-flex; align-items:center;
+  padding: 4px 8px; border-radius: 10px;
+  background: #0f141c;
+  border: 1px solid rgba(255,255,255,.05);
+  font-size: 12px; color: var(--muted);
+}
+
+/* Takt/AUTOSAVE-Badges rechts */
+#sbTick, #sbSave{
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 6px 10px; border-radius: 10px;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid rgba(255,255,255,.05);
+}
+
+/* dezente Wert-Pulse bei Anstieg – nutzt .pulse-Klasse aus JS */
+.pulse{ animation:pulse .28s ease; }
+@keyframes pulse{
+  0%{ box-shadow: 0 0 0 0 rgba(255,255,255,.28); }
+  100%{ box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+}
+
+/* responsiv */
+@media (max-width: 720px){
+  #sbBar{ gap: 8px; padding: 8px 10px; }
+  #sbSteinItem, #sbHolzItem, #sbMetallItem{ padding: 8px 10px; gap:8px; }
+  #sbStein, #sbHolz, #sbMetall{ padding: 3px 8px; }
+  #sbSteinRate, #sbSteinClick, #sbHolzRate, #sbHolzClick, #sbMetallRate, #sbMetallClick{ padding: 3px 7px; }
+}
 
 /* ---- Action Buttons (Click) ---- */
 /* gemeinsame Basis für Stein/Holz/Metall */
