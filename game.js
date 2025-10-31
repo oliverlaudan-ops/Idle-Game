@@ -94,9 +94,7 @@ const upgrades = [
    // --- Globaler Effizienz-Buff (kostet Holz) ---
   { id: 'ofen', res: 'holz', requiresUnlock: 'holz', name: 'Ofen', desc: 'Effizienz +10% global', baseCost: 1500, mult: 1.35, 
   apply: s => { s.effMult = +(s.effMult * 1.10).toFixed(6); } }
-   );
-
-
+   
   // --- Metall freischalten (bezahlt mit Holz) ---
   { id:'schmiede', res:'holz', requiresUnlock:'holz', single:true,
     name:'Schmiede', desc:'Schaltet METALL frei', baseCost:4400, mult:1.35,
