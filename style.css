@@ -246,3 +246,40 @@ section{ margin-bottom:18px; }
 
 #prestige .stat{ margin-bottom: 10px; }      /* Luft zwischen EP und Button */
 #prestige .btn{ width: fit-content; }        /* optional, schöner */
+
+/* 1) Kein ancestor darf sticky blockieren */
+html, body, .app { overflow: visible !important; }
+
+/* 2) Sticky wirklich aktiv + über dem Content */
+#sbBar{
+  position: sticky !important;
+  top: 0;
+  z-index: 1000;
+}
+
+/* 3) Rechtsblock bleibt rechts, ohne die Höhe zu zerstören */
+#sbBar { position: relative; }        /* behält sticky */
+#sbBar .sb-right{
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 0;
+}
+
+/* Mobile: rechtsblock unten einrasten lassen */
+@media (max-width: 720px){
+  #sbBar .sb-right{
+    position: static;
+    transform: none;
+    margin-left: auto;
+    width: auto;
+  }
+}
+
+/* (optisch) Stickybar-Hintergrund, damit nix durchscheint */
+#sbBar{
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
