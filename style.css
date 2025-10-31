@@ -326,3 +326,19 @@ html, body, .app { overflow: visible !important; }
   }
 }
 
+/* Abstand zwischen den Ressourcen-Pills in der Statsbar */
+#sbBar .sb-item {
+  margin-right: 12px;              /* Abstand nach rechts */
+}
+
+/* Letzter Pill ohne Extra-Abstand */
+#sbBar .sb-item:last-of-type {
+  margin-right: 0;
+}
+
+/* Etwas mehr Tiefe und Gleichmäßigkeit */
+#sbBar .sb-item {
+  border-radius: 12px;
+  padding: 6px 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
