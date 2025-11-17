@@ -83,41 +83,42 @@ h3{ font-size:17px; margin:0 0 6px; }
   padding:10px 14px; margin:0 0 16px;
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   backdrop-filter: blur(6px);
-  border-bottom:1px solid rgba(255,255,255,.05);
+  border-bottom: 1px solid rgba(255,255,255,.05);
 }
 #sbBar::-webkit-scrollbar{ display:none; }
 
+/* Ressourcen-Pills (Container) */
 .sb-item,
-#sbSteinItem,#sbHolzItem,#sbMetallItem{
-  display:inline-flex; align-items:center; gap:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  background:var(--panel);
-  border:1px solid rgba(255,255,255,.06);
-  box-shadow:0 10px 26px rgba(0,0,0,.30);
-  white-space:nowrap;
+#sbSteinItem, #sbHolzItem, #sbMetallItem{
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.06);
+  background: var(--panel);
+  box-shadow: 0 10px 26px rgba(0,0,0,.30);
+  white-space: nowrap;
 }
 
 /* dezenter Ressourcen-Glow */
-#sbSteinItem{ box-shadow:0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-stone); }
-#sbHolzItem { box-shadow:0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-wood); }
-#sbMetallItem{ box-shadow:0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-metal); }
+#sbSteinItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-stone); }
+#sbHolzItem { box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-wood); }
+#sbMetallItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-metal); }
 
 /* Icons per CSS – kein Extra-HTML nötig */
-#sbSteinItem::before { content:"🪨"; font-size:16px; }
-#sbHolzItem::before  { content:"🌲"; font-size:16px; }
-#sbMetallItem::before{ content:"⛏️"; font-size:16px; }
+#sbSteinItem::before { content: "🪨"; font-size: 16px; }
+#sbHolzItem::before  { content: "🌲"; font-size: 16px; }
+#sbMetallItem::before{ content: "⛏️"; font-size: 16px; }
 
-/* Hauptwerte + Subchips */
-#sbStein,#sbHolz,#sbMetall{
+/* Hauptwert + Subchips */
+#sbStein, #sbHolz, #sbMetall{
   display:inline-flex; align-items:center;
   padding:4px 10px; border-radius:10px;
   background:var(--panel-2);
   border:1px solid rgba(255,255,255,.05);
   font-weight:600;
 }
-#sbSteinRate,#sbSteinClick,
-#sbHolzRate,#sbHolzClick,
+#sbSteinRate, #sbSteinClick,
+#sbHolzRate,  #sbHolzClick,
 #sbMetallRate,#sbMetallClick{
   display:inline-flex; align-items:center;
   padding:4px 8px; border-radius:10px;
@@ -126,14 +127,23 @@ h3{ font-size:17px; margin:0 0 6px; }
   font-size:12px; color:var(--muted);
 }
 
-/* rechter Block: Tick & Autosave wirklich an den Rand */
+/* >>> das hier dockt Tick/Autosave rechts an */
 .sb-right{ margin-left:auto; display:flex; gap:10px; }
-#sbTick,#sbSave{
+#sbTick, #sbSave{
   display:inline-flex; align-items:center; gap:8px;
   padding:6px 10px; border-radius:10px;
   background:var(--panel-2); color:var(--text);
   border:1px solid rgba(255,255,255,.05);
   white-space:nowrap;
+}
+
+#sbEff{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 10px; margin-left:8px;
+  border-radius:10px; background:#131a22; color:#cfe8ff;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 2px 10px rgba(0,0,0,.35) inset, 0 0 8px rgba(0,0,0,.25);
+  font-size:13px;
 }
 
 /* Pulse bei Wert-Updates (JS setzt .pulse) */
@@ -157,7 +167,6 @@ h3{ font-size:17px; margin:0 0 6px; }
   border-radius:16px;
   font-size:15px; letter-spacing:.2px;
   margin-right:10px;
-  margin-top:8px;
   box-shadow:0 12px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
   transition:transform .08s ease, box-shadow .12s ease, background .2s ease;
 }
@@ -189,9 +198,6 @@ h3{ font-size:17px; margin:0 0 6px; }
   background:var(--btn-gray);
   cursor:not-allowed; opacity:.85;
 }
-
-/* -------- Alter Stats-Block unten ist überflüssig -------- */
-#stats{ display:none !important; }
 
 /* -------- Prestige-Bereich -------- */
 #prestige.card{ margin-top:24px; }
@@ -226,120 +232,4 @@ section{ margin-bottom:18px; }
   h1{ font-size:26px; }
   #upgrade-grid{ grid-template-columns:1fr; }
   #steinBtn,#holzBtn,#metallBtn{ width:100%; margin:0 0 10px; }
-}
-/* sbBar rechts zuverlässig anpinnen */
-#sbBar{ position: sticky; top:0; z-index:50; /* schon vorhanden */ 
-        position: relative; }              /* <— ergänzen */
-#sbBar .sb-right{
-  position: absolute;                      /* <— immer rechts im Balken */
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 0;                          /* überschreibt evtl. altes margin-left:auto */
-}
-@media (max-width: 720px){
-  #sbBar .sb-right{
-    position: static;                      /* auf sehr schmalen Screens unter die Pills */
-    transform: none;
-    margin-left: auto;
-  }
-}
-
-#prestige .stat{ margin-bottom: 10px; }      /* Luft zwischen EP und Button */
-#prestige .btn{ width: fit-content; }        /* optional, schöner */
-
-/* 1) Kein ancestor darf sticky blockieren */
-html, body, .app { overflow: visible !important; }
-
-/* 2) Sticky wirklich aktiv + über dem Content */
-#sbBar{
-  position: sticky !important;
-  top: 0;
-  z-index: 1000;
-}
-
-/* 3) Rechtsblock bleibt rechts, ohne die Höhe zu zerstören */
-#sbBar { position: relative; }        /* behält sticky */
-#sbBar .sb-right{
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 0;
-}
-
-/* Mobile: rechtsblock unten einrasten lassen */
-@media (max-width: 720px){
-  #sbBar .sb-right{
-    position: static;
-    transform: none;
-    margin-left: auto;
-    width: auto;
-  }
-}
-
-/* (optisch) Stickybar-Hintergrund, damit nix durchscheint */
-#sbBar{
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-
-/* Der Wrapper ist der sticky-Container */
-#sbSticky{
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-
-/* Die Bar selbst kümmert sich nur um Layout */
-#sbBar{
-  position: relative;    /* für .sb-right absolute */
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px;
-  overflow: visible;     /* kein eigener Overflow! */
-}
-
-/* Rechtsblock rechts andocken */
-#sbBar .sb-right{
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-/* Mobile: Zeile umbrechen & Rechtsblock nach unten */
-@media (max-width: 860px){
-  #sbBar{
-    flex-wrap: wrap;
-    padding-right: 14px; /* Platz für Rechtsblock */
-  }
-  #sbBar .sb-right{
-    position: static;
-    transform: none;
-    margin-left: auto;
-    width: auto;
-  }
-}
-
-/* Abstand zwischen den Ressourcen-Pills in der Statsbar */
-#sbBar .sb-item {
-  margin-right: 12px;              /* Abstand nach rechts */
-}
-
-/* Letzter Pill ohne Extra-Abstand */
-#sbBar .sb-item:last-of-type {
-  margin-right: 0;
-}
-
-/* Etwas mehr Tiefe und Gleichmäßigkeit */
-#sbBar .sb-item {
-  border-radius: 12px;
-  padding: 6px 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
