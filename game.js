@@ -377,7 +377,7 @@ class Game {
 }
 
 /* ---------- Bootstrap ---------- */
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const game = new Game();
   game.setupDOM();
   game.setupGameData();
