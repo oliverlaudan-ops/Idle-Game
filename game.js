@@ -1,50 +1,35 @@
-<!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>From Stone to Civilization</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="app">
-      <h1>From Stone to Civilization</h1>
+/* ==========================================================
+   From Stone to Civilization – game.js (Dynamic Clean Build)
+   ========================================================== */
 
-      <!-- ===== Statsbar (sticky) – Ressourcen dynamisch ===== -->
-      <div id="sbBar">
-        <div id="sbItems"></div> <!-- JS rendert hier die Ressource-Pills -->
-        <div class="sb-right">
-          <span id="sbTick">Tick 1.0s</span>
-          <span id="sbSave">Autosave</span>
-          <span id="sbEff">×1.00</span> <!-- Effizienz Multiplikator -->
-        </div>
-      </div>
+/* ------------------ Utils ------------------ */
+const SAVEKEY = 'stone_idle_save_dyn_v1';
 
-      <!-- ===== Action-Buttons – werden dynamisch erzeugt ===== -->
-      <div id="actions" class="row" style="margin-bottom: 12px"></div>
+const fmt = n => {
+  if (n == null) return '0';
+  const abs = Math.abs(n);
+  if (abs < 1000) return (Math.round(n * 100) / 100).toString();
+  const units = ['K','M','B','T','Qa','Qi'];
+  let u = -1, x = abs;
+  while (x >= 1000 && u < units.length - 1) { x /= 1000; u++; }
+  return (n < 0 ? '-' : '') + x.toFixed(2) + units[u];
+};
+const clamp0 = v => (v < 0 ? 0 : v);
+const getEl = id => document.getElementById(id);
 
-      <!-- ===== Upgrades ===== -->
-      <section>
-        <h2>Upgrades</h2>
-        <div id="upgrade-grid"></div>
-      </section>
+/* ------------------ Dynamic Resources ------------------ */
+const RESOURCES = [
+  { key: 'stein',  icon: '🪨', label: 'Stein',  unlockedBy: null,  startRpc: 1 },
+  { key: 'holz',   icon: '🌲', label: 'Holz',   unlockedBy: 'werkbank', startRpc: 1 },
+  { key: 'metall', icon: '⛏️', label: 'Metall', unlockedBy: 'schmiede', startRpc: 1 },
+];
 
-      <!-- ===== Prestige ===== -->
-      <section id="prestige" class="card">
-        <h2>Prestige</h2>
-        <div id="prestigeReq" class="stat">Erkenntnispunkte (EP): 0</div>
-        <button id="prestigeBtn" class="btn btn-primary">Prestige auslösen</button>
-      </section>
+const state = { ...DEFAULT, effMult: 1 };  // State für globale Multiplikatoren und Ressourcen.
 
-      <!-- (optional) System-Buttons -->
-      <div id="system-controls" class="row" style="gap: 10px; margin-top: 10px">
-        <button id="exportBtn" class="pill">Export</button>
-        <button id="importBtn" class="pill">Import</button>
-        <button id="saveBtn" class="pill">Speichern</button>
-        <button id="resetBtn" class="pill">Zurücksetzen</button>
-      </div>
-    </div>
+RESOURCES.forEach(r => {
+  state[r.key] = 0;
+  state['rpc_' + r.key] = r.startRpc || 0;
+  state['rps_' + r.key] = 0;
+  state['unl_' + r.key] = !r.unlockedBy; // Standard: frei, wenn kein Unlock
+});
 
-    <script src="game.js"></script>
-  </body>
-</html>
