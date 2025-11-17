@@ -10,49 +10,20 @@
     <div class="app">
       <h1>From Stone to Civilization</h1>
 
-      <!-- ===== Statsbar (sticky) – Ressourcen dynamisch ===== -->
-      <div id="sbBar">
-        <div id="sbItems"></div> <!-- JS rendert hier die Ressource-Pills -->
-        <div class="sb-right">
-          <span id="sbTick">Tick 1.0s</span>
-          <span id="sbSave">Autosave</span>
-          <span id="sbEff">×1.00</span> <!-- Effizienz Multiplikator -->
-        </div>
-      </div>
+      <!-- Obere Stats-Leiste (wird per JS gefüllt) -->
+      <div id="statsBar" class="stats-bar"></div>
 
-      <!-- ===== Action-Buttons – werden dynamisch erzeugt ===== -->
-      <div id="actions" class="row" style="margin-bottom: 12px"></div>
+      <!-- Action Buttons (werden per JS gefüllt) -->
+      <div id="actions" class="actions"></div>
 
-      <!-- ===== Stats (Hier werden die Werte gerendert) ===== -->
-      <div id="stats">
-        <h2>Stats</h2>
-        <div id="steinStats" class="stat">Stein: 0</div>
-        <div id="holzStats" class="stat">Holz: 0</div>
-        <div id="metallStats" class="stat">Metall: 0</div>
-      </div>
-
-      <!-- ===== Upgrades ===== -->
+      <!-- Upgrade-Bereich -->
       <section>
         <h2>Upgrades</h2>
-        <div id="upgrade-grid"></div>
+        <div id="upgradeGrid" class="upgrade-grid"></div>
       </section>
-
-      <!-- ===== Prestige ===== -->
-      <section id="prestige" class="card">
-        <h2>Prestige</h2>
-        <div id="prestigeReq" class="stat">Erkenntnispunkte (EP): 0</div>
-        <button id="prestigeBtn" class="btn btn-primary">Prestige auslösen</button>
-      </section>
-
-      <!-- (optional) System-Buttons -->
-      <div id="system-controls" class="row" style="gap: 10px; margin-top: 10px">
-        <button id="exportBtn" class="pill">Export</button>
-        <button id="importBtn" class="pill">Import</button>
-        <button id="saveBtn" class="pill">Speichern</button>
-        <button id="resetBtn" class="pill">Zurücksetzen</button>
-      </div>
     </div>
 
+    <!-- Spiel-Logik -->
     <script src="game.js"></script>
   </body>
 </html>
