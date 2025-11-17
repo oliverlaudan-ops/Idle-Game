@@ -1,80 +1,89 @@
-// ======================== Spiel-Initialisierung =====================
-document.addEventListener("DOMContentLoaded", () => {
-  initializeGame(); // Diese Funktion kümmert sich um die Initialisierung des Spiels
-});
-
-// ======================== Spiel-Initialisierung =====================
-function initializeGame() {
-  // Initialisierung des Spiels, Rendern aller wichtigen Informationen
-  renderAll();
-  console.log('[INIT] Game initialized');
-}
-
-// ======================== Spiel-Status (state) =======================
-const RESOURCES = [
-  { key: 'stein', label: 'Stein' },
-  { key: 'holz', label: 'Holz' },
-  { key: 'metall', label: 'Metall' }
-];
-
-// State-Objekt (Spielstand)
+// Spielzustand und Funktionen
 const state = {
   stein: 0,
   holz: 0,
   metall: 0,
-  rpsStein: 0, // Ressourcengenerierung pro Sekunde für Stein
-  rpsHolz: 0,  // Ressourcengenerierung pro Sekunde für Holz
-  rpsMetall: 0 // Ressourcengenerierung pro Sekunde für Metall
+  rpsStein: 1,  // Resource Per Second for Stein
+  rpsHolz: 0,   // Resource Per Second for Holz
+  rpsMetall: 0, // Resource Per Second for Metall
 };
 
-// ======================== Upgrades ================================
-
-// Upgrades Array
-const upgrades = [
-  { id: 'faustkeil', name: 'Faustkeil', desc: '+1 Stein/Klick', res: 'stein', baseCost: 10, mult: 1.2, apply: () => state.rpsStein++ },
-  { id: 'werkbank', name: 'Werkbank', desc: 'Schaltet Holz frei', res: 'stein', baseCost: 250, mult: 2.0, apply: () => state.rpsHolz = 1 },
-  { id: 'steinmine', name: 'Steinmine', desc: '+8 Stein/Sek', res: 'stein', baseCost: 520, mult: 1.5, apply: () => state.rpsStein += 8 },
-  { id: 'arbeitskraft', name: 'Arbeitskraft', desc: '+1 Stein/Sek', res: 'stein', baseCost: 120, mult: 1.3, apply: () => state.rpsStein += 1 },
-  { id: 'holzfaeller', name: 'Holzfäller', desc: '+0.8 Holz/Sek', res: 'holz', baseCost: 240, mult: 1.5, apply: () => state.rpsHolz += 0.8 },
-  { id: 'sägewerk', name: 'Sägewerk', desc: '+6 Holz/Sek', res: 'holz', baseCost: 634, mult: 1.5, apply: () => state.rpsHolz += 6 },
-  { id: 'axt', name: 'Axt', desc: '+1 Holz/Klick', res: 'holz', baseCost: 167, mult: 1.2, apply: () => state.rpsHolz++ },
-  { id: 'ofen', name: 'Ofen', desc: 'Verdoppelt Metall-Sammeln', res: 'metall', baseCost: 500, mult: 2.0, apply: () => state.rpsMetall *= 2 }
+// Ressourcen und Upgrades
+const resources = [
+  { id: 'stein', name: 'Stein', rate: 'rpsStein', unit: 'Stein' },
+  { id: 'holz', name: 'Holz', rate: 'rpsHolz', unit: 'Holz' },
+  { id: 'metall', name: 'Metall', rate: 'rpsMetall', unit: 'Metall' }
 ];
 
-// ======================== Render-Logik ===============================
+const upgrades = [
+  {
+    id: 'faustkeil',
+    name: 'Faustkeil',
+    desc: '+1 Stein/Klick',
+    baseCost: 10,
+    apply: () => state.rpsStein += 1, // Effekt des Upgrades
+  },
+  {
+    id: 'werkbank',
+    name: 'Werkbank',
+    desc: 'Schaltet Holz frei',
+    baseCost: 250,
+    apply: () => state.rpsHolz += 1,  // Effekt des Upgrades
+  },
+  {
+    id: 'sägewerk',
+    name: 'Sägewerk',
+    desc: '+6 Holz/Sek',
+    baseCost: 400,
+    apply: () => state.rpsHolz += 6,  // Effekt des Upgrades
+  }
+];
 
-// Funktion zum Rendern der Statistiken
-const renderStats = () => {
-  // Alle Ressourcen durchlaufen und die Statistiken aktualisieren
-  RESOURCES.forEach(resource => {
-    const statEl = document.getElementById(`${resource.key}Stats`);
-    if (statEl) {
-      statEl.textContent = `${fmt(state[resource.key])} ${resource.label} (${fmt(state['rps_' + resource.key])}/s)`;
-    }
+// Dynamisches Erstellen der Buttons und Zuweisen der Event Listener
+const createResourceButtons = () => {
+  const actionDiv = document.getElementById('actions');
+  actionDiv.innerHTML = ''; // Vorherige Buttons entfernen
+
+  resources.forEach(resource => {
+    const button = document.createElement('button');
+    button.id = `${resource.id}Btn`;
+    button.textContent = `${resource.name} sammeln (+${state[resource.rate]})`;
+    button.classList.add('btn');
+    actionDiv.appendChild(button);
+
+    button.addEventListener('click', () => {
+      state[resource.id] += state[resource.rate]; // Erhöhe die Resource
+      renderStats();
+    });
   });
 };
 
-// Funktion zum Rendern der Upgrades
+// Stats rendern
+const renderStats = () => {
+  resources.forEach(resource => {
+    document.getElementById(`${resource.id}Stats`).textContent = `${resource.name}: ${fmt(state[resource.id])} (${fmt(state[resource.rate])}/s)`;
+  });
+};
+
+// Formatierungsfunktion für Zahlen (z.B. Tausender Trennzeichen)
+const fmt = (value) => {
+  return value.toLocaleString(); // Formatierung als Zahl mit Tausender-Trennung
+};
+
+// Rendern der Upgrades
 const renderUpgrades = () => {
   const upgradeGrid = document.getElementById('upgrade-grid');
   upgradeGrid.innerHTML = ''; // Vorherige Upgrades entfernen
 
   upgrades.forEach(upg => {
-    const canBuy = state[upg.res] >= upg.baseCost; // Überprüfen, ob genug Ressourcen vorhanden sind
-    const card = buildCard(upg, state[upg.id] || 0, canBuy, upg.res, function () {
-      if (state[upg.res] < upg.baseCost) return; // Wenn nicht genug Ressourcen, nichts tun
-      state[upg.res] -= upg.baseCost; // Abziehen der Kosten
-      upg.apply(state); // Anwenden des Effekts
-      upg.baseCost = Math.floor(upg.baseCost * upg.mult); // Kosten des Upgrades erhöhen
-      renderStats(); // Stats aktualisieren
-      renderUpgrades(); // UI mit neuen Preisen aktualisieren
-    });
-    upgradeGrid.appendChild(card); // Karte zum UI hinzufügen
+    const canBuy = state.stein >= upg.baseCost; // Überprüfen, ob genug Stein vorhanden ist
+    const card = buildCard(upg, canBuy);
+    upgradeGrid.appendChild(card);
   });
 };
 
 // Funktion zum Erstellen der Upgrade-Karten
-function buildCard(upg, amount, canBuy, resourceType, onClick) {
+function buildCard(upg, canBuy) {
   const card = document.createElement('div');
   card.classList.add('card');
 
@@ -87,7 +96,7 @@ function buildCard(upg, amount, canBuy, resourceType, onClick) {
   card.appendChild(description);
 
   const cost = document.createElement('p');
-  cost.textContent = `Kosten: ${upg.baseCost} ${resourceType}`;
+  cost.textContent = `Kosten: ${upg.baseCost} Stein`;
   card.appendChild(cost);
 
   const buyButton = document.createElement('button');
@@ -97,7 +106,10 @@ function buildCard(upg, amount, canBuy, resourceType, onClick) {
 
   buyButton.addEventListener('click', () => {
     if (canBuy) {
-      onClick(); // Wenn der Button klickbar ist, den Upgrade-Effekt anwenden
+      state.stein -= upg.baseCost;  // Abziehen der Kosten
+      upg.apply();  // Anwenden des Effekts
+      renderStats();  // Stats aktualisieren
+      renderUpgrades();  // UI mit neuen Preisen aktualisieren
     }
   });
 
@@ -106,34 +118,29 @@ function buildCard(upg, amount, canBuy, resourceType, onClick) {
   return card;
 }
 
-// Funktion zum Rendern aller Inhalte (Stats und Upgrades)
+// Funktion zum Rendern aller Inhalte
 const renderAll = () => {
-  renderStats(); // Statistiken rendern
-  renderUpgrades(); // Upgrades rendern
+  renderStats();
+  renderUpgrades();
 };
 
-// ======================== Event Listener ================================
-
-// Event Listener für das Sammeln von Ressourcen
-document.getElementById('steinBtn').addEventListener('click', () => {
-  state.stein += state.rpsStein;
-  renderStats();
+// Eventlistener für Prestige
+const prestigeBtn = document.getElementById('prestigeBtn');
+prestigeBtn.addEventListener('click', () => {
+  if (state.stein >= 50000) {
+    alert('Prestige ausgelöst!');
+    state.stein = 0;
+    state.holz = 0;
+    state.metall = 0;
+    state.rpsStein = 1;
+    state.rpsHolz = 0;
+    state.rpsMetall = 0;
+    renderAll();
+  }
 });
 
-document.getElementById('holzBtn').addEventListener('click', () => {
-  state.holz += state.rpsHolz;
-  renderStats();
+// Initiales Rendering, wenn das DOM bereit ist
+document.addEventListener("DOMContentLoaded", () => {
+  createResourceButtons();  // Buttons für jede Ressource erstellen
+  renderAll();  // Alle Daten rendern
 });
-
-document.getElementById('metallBtn').addEventListener('click', () => {
-  state.metall += state.rpsMetall;
-  renderStats();
-});
-
-// ======================== Hilfsfunktionen ==============================
-
-// Formatierungsfunktion für Zahlen (optional)
-const fmt = num => {
-  return num.toFixed(1);
-};
-
