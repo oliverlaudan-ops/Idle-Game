@@ -58,6 +58,10 @@ RESOURCES.forEach(r => {
 });
 
 /* ------------------ Upgrades ------------------ */
+// Jetzt wird "upgrades" korrekt definiert
+const upgrades = [];
+
+// Beispiel für den "Ofen"-Upgrade:
 upgrades.push({
   id: 'ofen',
   res: 'holz',
@@ -71,4 +75,4 @@ upgrades.push({
   }
 });
 
-// Restlicher Code für die Upgrades
+// Weitere Upgrades kannst du hier hinzufügen, indem du die gleiche Struktur verwendest
