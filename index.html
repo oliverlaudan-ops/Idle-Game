@@ -11,16 +11,14 @@
       <h1>From Stone to Civilization</h1>
 
       <!-- ===== Statsbar (sticky) – Ressourcen dynamisch ===== -->
-      <!-- vorher: <div id="sbBar">... -->
-<div id="sbSticky">
-  <div id="sbBar">
-    <div id="sbItems"></div>
-    <div class="sb-right">
-      <span id="sbTick">Tick 1.0s</span>
-      <span id="sbSave">Autosave</span>
-    </div>
-  </div>
-</div>
+      <div id="sbBar">
+        <div id="sbItems"></div> <!-- JS rendert hier die Ressource-Pills -->
+        <div class="sb-right">
+          <span id="sbTick">Tick 1.0s</span>
+          <span id="sbSave">Autosave</span>
+          <span id="sbEff">×1.00</span> <!-- Effizienz Multiplikator -->
+        </div>
+      </div>
 
       <!-- ===== Action-Buttons – werden dynamisch erzeugt ===== -->
       <div id="actions" class="row" style="margin-bottom: 12px"></div>
