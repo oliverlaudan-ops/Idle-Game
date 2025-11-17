@@ -1,235 +1,191 @@
-/* =========================================
-   From Stone to Civilization – style.css
-   Clean, cohesive, responsive UI
-   ========================================= */
-
-/* -------- Theme -------- */
+/* ===============================
+   Globales Layout / Theme
+   =============================== */
 :root{
-  --bg: #0b0d12;
-  --panel: #141a23;
-  --panel-2: #0f141c;
-  --text: #e8eef6;
-  --muted: #9aa6b2;
-
-  /* dezente Akzent-Glows */
-  --accent-stone:#2a3752;
-  --accent-wood: #22382a;
-  --accent-metal:#24304a;
-
-  --btn-green:#27b060;
-  --btn-green-h:#1f8e4e;
-  --btn-gray:#5e6875;
+  --bg: #05070b;
+  --panel: #111522;
+  --panel-soft:#161b2a;
+  --accent: #2fd084;
+  --text: #e6edf7;
+  --muted:#9aa4b6;
 }
 
-*{ box-sizing: border-box; }
-html,body{ height:100%; }
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; height:100%; }
+
 body{
-  margin:0;
-  background:var(--bg);
+  background: radial-gradient(circle at top, #1c2440 0, #05070b 55%);
   color:var(--text);
-  font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
+  font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
 }
 
 .app{
-  max-width:1100px;
-  margin:24px auto 48px;
-  padding:0 16px;
+  max-width: 960px;
+  margin: 24px auto 40px;
+  padding: 0 16px;
 }
 
-/* -------- Headings -------- */
-h1{ font-size:32px; margin:0 0 16px; letter-spacing:.2px; }
-h2{ font-size:18px; margin:24px 0 12px; color:var(--muted); }
-h3{ font-size:17px; margin:0 0 6px; }
-.muted{ color:var(--muted); }
-
-/* -------- Panels / Cards -------- */
-.card,.card-sm{
-  background:var(--panel);
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.04);
+/* ===============================
+   Überschrift
+   =============================== */
+h1{
+  margin:0 0 16px;
+  font-size:28px;
+  letter-spacing:.4px;
 }
-.card-sm{ padding:18px; }
-
-/* -------- Upgrade Grid -------- */
-#upgrade-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:18px;
+h2{
+  margin:24px 0 10px;
+  font-size:18px;
+  color:var(--muted);
 }
 
-/* -------- Badges / Pills -------- */
-.badge,.pill{
-  display:inline-flex; align-items:center; gap:8px;
+/* ===============================
+   Stats Bar (oben)
+   =============================== */
+.stats-bar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:10px 12px;
+  margin:0 0 16px;
+  background:rgba(5,7,11,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+
+.stat-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
   padding:6px 10px;
-  border-radius:10px;
-  background:var(--panel-2);
-  color:var(--text);
-  font-size:12px;
-  border:1px solid rgba(255,255,255,.04);
-}
-
-/* =========================================
-   STATS BAR (oben, sticky) – einzeilig, mit
-   Tick & Autosave rechts
-   ========================================= */
-#sbBar{
-  position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; gap:12px;
-  flex-wrap:nowrap;               /* einzeilig halten */
-  overflow-x:auto;                /* bei wenig Platz horizontal scrollen */
-  scrollbar-width:none; -ms-overflow-style:none;
-  padding:10px 14px; margin:0 0 16px;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(255,255,255,.05);
-}
-#sbBar::-webkit-scrollbar{ display:none; }
-
-/* Ressourcen-Pills (Container) */
-.sb-item,
-#sbSteinItem, #sbHolzItem, #sbMetallItem{
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 10px 12px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.06);
-  background: var(--panel);
-  box-shadow: 0 10px 26px rgba(0,0,0,.30);
-  white-space: nowrap;
-}
-
-/* dezenter Ressourcen-Glow */
-#sbSteinItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-stone); }
-#sbHolzItem { box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-wood); }
-#sbMetallItem{ box-shadow: 0 10px 26px rgba(0,0,0,.30), 0 0 22px 0 var(--accent-metal); }
-
-/* Icons per CSS – kein Extra-HTML nötig */
-#sbSteinItem::before { content: "🪨"; font-size: 16px; }
-#sbHolzItem::before  { content: "🌲"; font-size: 16px; }
-#sbMetallItem::before{ content: "⛏️"; font-size: 16px; }
-
-/* Hauptwert + Subchips */
-#sbStein, #sbHolz, #sbMetall{
-  display:inline-flex; align-items:center;
-  padding:4px 10px; border-radius:10px;
-  background:var(--panel-2);
-  border:1px solid rgba(255,255,255,.05);
-  font-weight:600;
-}
-#sbSteinRate, #sbSteinClick,
-#sbHolzRate,  #sbHolzClick,
-#sbMetallRate,#sbMetallClick{
-  display:inline-flex; align-items:center;
-  padding:4px 8px; border-radius:10px;
-  background:#0f141c;
-  border:1px solid rgba(255,255,255,.05);
-  font-size:12px; color:var(--muted);
-}
-
-/* >>> das hier dockt Tick/Autosave rechts an */
-.sb-right{ margin-left:auto; display:flex; gap:10px; }
-#sbTick, #sbSave{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:6px 10px; border-radius:10px;
-  background:var(--panel-2); color:var(--text);
-  border:1px solid rgba(255,255,255,.05);
+  border-radius:999px;
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 8px 22px rgba(0,0,0,0.45);
   white-space:nowrap;
-}
-
-#sbEff{
-  display:inline-flex; align-items:center; gap:6px;
-  padding:6px 10px; margin-left:8px;
-  border-radius:10px; background:#131a22; color:#cfe8ff;
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 2px 10px rgba(0,0,0,.35) inset, 0 0 8px rgba(0,0,0,.25);
   font-size:13px;
 }
 
-/* Pulse bei Wert-Updates (JS setzt .pulse) */
-.pulse{ animation:pulse .28s ease; }
-@keyframes pulse{
-  0%{ box-shadow:0 0 0 0 rgba(255,255,255,.28); }
-  100%{ box-shadow:0 0 0 8px rgba(255,255,255,0); }
+.stat-pill span.label{
+  font-weight:600;
+}
+.stat-pill span.details{
+  font-size:12px;
+  color:var(--muted);
 }
 
-/* Wrap-Verhalten auf sehr schmalen Screens */
-@media (max-width:860px){
-  #sbBar{ flex-wrap:wrap; overflow-x:visible; }
-  .sb-right{ margin-left:0; width:100%; justify-content:flex-end; }
+.stat-meta{
+  margin-left:auto;
+  font-size:12px;
+  color:var(--muted);
 }
 
-/* -------- Action Buttons (Click) -------- */
-#steinBtn,#holzBtn,#metallBtn{
-  appearance:none; border:none; cursor:pointer;
+/* ===============================
+   Action Buttons
+   =============================== */
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.action-btn{
+  appearance:none;
+  border:none;
+  outline:none;
+  cursor:pointer;
+  padding:10px 16px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:500;
   color:var(--text);
-  padding:12px 18px;
-  border-radius:16px;
-  font-size:15px; letter-spacing:.2px;
-  margin-right:10px;
-  box-shadow:0 12px 28px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
-  transition:transform .08s ease, box-shadow .12s ease, background .2s ease;
+  background:linear-gradient(135deg,#1b2437,#222c44);
+  box-shadow:0 10px 26px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  transition:transform .08s ease, box-shadow .12s ease, filter .12s ease;
 }
-#steinBtn { background:var(--accent-stone); }
-#holzBtn  { background:var(--accent-wood); }
-#metallBtn{ background:var(--accent-metal); }
 
-#steinBtn:hover,#holzBtn:hover,#metallBtn:hover{
+.action-btn:hover{
+  filter:brightness(1.06);
   transform:translateY(-1px);
-  box-shadow:0 16px 36px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.06);
+  box-shadow:0 14px 34px rgba(0,0,0,0.75);
 }
-#steinBtn:active,#holzBtn:active,#metallBtn:active{
+.action-btn:active{
   transform:translateY(0);
+  box-shadow:0 10px 26px rgba(0,0,0,0.6);
 }
 
-/* -------- Upgrade-Card Buttons -------- */
-.buy{
-  margin-top:14px;
-  padding:10px 14px;
-  border-radius:12px;
-  border:none; cursor:pointer;
-  font-weight:600; color:#fff;
-  transition:filter .12s ease, transform .08s ease;
-}
-.buy.can{ background:var(--btn-green); }
-.buy.can:hover{ filter:brightness(1.06); }
-.buy.can:active{ transform:translateY(1px); }
-.buy.cannot{
-  background:var(--btn-gray);
-  cursor:not-allowed; opacity:.85;
+/* leichte Farbnuancen für verschiedene Ressourcen */
+.action-btn.stein{ box-shadow:0 10px 26px rgba(0,0,0,0.6),0 0 20px rgba(120,160,255,0.28); }
+.action-btn.holz{  box-shadow:0 10px 26px rgba(0,0,0,0.6),0 0 20px rgba(120,220,160,0.28); }
+.action-btn.metall{box-shadow:0 10px 26px rgba(0,0,0,0.6),0 0 20px rgba(180,180,255,0.35); }
+
+/* ===============================
+   Upgrade Cards
+   =============================== */
+.upgrade-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:14px;
 }
 
-/* -------- Prestige-Bereich -------- */
-#prestige.card{ margin-top:24px; }
-#prestige .stat{
-  background:var(--panel-2);
-  border-radius:12px;
-  padding:8px 10px;
-  color:var(--text);
-  border:1px solid rgba(255,255,255,.05);
+.card{
+  background:var(--panel-soft);
+  border-radius:14px;
+  padding:12px 14px;
+  box-shadow:0 10px 26px rgba(0,0,0,0.55);
+  border:1px solid rgba(255,255,255,0.04);
 }
 
-/* moderne Buttons allgemein */
-.btn{
-  appearance:none; border:none; cursor:pointer;
-  padding:10px 14px; border-radius:12px;
-  font-weight:600; color:#fff;
-  transition: transform .08s ease, filter .12s ease;
+.card h3{
+  margin:0 0 4px;
+  font-size:16px;
 }
-.btn:active{ transform: translateY(1px); }
-.btn-primary{ background:var(--btn-green); }
-.btn-primary:hover{ filter:brightness(1.06); }
-.btn-primary:disabled{ background:#536071; cursor:not-allowed; opacity:.85; }
+.card p{
+  margin:2px 0;
+  font-size:13px;
+}
+.card p.muted{
+  color:var(--muted);
+  font-size:12px;
+}
 
-/* -------- Helpers -------- */
-section{ margin-bottom:18px; }
-.row{ display:flex; gap:12px; flex-wrap:wrap; }
-.center{ text-align:center; }
-.right{ text-align:right; }
+.buy-btn{
+  margin-top:10px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+  background:var(--accent);
+  box-shadow:0 6px 16px rgba(0,0,0,0.6);
+  transition:filter .1s ease, transform .06s ease;
+}
+.buy-btn:hover:not(:disabled){ filter:brightness(1.06); }
+.buy-btn:active:not(:disabled){ transform:translateY(1px); }
+.buy-btn:disabled{
+  background:#4c5465;
+  cursor:not-allowed;
+  opacity:0.7;
+}
 
-/* -------- Mobile Tweaks -------- */
+/* ===============================
+   Responsive
+   =============================== */
 @media (max-width:720px){
-  h1{ font-size:26px; }
-  #upgrade-grid{ grid-template-columns:1fr; }
-  #steinBtn,#holzBtn,#metallBtn{ width:100%; margin:0 0 10px; }
+  h1{ font-size:24px; }
+  .stats-bar{ gap:6px; }
+  .action-btn{
+    width:100%;
+    justify-content:center;
+  }
 }
