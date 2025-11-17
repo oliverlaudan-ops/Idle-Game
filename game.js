@@ -76,9 +76,9 @@ const renderUpgrades = () => {
   upgradeGrid.innerHTML = ''; // Vorherige Upgrades entfernen
 
   upgrades.forEach(upg => {
-    const canBuy = state.stein >= upg.baseCost; // Überprüfen, ob genug Stein vorhanden ist
-    const card = buildCard(upg, canBuy);
-    upgradeGrid.appendChild(card);
+    const canBuy = state[upg.res] >= upg.baseCost; // Überprüfen, ob genug Ressource vorhanden ist
+    const card = buildCard(upg, canBuy); // Das Upgrade in eine Karte umwandeln
+    upgradeGrid.appendChild(card); // Karte zum UI hinzufügen
   });
 };
 
@@ -102,14 +102,14 @@ function buildCard(upg, canBuy) {
   const buyButton = document.createElement('button');
   buyButton.classList.add('buy');
   buyButton.textContent = canBuy ? 'Kaufen' : 'Nicht genug';
-  buyButton.disabled = !canBuy;
+  buyButton.disabled = !canBuy; // Button ist deaktiviert, wenn nicht genug Ressourcen vorhanden sind
 
   buyButton.addEventListener('click', () => {
     if (canBuy) {
-      state.stein -= upg.baseCost;  // Abziehen der Kosten
-      upg.apply();  // Anwenden des Effekts
-      renderStats();  // Stats aktualisieren
-      renderUpgrades();  // UI mit neuen Preisen aktualisieren
+      state.stein -= upg.baseCost;  // Abziehen der Kosten von Stein
+      upg.apply(state);  // Effekt des Upgrades anwenden
+      renderStats();  // Statistiken aktualisieren
+      renderUpgrades();  // Upgrades neu rendern
     }
   });
 
