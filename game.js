@@ -569,3 +569,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // optional für Debug in der Konsole:
   window.idleGame = game;
 });
+
+// Funktion zum Initialisieren der Buttons
+function initButtons() {
+  // Autosave bei jeder Änderung
+  setInterval(() => {
+    game.save();
+  }, 5000);  // Alle 5 Sekunden speichern
+
+  // Reset Button
+  document.getElementById("resetBtn").addEventListener('click', () => {
+    game.reset();
+    game.render();
+  });
+
+  // Export Button
+  document.getElementById("exportBtn").addEventListener('click', () => {
+    const exportedData = game.export();
+    navigator.clipboard.writeText(exportedData);  // Kopiert in die Zwischenablage
+  });
+
+  // Import Button
+  document.getElementById("importBtn").addEventListener('click', () => {
+    const importedData = prompt('Füge den Export-String ein:');
+    if (importedData) {
+      game.import(importedData);
+      game.render();
+    }
+  });
+}
