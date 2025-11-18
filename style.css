@@ -178,6 +178,28 @@ h2{
   opacity:0.7;
 }
 
+#saveOptions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+#saveOptions button {
+  padding: 10px 20px;
+  font-size: 14px;
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#saveOptions button:hover {
+  transform: scale(1.05);
+}
+
+
 /* ===============================
    Responsive
    =============================== */
