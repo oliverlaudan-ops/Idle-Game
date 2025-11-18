@@ -181,6 +181,28 @@ class Game {
       }
     }));
 
+    // --- Globaler Multiplikator ---
+this.addUpgrade(new Upgrade({
+  id: 'globaler-multiplikator',
+  name: 'Effizienzverbesserung',
+  desc: 'Erhöht alle Produktionsraten um 1.5x',
+  costRes: 'stein',
+  costBase: 10000,
+  costMult: 1.5,
+  single: true,
+  apply: (game) => {
+    game.getResource('stein').rpc *= 1.5;
+    game.getResource('holz').rpc *= 1.5;
+    game.getResource('metall').rpc *= 1.5;
+    game.getResource('kristall').rpc *= 1.5;
+    game.getResource('stein').rps *= 1.5;
+    game.getResource('holz').rps *= 1.5;
+    game.getResource('metall').rps *= 1.5;
+    game.getResource('kristall').rps *= 1.5;
+  }
+}));
+ 
+
     // --- Holz freischalten & verbessern ---
     this.addUpgrade(new Upgrade({
       id:'werkbank',
