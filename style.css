@@ -90,6 +90,7 @@ h2{
 .actions{
   display:flex;
   flex-wrap:wrap;
+  position: sticky;
   gap:10px;
   margin-bottom:18px;
 }
