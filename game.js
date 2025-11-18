@@ -285,7 +285,7 @@ class Game {
         game.getResource('metall').rps += 5;
       }
     }));
-  }
+  
 
   /* ---- Kristall ---- */
  this.addUpgrade(new Upgrade({
@@ -314,7 +314,7 @@ this.addUpgrade(new Upgrade({
         game.getResource('kristall').rpc += 1;
       }
     }));
-  }
+  
 
 this.addUpgrade(new Upgrade({
       id:'kristallarbeiter',
@@ -327,7 +327,7 @@ this.addUpgrade(new Upgrade({
         game.getResource('kristall').rps += 0.15;
       }
     }));
-  }
+  
 
 this.addUpgrade(new Upgrade({
       id:'kristallbagger',
