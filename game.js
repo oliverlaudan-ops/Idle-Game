@@ -272,7 +272,7 @@ class Game {
         game.getResource('metall').rps += 1.5;
       }
     }));
-  }
+  
 
    this.addUpgrade(new Upgrade({
       id:'giesserei',
