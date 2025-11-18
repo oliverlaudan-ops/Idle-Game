@@ -171,7 +171,7 @@ class Game {
 
      this.addUpgrade(new Upgrade({
       id:'bergwerk',
-      name:'Berwerk',
+      name:'Bergwerk',
       desc:'+20 Stein / Sekunde',
       costRes:'stein',
       costBase:1000,
