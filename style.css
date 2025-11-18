@@ -199,6 +199,40 @@ h2{
   transform: scale(1.05);
 }
 
+#actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 60px; /* So dass sie unterhalb der Statsbar bleiben */
+  z-index: 100;
+  background: var(--panel);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  background: var(--accent);
+  color: white;
+  font-size: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #36a153;
+}
+
+.action-btn:disabled {
+  background: #6e6e6e;
+  cursor: not-allowed;
+}
+
+
 
 /* ===============================
    Responsive
