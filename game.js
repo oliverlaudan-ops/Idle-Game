@@ -129,6 +129,7 @@ class Game {
     this.addResource(new Resource('stein','Stein','🪨',1,0,true));
     this.addResource(new Resource('holz', 'Holz','🌲',0,0,false));
     this.addResource(new Resource('metall','Metall','⛏️',0,0,false));
+    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false)); // Kristall-Ressource
 
     // Upgrades:
     // --- Stein-Upgrade-Kette ---
@@ -165,6 +166,18 @@ class Game {
       costMult:1.35,
       apply:(game)=>{
         game.getResource('stein').rps += 5;
+      }
+    }));
+
+     this.addUpgrade(new Upgrade({
+      id:'bergwerk',
+      name:'Berwerk',
+      desc:'+20 Stein / Sekunde',
+      costRes:'stein',
+      costBase:1000,
+      costMult:1.5,
+      apply:(game)=>{
+        game.getResource('stein').rps += 20;
       }
     }));
 
@@ -208,6 +221,18 @@ class Game {
       }
     }));
 
+     this.addUpgrade(new Upgrade({
+      id:'saegewerk',
+      name:'Sägewerk',
+      desc:'+5 Holz / Sekunde',
+      costRes:'holz',
+      costBase:500,
+      costMult:1.4,
+      apply:(game)=>{
+        game.getResource('holz').rps += 5;
+      }
+    }));
+
     // --- Metall freischalten & verbessern ---
     this.addUpgrade(new Upgrade({
       id:'schmiede',
@@ -237,14 +262,82 @@ class Game {
     }));
 
     this.addUpgrade(new Upgrade({
-      id:'bergwerk',
-      name:'Bergwerk',
+      id:'schmelzofen',
+      name:'Schmelzofen',
       desc:'+1.5 Metall / Sekunde',
       costRes:'metall',
       costBase:600,
       costMult:1.35,
       apply:(game)=>{
         game.getResource('metall').rps += 1.5;
+      }
+    }));
+  }
+
+   this.addUpgrade(new Upgrade({
+      id:'giesserei',
+      name:'Gießerei',
+      desc:'+5 Metall / Sekunde',
+      costRes:'metall',
+      costBase:1500,
+      costMult:1.5,
+      apply:(game)=>{
+        game.getResource('metall').rps += 5;
+      }
+    }));
+  }
+
+  /* ---- Kristall ---- */
+ this.addUpgrade(new Upgrade({
+      id:'kristallberg',
+      name:'Kristall-Bergwerk',
+      desc:'Schaltet KRISTALL frei',
+      costRes:'metall',
+      costBase:920,
+      costMult:2.1,
+      single:true,
+      unlocksResourceId:'kristall',
+      apply:(game)=>{
+        const m = game.getResource('kristall');
+        m.rpc = Math.max(m.rpc,1);
+      }
+    }));
+
+this.addUpgrade(new Upgrade({
+      id:'kristallmine',
+      name:'Kristall-Mine',
+      desc:'+1 Kristall pro Klick',
+      costRes:'kristall',
+      costBase:500,
+      costMult:1.45,
+      apply:(game)=>{
+        game.getResource('kristall').rpc += 1;
+      }
+    }));
+  }
+
+this.addUpgrade(new Upgrade({
+      id:'kristallarbeiter',
+      name:'Kristall-Arbeiter',
+      desc:'+0.15 Kristall / Sekunde',
+      costRes:'kristall',
+      costBase:1500,
+      costMult:1.5,
+      apply:(game)=>{
+        game.getResource('kristall').rps += 0.15;
+      }
+    }));
+  }
+
+this.addUpgrade(new Upgrade({
+      id:'kristallbagger',
+      name:'Kristall-Bagger',
+      desc:'+15 Kristall / Sekunde',
+      costRes:'kristall',
+      costBase:4500,
+      costMult:2,
+      apply:(game)=>{
+        game.getResource('kristall').rps += 15;
       }
     }));
   }
