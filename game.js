@@ -62,7 +62,13 @@ class Game {
     };
     const gameStateString = JSON.stringify(gameState); 
     const encoded = btoa(gameStateString); 
-    alert('Exportiert: ' + encoded);
+    
+    // Export String kopieren
+    navigator.clipboard.writeText(encoded).then(() => {
+      alert('Exportiert und in die Zwischenablage kopiert!');
+    }).catch(err => {
+      alert('Fehler beim Kopieren: ' + err);
+    });
   }
 
   import(exportString) {
