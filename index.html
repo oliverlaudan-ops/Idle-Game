@@ -9,28 +9,35 @@
   <body>
     <div class="app">
       <h1>From Stone to Civilization</h1>
+      <div id="stats-bar">
+        <div id="sbStein">Stein: 0</div>
+        <div id="sbHolz">Holz: 0</div>
+        <div id="sbMetall">Metall: 0</div>
+      </div>
 
-      <!-- Obere Stats-Leiste (wird per JS gefüllt) -->
-      <div id="statsBar" class="stats-bar"></div>
+      <!-- Action buttons will be dynamically generated here -->
+      <div id="actions" class="row" style="margin-bottom: 12px"></div>
 
-      <!-- Action Buttons (werden per JS gefüllt) -->
-      <div id="actions" class="actions"></div>
-
-      <!-- Upgrade-Bereich -->
-      <section>
+      <div id="upgrades">
         <h2>Upgrades</h2>
-        <div id="upgradeGrid" class="upgrade-grid"></div>
-      </section>
+        <div id="upgrade-grid" class="row"></div>
+      </div>
+
+      <div id="prestige">
+        <h2>Prestige</h2>
+        <div id="prestigeReq" class="stat">Erkenntnispunkte (EP): 0</div>
+        <button id="prestigeBtn">Prestige auslösen</button>
+      </div>
+
+      <div class="buttons">
+        <button id="saveBtn">Speichern</button>
+        <button id="resetBtn">Zurücksetzen</button>
+        <button id="importBtn">Importieren</button>
+        <button id="exportBtn">Exportieren</button>
+      </div>
+
+      <!-- Link to external JS -->
+      <script src="game.js"></script>
     </div>
-
-    <!-- Buttons für Import, Export und Reset -->
-<div id="saveOptions" class="row" style="gap: 10px;">
-  <button id="exportBtn" class="action-btn">Spiel exportieren</button>
-  <button id="importBtn" class="action-btn">Spiel importieren</button>
-  <button id="resetBtn" class="action-btn">Spiel zurücksetzen</button>
-</div>
-
-    <!-- Spiel-Logik -->
-    <script src="game.js"></script>
   </body>
 </html>
