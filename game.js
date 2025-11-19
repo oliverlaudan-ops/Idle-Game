@@ -17,7 +17,7 @@ function formatRate(n){
 }
 
 function save() {
-    localStorage.setItem('gameState', JSON.stringify(this));
+    localStorage.setItem('gameState', JSON.stringify(this.GameState));
   }
 
 function reset() {
