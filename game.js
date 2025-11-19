@@ -1,7 +1,7 @@
 /* ==========================================================
    From Stone to Civilization – OOP Version (plain JS)
    ========================================================== */
-
+const game = new Game(); // Hier wird das Game-Objekt als globale Variable definiert.
 /* ---------- Hilfsfunktionen ---------- */
 function formatAmount(n){
   if (n >= 1_000_000) return (n/1_000_000).toFixed(2)+'M';
