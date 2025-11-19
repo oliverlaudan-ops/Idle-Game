@@ -38,7 +38,7 @@ function reset() {
   }
 
  // Export des Spielstands als Base64
- function export() {
+ function gExport() {
     const savedState = JSON.stringify(this);
     const encoded = btoa(savedState);  // Base64 kodieren
     alert('Exportiert: ' + encoded);
@@ -46,7 +46,7 @@ function reset() {
   }
 
   // Import eines Spielstands aus einem Base64-String
-  function import(encodedState) {
+  function gImport(encodedState) {
     try {
       const decoded = atob(encodedState);
       const parsedState = JSON.parse(decoded);
