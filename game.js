@@ -39,7 +39,7 @@ function reset() {
 
  // Export des Spielstands als Base64
  function gExport() {
-    const savedState = JSON.stringify(this);
+    const savedState = JSON.stringify(this.GameState);
     const encoded = btoa(savedState);  // Base64 kodieren
     alert('Exportiert: ' + encoded);
     return encoded;
