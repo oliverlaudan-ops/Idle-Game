@@ -1,91 +1,75 @@
-:root {
-  --bg: #0f1115;
-  --panel: #151921;
-  --btn-color: #42b249;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-}
-
 body {
-  margin: 0;
-  background: #0b0d12;
   font-family: Arial, sans-serif;
+  color: white;
+  background-color: #0d1117;
+  margin: 0;
 }
 
 .app {
-  max-width: 900px;
-  margin: 16px;
-}
-
-h1 {
-  text-align: center;
-  color: white;
-}
-
-.row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.stat {
-  background: #101420;
-  border-radius: 12px;
-  padding: 6px;
-  font-size: 12px;
-  color: var(--bg);
-}
-
-.card {
-  background: var(--panel);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 14px;
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 button {
   padding: 10px;
-  border-radius: 12px;
-  font-size: 14px;
+  border: none;
+  background-color: #2a8d2b;
+  color: white;
   cursor: pointer;
+  font-size: 14px;
+  border-radius: 8px;
+  margin: 5px;
+}
+
+button:disabled {
+  background-color: #6e6e6e;
 }
 
 button:hover {
-  background-color: #2a8d2b;
+  background-color: #42b249;
 }
 
-#actions {
-  position: sticky;
-  top: 0;
-  background-color: #151921;
-  padding: 10px 0;
-  z-index: 100;
-  border-radius: 10px;
+.card {
+  background: #1e2226;
+  padding: 20px;
+  margin: 10px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+#upgrade-grid, #action-grid {
   display: flex;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
-#saveBtn, #resetBtn, #importBtn, #exportBtn {
-  background-color: var(--btn-color);
+.card, .action-btn {
+  flex: 1 0 200px;
+  margin: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-#saveBtn:disabled, #resetBtn:disabled, #importBtn:disabled, #exportBtn:disabled {
-  background-color: #6e6e6e;
-  cursor: not-allowed;
+#sbStein, #sbHolz, #sbMetall, #sbKristall {
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
-#upgrade-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
+#sbStein {
+  color: #42b249;
 }
 
-button, .stat {
-  font-size: 14px;
+#sbHolz {
+  color: #42b249;
+}
+
+#sbMetall {
+  color: #a4a4a4;
+}
+
+#sbKristall {
+  color: #5f5f5f;
+}
+
+.action-btn {
+  width: 100%;
 }
