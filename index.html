@@ -9,25 +9,12 @@
   <body>
     <div class="app">
       <h1>From Stone to Civilization</h1>
-      <div id="stats-bar">
-        <div id="sbStein">Stein: 0</div>
-        <div id="sbHolz">Holz: 0</div>
-        <div id="sbMetall">Metall: 0</div>
-      </div>
 
-      <!-- Action buttons will be dynamically generated here -->
-      <div id="actions" class="row" style="margin-bottom: 12px"></div>
-
-      <div id="upgrades">
-        <h2>Upgrades</h2>
-        <div id="upgrade-grid" class="row"></div>
-      </div>
-
-      <div id="prestige">
-        <h2>Prestige</h2>
-        <div id="prestigeReq" class="stat">Erkenntnispunkte (EP): 0</div>
-        <button id="prestigeBtn">Prestige auslösen</button>
-      </div>
+      <!-- Container für die StatsBar und Action Buttons -->
+      <div id="stats-container"></div>   <!-- Für die Statistiken -->
+      <div id="actions-container"></div> <!-- Für die Action Buttons -->
+      <div id="upgrades-container"></div> <!-- Für die Upgrades -->
+      <div id="prestige-container"></div> <!-- Für Prestige -->
 
       <div class="buttons">
         <button id="saveBtn">Speichern</button>
@@ -35,9 +22,9 @@
         <button id="importBtn">Importieren</button>
         <button id="exportBtn">Exportieren</button>
       </div>
-
-      <!-- Link to external JS -->
-      <script src="game.js"></script>
     </div>
+
+    <!-- Link zu der externen JS-Datei -->
+    <script src="game.js"></script>
   </body>
 </html>
