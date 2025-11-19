@@ -616,7 +616,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function initButtons() {
   // Autosave bei jeder Änderung
   setInterval(() => {
-    game.save();
+    this.save();
   }, 5000);  // Alle 5 Sekunden speichern
 
   // Reset Button
@@ -627,7 +627,7 @@ function initButtons() {
 
   // Export Button
   document.getElementById("exportBtn").addEventListener('click', () => {
-    const exportedData = game.export();
+    const exportedData = this.gExport();
     navigator.clipboard.writeText(exportedData);  // Kopiert in die Zwischenablage
   });
 
@@ -635,8 +635,8 @@ function initButtons() {
   document.getElementById("importBtn").addEventListener('click', () => {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
-      game.import(importedData);
-      game.render();
+      this.gImport(importedData);
+      this.render();
     }
   });
 }
