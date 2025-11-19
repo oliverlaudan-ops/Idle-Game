@@ -56,6 +56,7 @@ function reset() {
     } catch (e) {
       alert('Fehler beim Importieren: ' + e.message);
     }
+  }
 
 class GameState {
   constructor() {
