@@ -50,7 +50,7 @@ function reset() {
     try {
       const decoded = atob(encodedState);
       const parsedState = JSON.parse(decoded);
-      Object.assign(this, parsedState);
+      Object.assign(this.GameState, parsedState);
       this.save();  // Speichern nach dem Import
       alert('Import erfolgreich!');
     } catch (e) {
