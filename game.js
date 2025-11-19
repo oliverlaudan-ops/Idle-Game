@@ -16,6 +16,47 @@ function formatRate(n){
   return formatAmount(n);
 }
 
+function save() {
+    localStorage.setItem('gameState', JSON.stringify(this));
+  }
+
+function reset() {
+    if (confirm('Wirklich alles zurücksetzen?')) {
+      localStorage.removeItem('gameState');
+      this.stein = 0;
+      this.holz = 0;
+      this.metall = 0;
+      this.kristall = 0;
+      this.rpcStein = 1;
+      this.rpcHolz = 0;
+      this.rpcMetall = 0;
+      this.rpcKristall = 0;
+      this.totalEarned = 0;
+      this.upgrades = [];
+      this.save();
+    }
+  }
+
+ // Export des Spielstands als Base64
+ function export() {
+    const savedState = JSON.stringify(this);
+    const encoded = btoa(savedState);  // Base64 kodieren
+    alert('Exportiert: ' + encoded);
+    return encoded;
+  }
+
+  // Import eines Spielstands aus einem Base64-String
+  function import(encodedState) {
+    try {
+      const decoded = atob(encodedState);
+      const parsedState = JSON.parse(decoded);
+      Object.assign(this, parsedState);
+      this.save();  // Speichern nach dem Import
+      alert('Import erfolgreich!');
+    } catch (e) {
+      alert('Fehler beim Importieren: ' + e.message);
+    }
+
 class GameState {
   constructor() {
     // Wenn es bereits einen gespeicherten Zustand gibt, laden wir diesen
