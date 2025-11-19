@@ -1,9 +1,9 @@
 class Resource {
-  constructor(name, symbol, startingValue, rate) {
+  constructor(name, symbol, startingValue = 0, rate = 0) {
     this.name = name;
     this.symbol = symbol;
     this.value = startingValue;
-    this.rate = rate; // Rate per second
+    this.rate = rate; // Rate pro Sekunde
     this.perClick = 1; // Pro Klick
   }
 
@@ -30,9 +30,9 @@ class Resource {
 class Game {
   constructor() {
     this.resources = {
-      stein: new Resource("Stein", "🪨", 0, 1), // Stein, Symbol, Startwert, Rate pro Sekunde
+      stein: new Resource("Stein", "🪨", 0, 1),
       holz: new Resource("Holz", "🌲", 0, 0),
-      metal: new Resource("Metall", "⚒️", 0, 0),
+      metall: new Resource("Metall", "⚒️", 0, 0),
       kristall: new Resource("Kristall", "💎", 0, 0),
     };
 
@@ -68,8 +68,9 @@ class Game {
       upgrades: this.upgrades.map(upg => upg.purchased)
     };
 
-    const gameStateString = JSON.stringify(gameState);
-    localStorage.setItem('stone_idle_save_v2', btoa(gameStateString));
+    const gameStateString = JSON.stringify(gameState); 
+    const encoded = btoa(gameStateString); 
+    localStorage.setItem('stone_idle_save_v2', encoded); 
   }
 
   load() {
@@ -97,9 +98,9 @@ class Game {
       }, {}),
       upgrades: this.upgrades.map(upg => upg.purchased)
     };
-    const gameStateString = JSON.stringify(gameState);
-    const encoded = btoa(gameStateString);
-
+    const gameStateString = JSON.stringify(gameState); 
+    const encoded = btoa(gameStateString); 
+    
     navigator.clipboard.writeText(encoded).then(() => {
       alert('Exportiert und in die Zwischenablage kopiert!');
     }).catch(err => {
@@ -137,43 +138,63 @@ class Game {
   }
 
   render() {
-    Object.keys(this.resources).forEach(key => {
-      document.getElementById(`sb${key.charAt(0).toUpperCase() + key.slice(1)}`).textContent = this.resources[key].getDisplayValue();
-    });
-
+    this.renderStats();
     this.renderUpgrades();
+    this.renderActionButtons();
+  }
+
+  renderStats() {
+    const statsContainer = document.getElementById('stats-container');
+    statsContainer.innerHTML = ''; // Leere den Container
+
+    Object.keys(this.resources).forEach(resourceKey => {
+      const resource = this.resources[resourceKey];
+      const statElement = document.createElement('div');
+      statElement.classList.add('stat');
+      statElement.textContent = `${resource.name}: ${resource.getDisplayValue()}`;
+      statsContainer.appendChild(statElement);
+    });
+  }
+
+  renderActionButtons() {
+    const actionsContainer = document.getElementById('actions-container');
+    actionsContainer.innerHTML = '';
+
+    Object.keys(this.resources).forEach(resourceKey => {
+      const resource = this.resources[resourceKey];
+      const button = document.createElement('button');
+      button.classList.add('action-btn');
+      button.textContent = `+${resource.perClick} ${resource.symbol} sammeln`;
+      button.addEventListener('click', () => {
+        resource.increment();
+        this.render();
+      });
+      actionsContainer.appendChild(button);
+    });
   }
 
   renderUpgrades() {
-    const upgradeGrid = document.getElementById('upgrade-grid');
-    upgradeGrid.innerHTML = '';
+    const upgradesContainer = document.getElementById('upgrades-container');
+    upgradesContainer.innerHTML = '';
 
     this.upgrades.forEach(upg => {
-      const card = document.createElement('div');
-      card.classList.add('card');
-      
-      const name = document.createElement('h3');
-      name.textContent = upg.name;
-      card.appendChild(name);
-
-      const cost = document.createElement('p');
-      cost.textContent = `Kosten: ${upg.cost} Stein`;
-      card.appendChild(cost);
-
-      const button = document.createElement('button');
-      button.textContent = upg.purchased ? 'Gekauft' : 'Kaufen';
-      button.disabled = upg.purchased || this.resources.stein.value < upg.cost;
+      const upgradeCard = document.createElement('div');
+      upgradeCard.classList.add('card');
+      upgradeCard.innerHTML = `
+        <h3>${upg.name}</h3>
+        <p>Kosten: ${upg.cost} Stein</p>
+        <button ${upg.purchased ? 'disabled' : ''}>${upg.purchased ? 'Gekauft' : 'Kaufen'}</button>
+      `;
+      const button = upgradeCard.querySelector('button');
       button.addEventListener('click', () => {
-        if (!upg.purchased && this.resources.stein.value >= upg.cost) {
+        if (this.resources.stein.value >= upg.cost) {
           this.resources.stein.value -= upg.cost;
           upg.effect();
           upg.purchased = true;
           this.render();
         }
       });
-      card.appendChild(button);
-
-      upgradeGrid.appendChild(card);
+      upgradesContainer.appendChild(upgradeCard);
     });
   }
 }
