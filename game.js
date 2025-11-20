@@ -591,7 +591,7 @@ function initButtons() {
 
   // Export Button
   document.getElementById("exportBtn").addEventListener('click', () => {
-    const exportedData = export();
+    const exportedData = gameState.export();
     navigator.clipboard.writeText(exportedData);  // Kopiert in die Zwischenablage
   });
 
@@ -599,7 +599,7 @@ function initButtons() {
   document.getElementById("importBtn").addEventListener('click', () => {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
-      import(importedData);
+      gameState.import(importedData);
       render();
     }
   });
