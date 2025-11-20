@@ -170,29 +170,21 @@ class Game {
   }
 
 syncToState() {
-    // Ressourcen
-    for (let key in this.resources) {
-      let res = this.resources[key];
-      gameState[res.id] = res.amount;
+    for (const key in this.resources) {
+      gameState[key] = this.resources[key].amount;
     }
-    // Upgrades
-    gameState.upgrades = this.upgrades.map(u => ({
-      id: u.id,
-      level: u.level
-    }));
+    gameState.upgrades = this.upgrades.map(u => ({ id: u.id, level: u.level }));
   }
 
+  // Übertrage gespeicherte Werte von gameState zurück in game
   syncFromState() {
-    // Ressourcen
-    for (let key in this.resources) {
-      let res = this.resources[key];
-      res.amount = gameState[res.id] ?? 0;
+    for (const key in this.resources) {
+      this.resources[key].amount = gameState[key] ?? 0;
     }
-    // Upgrades
     if (Array.isArray(gameState.upgrades)) {
-      for (let u of this.upgrades) {
-        let saved = gameState.upgrades.find(su => su.id === u.id);
-        if (saved) u.level = saved.level;
+      for (const upg of this.upgrades) {
+        const saved = gameState.upgrades.find(s => s.id === upg.id);
+        upg.level = saved ? saved.level : 0;
       }
     }
   }
