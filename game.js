@@ -1,6 +1,4 @@
-/* ==========================================================
-   From Stone to Civilization – OOP Version (plain JS)
-   ========================================================== */
+// ==== From Stone to Civilization – OOP Version (plain JS) ====
 // Globale Objekte, damit alle Funktionen Zugriff haben
 let game;
 let gameState;
@@ -22,39 +20,35 @@ function formatRate(n){
 /* ---------- Klasse: GameState ---------- */
 class GameState {
   constructor() {
-    // Robust: Prüfen, ob ein State im LocalStorage definiert und gültig ist
     let storageValue = localStorage.getItem("gameState");
     let savedState = null;
     if (storageValue && storageValue !== "undefined") {
       try {
         savedState = JSON.parse(storageValue);
         Object.assign(this, savedState);
-      } catch (e) {
-        // Fehlerhafte oder alte Spielstände ignorieren
-      }
+      } catch (e) {}
     }
-    if (!savedState) {
-      // Initialwerte
-      this.stein = 0;
-      this.holz = 0;
-      this.metall = 0;
-      this.kristall = 0;
-      this.rpcStein = 1;
-      this.rpcHolz = 0;
-      this.rpcMetall = 0;
-      this.rpcKristall = 0;
-      this.totalEarned = 0;
-      this.upgrades = [];
-      this.save();
-    }
+    // Defaults
+    this.stein = this.stein ?? 0;
+    this.holz = this.holz ?? 0;
+    this.metall = this.metall ?? 0;
+    this.kristall = this.kristall ?? 0;
+    this.rpcStein = this.rpcStein ?? 1;
+    this.rpcHolz = this.rpcHolz ?? 0;
+    this.rpcMetall = this.rpcMetall ?? 0;
+    this.rpcKristall = this.rpcKristall ?? 0;
+    this.totalEarned = this.totalEarned ?? 0;
+    this.upgrades = this.upgrades ?? [];
+    // Prestige-Init:
+    this.prestige = this.prestige ?? 0;
+    this.prestigeBonus = this.prestigeBonus ?? 1;
+    this.save();
   }
 
-  // Speichern
   save() {
     localStorage.setItem('gameState', JSON.stringify(this));
   }
 
-  // Reset
   reset() {
     if (confirm('Wirklich alles zurücksetzen?')) {
       localStorage.removeItem('gameState');
@@ -68,12 +62,12 @@ class GameState {
       this.rpcKristall = 0;
       this.totalEarned = 0;
       this.upgrades = [];
+      // Prestige bleibt erhalten!
       this.save();
       alert('Zurückgesetzt!');
     }
   }
 
-  // Export als Base64
   export() {
     const savedState = JSON.stringify(this);
     const encoded = btoa(savedState);
@@ -81,7 +75,6 @@ class GameState {
     return encoded;
   }
 
-  // Import von Base64
   import(encodedState) {
     try {
       const decoded = atob(encodedState);
@@ -106,7 +99,10 @@ class Resource {
     this.rps = rps;
     this.unlocked = unlocked;
   }
-  add(n){ this.amount += n; }
+  add(n){ 
+    const bonus = gameState.prestigeBonus ?? 1;
+    this.amount += n * bonus;
+  }
   spend(n){
     if (this.amount >= n){
       this.amount -= n;
@@ -169,40 +165,23 @@ class Game {
     this.upgradeGridEl = null;
   }
 
-syncToState() {
-    for (const key in this.resources) {
-      gameState[key] = this.resources[key].amount;
-    }
-    gameState.upgrades = this.upgrades.map(u => ({ id: u.id, level: u.level }));
-  }
-
-  // Übertrage gespeicherte Werte von gameState zurück in game
-  syncFromState() {
-    for (const key in this.resources) {
-      this.resources[key].amount = gameState[key] ?? 0;
-    }
-    if (Array.isArray(gameState.upgrades)) {
-      for (const upg of this.upgrades) {
-        const saved = gameState.upgrades.find(s => s.id === upg.id);
-        upg.level = saved ? saved.level : 0;
-      }
-    }
-  }
-   
   addResource(res){ this.resources[res.id] = res; }
   getResource(id){ return this.resources[id]; }
   addUpgrade(upg){ this.upgrades.push(upg); }
+
   setupDOM(){
     this.statsBarEl    = document.getElementById('statsBar');
     this.actionsEl     = document.getElementById('actions');
     this.upgradeGridEl = document.getElementById('upgradeGrid');
   }
   setupGameData(){
+    // Ressourcen
     this.addResource(new Resource('stein','Stein','🪨',1,0,true));
     this.addResource(new Resource('holz', 'Holz','🌲',0,0,false));
     this.addResource(new Resource('metall','Metall','⛏️',0,0,false));
-    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));     
-    // Upgrades:
+    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));
+
+// Upgrades:
     // --- Stein-Upgrade-Kette ---
     this.addUpgrade(new Upgrade({
       id:'faustkeil',
@@ -435,7 +414,76 @@ this.addUpgrade(new Upgrade({
     }));
   }
 
-/* ---- Rendering ---- */   
+
+  // ==== Präzise Prestige-Funktionen ====
+  renderPrestigeContainer() {
+    const el = document.getElementById('prestigeContainer');
+    if (!el) return;
+    const canPrestige = gameState.stein >= 1_000_000;
+    const toGain = Math.floor(gameState.stein / 1_000_000);
+    el.innerHTML = `
+      <div class="prestige-info">
+        <strong>Prestige-Punkte:</strong> ${gameState.prestige}<br>
+        <strong>Bonus:</strong> x${gameState.prestigeBonus.toFixed(2)}
+      </div>
+      <button id="prestigeBtn" ${canPrestige ? '' : 'disabled'}>
+        Prestige durchführen (${toGain} neue Punkte)
+      </button>
+      <div style="font-size:12px; color:#9aa4b6; margin-top:5px">
+        Pro 1 Mio Stein erhältst du 1 Prestige-Punkt.<br>
+        Jeder Prestige-Punkt gibt +10% Produktionsbonus.
+      </div>
+    `;
+    document.getElementById('prestigeBtn').onclick = () => {
+      this.doPrestige();
+    };
+  }
+
+  doPrestige() {
+    if (gameState.stein < 1_000_000) return;
+    const gained = Math.floor(gameState.stein / 1_000_000);
+    gameState.prestige += gained;
+    gameState.prestigeBonus = 1 + gameState.prestige * 0.1;
+
+    // Ressourcen-Rücksetzung:
+    for (const rId in this.resources) {
+      this.resources[rId].amount = 0;
+      if (rId !== 'stein') this.resources[rId].unlocked = false;
+    }
+    this.upgrades.forEach(u => u.level = 0);
+    gameState.stein = 0;
+    gameState.holz = 0;
+    gameState.metall = 0;
+    gameState.kristall = 0;
+    game.syncToState();
+    gameState.save();
+    alert(`Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${gameState.prestigeBonus.toFixed(2)}`);
+    this.renderAll();
+  }
+  // ==== ENDE Prestige ====
+
+  // Synchronisation game <-> gameState (wichtig für Speichern, Import, Reset)
+  syncToState() {
+    for (let key in this.resources) {
+      gameState[key] = this.resources[key].amount;
+    }
+    gameState.upgrades = this.upgrades.map(u => ({
+      id: u.id,
+      level: u.level
+    }));
+  }
+  syncFromState() {
+    for (let key in this.resources) {
+      this.resources[key].amount = gameState[key] ?? 0;
+    }
+    if (Array.isArray(gameState.upgrades)) {
+      for (let u of this.upgrades) {
+        let saved = gameState.upgrades.find(su => su.id === u.id);
+        if (saved) u.level = saved.level;
+      }
+    }
+  }
+
   renderStatsBar(){
     if (!this.statsBarEl) return;
     this.statsBarEl.innerHTML = '';
@@ -523,6 +571,7 @@ this.addUpgrade(new Upgrade({
     this.renderStatsBar();
     this.renderActions();
     this.renderUpgrades();
+    this.renderPrestigeContainer();
   }
   startTick(){
     if (this.tickTimer) clearInterval(this.tickTimer);
@@ -541,38 +590,32 @@ this.addUpgrade(new Upgrade({
 
 /* ---------- Bootstrap ---------- */
 document.addEventListener("DOMContentLoaded", () => {
-  gameState = new GameState(); // Erstellt und lädt ggf. Spielstand
+  gameState = new GameState();
   game = new Game();
   game.setupDOM();
   game.setupGameData();
-  game.syncFromState(); 
+  game.syncFromState();
   game.renderAll();
   game.startTick();
-  initButtons(); // Jetzt existieren game und gameState
+  initButtons();
   window.idleGame = game;
 });
 
 function initButtons() {
-  // Autosave
   setInterval(() => {
     game.syncToState();
     gameState.save();
   }, 5000);
 
-  // Reset Button
   document.getElementById("resetBtn").addEventListener('click', () => {
-    game.syncToState();
-    gameState.save(); 
     gameState.reset();
     game.syncFromState();
     game.renderAll();
   });
 
-  // Export Button
   document.getElementById("exportBtn").addEventListener('click', () => {
-    const exportedData = gameState.export();
     game.syncToState();
-    gameState.save(); 
+    const exportedData = gameState.export();
     if (navigator.clipboard) {
       navigator.clipboard.writeText(exportedData);
     } else {
@@ -580,7 +623,6 @@ function initButtons() {
     }
   });
 
-  // Import Button
   document.getElementById("importBtn").addEventListener('click', () => {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
