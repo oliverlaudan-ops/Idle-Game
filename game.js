@@ -413,7 +413,8 @@ this.addUpgrade(new Upgrade({
       }
     }));
   }
-   
+
+/* ---- Rendering ---- */   
   renderStatsBar(){
     if (!this.statsBarEl) return;
     this.statsBarEl.innerHTML = '';
