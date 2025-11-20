@@ -37,6 +37,7 @@ class GameState {
      this.totalEarned = 0;
      this.upgrades = [];
      this.save();
+     this.initButtons();
       }
     }
   
