@@ -545,6 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
   game = new Game();
   game.setupDOM();
   game.setupGameData();
+  game.syncFromState(); 
   game.renderAll();
   game.startTick();
   initButtons(); // Jetzt existieren game und gameState
