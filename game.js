@@ -580,18 +580,18 @@ document.addEventListener("DOMContentLoaded", () => {
 function initButtons() {
   // Autosave bei jeder Änderung
   setInterval(() => {
-    game.save();
+    save();
   }, 5000);  // Alle 5 Sekunden speichern
 
   // Reset Button
   document.getElementById("resetBtn").addEventListener('click', () => {
-    game.reset();
-    game.render();
+    reset();
+    render();
   });
 
   // Export Button
   document.getElementById("exportBtn").addEventListener('click', () => {
-    const exportedData = game.export();
+    const exportedData = export();
     navigator.clipboard.writeText(exportedData);  // Kopiert in die Zwischenablage
   });
 
@@ -599,8 +599,8 @@ function initButtons() {
   document.getElementById("importBtn").addEventListener('click', () => {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
-      game.import(importedData);
-      game.render();
+      import(importedData);
+      render();
     }
   });
 }
