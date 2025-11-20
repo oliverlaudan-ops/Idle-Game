@@ -580,7 +580,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function initButtons() {
   // Autosave bei jeder Änderung
   setInterval(() => {
-    save();
+    gameState.save();
   }, 5000);  // Alle 5 Sekunden speichern
 
   // Reset Button
