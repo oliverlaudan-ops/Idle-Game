@@ -193,7 +193,7 @@ h2{
 
 .prestige-block {
   width: 100%;
-  max-width: 700px; /* oder gleiche Breite wie upgrade-grid cards */
+  max-width: 960px; /* oder gleiche Breite wie upgrade-grid cards */
   margin: 0 auto 32px auto;
   background: var(--panel-soft);
   border-radius: 14px;
