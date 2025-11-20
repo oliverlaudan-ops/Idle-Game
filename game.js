@@ -40,7 +40,7 @@ class GameState {
 
   // Speichert den aktuellen Zustand im LocalStorage
   save() {
-    localStorage.setItem('gameState', JSON.stringify(this));
+    localStorage.setItem('gameState', JSON.stringify(this.gameState));
   }
 
   // Reset der Ressourcen
@@ -82,6 +82,8 @@ class GameState {
     }
   }
 }
+
+const gameState = new GameState();
 
 /* ---------- Klasse: Resource ---------- */
 class Resource {
