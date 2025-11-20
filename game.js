@@ -414,11 +414,21 @@ this.addUpgrade(new Upgrade({
     this.getResource('metall').rps = 0;
     this.getResource('kristall').rps = 0;
 
-    // Upgrades auswerten
-    for (let upg of this.upgrades) {
-      if (upg.level > 0) {
-        for(let i=0; i<upg.level; ++i) {
-          if (typeof upg.applyFn === 'function') upg.applyFn(this);
+    // Effekte der Upgrades anwenden (pro Level)
+  for (let upg of this.upgrades) {
+    if (upg.level > 0) {
+      for(let i=0; i<upg.level; ++i) {
+        if (typeof upg.applyFn === 'function') upg.applyFn(this);
+      }
+    }
+  }
+  // Ressourcen-Entsperrungen aus Upgrades
+  for (let upg of this.upgrades) {
+    if (upg.level > 0 && upg.unlocksResourceId) {
+      const res = this.getResource(upg.unlocksResourceId);
+      if (res) {
+        res.unlocked = true;
+        if (res.rpc === 0) res.rpc = 1;
         }
       }
     }
