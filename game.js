@@ -586,7 +586,7 @@ function initButtons() {
   // Reset Button
   document.getElementById("resetBtn").addEventListener('click', () => {
     gameState.reset();
-    this.render();
+    game.render();
   });
 
   // Export Button
@@ -600,7 +600,7 @@ function initButtons() {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
       gameState.import(importedData);
-      this.render();
+      game.render();
     }
   });
 }
