@@ -39,7 +39,7 @@ class GameState {
      this.save();
       }
     }
-  }
+  
 
   // Speichert den aktuellen Zustand im LocalStorage
   save() {
