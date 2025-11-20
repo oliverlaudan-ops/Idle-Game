@@ -562,18 +562,24 @@ document.addEventListener("DOMContentLoaded", () => {
 function initButtons() {
   // Autosave
   setInterval(() => {
+    game.syncToState();
     gameState.save();
   }, 5000);
 
   // Reset Button
   document.getElementById("resetBtn").addEventListener('click', () => {
+    game.syncToState();
+    gameState.save(); 
     gameState.reset();
+    game.syncFromState();
     game.renderAll();
   });
 
   // Export Button
   document.getElementById("exportBtn").addEventListener('click', () => {
     const exportedData = gameState.export();
+    game.syncToState();
+    gameState.save(); 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(exportedData);
     } else {
@@ -586,6 +592,7 @@ function initButtons() {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
       gameState.import(importedData);
+      game.syncFromState();
       game.renderAll();
     }
   });
