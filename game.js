@@ -1,5 +1,5 @@
 // ==== From Stone to Civilization – OOP Version (plain JS) ====
-// Globale Objekte, damit alle Funktionen Zugriff haben
+// Globale Objekte
 let game;
 let gameState;
 
@@ -33,13 +33,8 @@ class GameState {
     this.holz = this.holz ?? 0;
     this.metall = this.metall ?? 0;
     this.kristall = this.kristall ?? 0;
-    this.rpcStein = this.rpcStein ?? 1;
-    this.rpcHolz = this.rpcHolz ?? 0;
-    this.rpcMetall = this.rpcMetall ?? 0;
-    this.rpcKristall = this.rpcKristall ?? 0;
     this.totalEarned = this.totalEarned ?? 0;
     this.upgrades = this.upgrades ?? [];
-    // Prestige-Init:
     this.prestige = this.prestige ?? 0;
     this.prestigeBonus = this.prestigeBonus ?? 1;
     this.save();
@@ -56,10 +51,6 @@ class GameState {
       this.holz = 0;
       this.metall = 0;
       this.kristall = 0;
-      this.rpcStein = 1;
-      this.rpcHolz = 0;
-      this.rpcMetall = 0;
-      this.rpcKristall = 0;
       this.totalEarned = 0;
       this.upgrades = [];
       // Prestige bleibt erhalten!
@@ -67,14 +58,12 @@ class GameState {
       alert('Zurückgesetzt!');
     }
   }
-
   export() {
     const savedState = JSON.stringify(this);
     const encoded = btoa(savedState);
     alert('Exportiert: ' + encoded);
     return encoded;
   }
-
   import(encodedState) {
     try {
       const decoded = atob(encodedState);
@@ -164,7 +153,6 @@ class Game {
     this.actionsEl     = null;
     this.upgradeGridEl = null;
   }
-
   addResource(res){ this.resources[res.id] = res; }
   getResource(id){ return this.resources[id]; }
   addUpgrade(upg){ this.upgrades.push(upg); }
@@ -175,13 +163,12 @@ class Game {
     this.upgradeGridEl = document.getElementById('upgradeGrid');
   }
   setupGameData(){
-    // Ressourcen
     this.addResource(new Resource('stein','Stein','🪨',1,0,true));
     this.addResource(new Resource('holz', 'Holz','🌲',0,0,false));
     this.addResource(new Resource('metall','Metall','⛏️',0,0,false));
     this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));
 
-// Upgrades:
+    // Upgrades:
     // --- Stein-Upgrade-Kette ---
     this.addUpgrade(new Upgrade({
       id:'faustkeil',
@@ -415,7 +402,29 @@ this.addUpgrade(new Upgrade({
   }
 
 
-  // ==== Präzise Prestige-Funktionen ====
+  // ---- Rekonstruktion aller Ressourcenboni aus Leveln (wichtig!) ----
+  recalculateResourceBonuses() {
+    // Grundwerte setzen
+    this.getResource('stein').rpc = 1;
+    this.getResource('holz').rpc = 0;
+    this.getResource('metall').rpc = 0;
+    this.getResource('kristall').rpc = 0;
+    this.getResource('stein').rps = 0;
+    this.getResource('holz').rps = 0;
+    this.getResource('metall').rps = 0;
+    this.getResource('kristall').rps = 0;
+
+    // Upgrades auswerten
+    for (let upg of this.upgrades) {
+      if (upg.level > 0) {
+        for(let i=0; i<upg.level; ++i) {
+          if (typeof upg.applyFn === 'function') upg.applyFn(this);
+        }
+      }
+    }
+  }
+
+  // ---- Prestige- und Sync-Logik ----
   renderPrestigeContainer() {
     const el = document.getElementById('prestigeContainer');
     if (!el) return;
@@ -438,14 +447,12 @@ this.addUpgrade(new Upgrade({
       this.doPrestige();
     };
   }
-
   doPrestige() {
     if (gameState.stein < 1_000_000) return;
     const gained = Math.floor(gameState.stein / 1_000_000);
     gameState.prestige += gained;
     gameState.prestigeBonus = 1 + gameState.prestige * 0.1;
-
-    // Ressourcen-Rücksetzung:
+    // Ressourcen und Upgrades zurücksetzen:
     for (const rId in this.resources) {
       this.resources[rId].amount = 0;
       if (rId !== 'stein') this.resources[rId].unlocked = false;
@@ -455,14 +462,15 @@ this.addUpgrade(new Upgrade({
     gameState.holz = 0;
     gameState.metall = 0;
     gameState.kristall = 0;
-    game.syncToState();
+
+    // Wichtig: Boni rekonstruieren
+    this.recalculateResourceBonuses();
+    this.syncToState();
     gameState.save();
     alert(`Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${gameState.prestigeBonus.toFixed(2)}`);
     this.renderAll();
   }
-  // ==== ENDE Prestige ====
 
-  // Synchronisation game <-> gameState (wichtig für Speichern, Import, Reset)
   syncToState() {
     for (let key in this.resources) {
       gameState[key] = this.resources[key].amount;
@@ -479,9 +487,10 @@ this.addUpgrade(new Upgrade({
     if (Array.isArray(gameState.upgrades)) {
       for (let u of this.upgrades) {
         let saved = gameState.upgrades.find(su => su.id === u.id);
-        if (saved) u.level = saved.level;
+        u.level = saved ? saved.level : 0;
       }
     }
+    this.recalculateResourceBonuses();
   }
 
   renderStatsBar(){
@@ -556,6 +565,7 @@ this.addUpgrade(new Upgrade({
         : (canBuy ? 'Kaufen' : 'Nicht genug');
       btn.addEventListener('click', () => {
         if (upg.buy(this)){
+          this.recalculateResourceBonuses();
           this.renderAll();
         }
       });
