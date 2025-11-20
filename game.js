@@ -227,10 +227,12 @@ class Game {
       if (rId !== 'stein') this.resources[rId].unlocked = false;
     }
     this.upgrades.forEach(u => u.level = 0);
-    gameState.stein = 0;
-    gameState.holz = 0;
-    gameState.metall = 0;
-    gameState.kristall = 0;
+    for (const key in this.resources) {
+      this.resources[key].amount = 0;
+      gameState[key] = 0; // sorgt auch im Spielstand für den Reset
+      // Optional: Sperre alle außer Basis-Resource nach Prestige
+      if (key !== 'stein') this.resources[key].unlocked = false;
+    }
     this.recalculateResourceBonuses();
     this.syncToState();
     gameState.save();
@@ -238,11 +240,42 @@ class Game {
     this.renderAll();
   }
 
+  renderPrestigeUpgrades() {
+  const el = document.getElementById('prestigeUpgrades');
+  if (!el) return;
+  el.innerHTML = '<h3>Prestige Upgrades</h3>';
+  this.prestigeUpgrades.forEach(upg => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <strong>${upg.name}</strong><br>
+      <span>${upg.desc}</span><br>
+      <span>Kosten: ${upg.getCurrentCost()} Prestige-Punkte</span><br>
+      <span>Level: ${upg.level}</span>
+    `;
+    const btn = document.createElement('button');
+    btn.className = 'buy-btn';
+    btn.disabled = !upg.canBuy(gameState);
+    btn.textContent = upg.single && upg.level > 0 ? 'Gekauft' : (btn.disabled ? 'Nicht genug' : 'Kaufen');
+    btn.onclick = () => {
+      if (upg.buy(this, gameState)) {
+        this.syncToState();
+        gameState.save();
+        this.renderAll();
+      }
+    };
+    card.appendChild(btn);
+    el.appendChild(card);
+  });
+}
+
+
   renderAll() {
     this.renderStatsBar();
     this.renderActions();
     this.renderUpgrades();
     this.renderPrestigeContainer();
+    this.renderPrestigeUpgrades();
   }
 
   startTick() {
