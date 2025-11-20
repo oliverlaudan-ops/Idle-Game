@@ -168,6 +168,35 @@ class Game {
     this.actionsEl     = null;
     this.upgradeGridEl = null;
   }
+
+syncToState() {
+    // Ressourcen
+    for (let key in this.resources) {
+      let res = this.resources[key];
+      gameState[res.id] = res.amount;
+    }
+    // Upgrades
+    gameState.upgrades = this.upgrades.map(u => ({
+      id: u.id,
+      level: u.level
+    }));
+  }
+
+  syncFromState() {
+    // Ressourcen
+    for (let key in this.resources) {
+      let res = this.resources[key];
+      res.amount = gameState[res.id] ?? 0;
+    }
+    // Upgrades
+    if (Array.isArray(gameState.upgrades)) {
+      for (let u of this.upgrades) {
+        let saved = gameState.upgrades.find(su => su.id === u.id);
+        if (saved) u.level = saved.level;
+      }
+    }
+  }
+   
   addResource(res){ this.resources[res.id] = res; }
   getResource(id){ return this.resources[id]; }
   addUpgrade(upg){ this.upgrades.push(upg); }
@@ -180,7 +209,7 @@ class Game {
     this.addResource(new Resource('stein','Stein','🪨',1,0,true));
     this.addResource(new Resource('holz', 'Holz','🌲',0,0,false));
     this.addResource(new Resource('metall','Metall','⛏️',0,0,false));
-    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));
+    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));     
     // Upgrades:
     // --- Stein-Upgrade-Kette ---
     this.addUpgrade(new Upgrade({
