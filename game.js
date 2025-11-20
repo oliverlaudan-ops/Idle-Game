@@ -19,20 +19,25 @@ function formatRate(n){
 class GameState {
   constructor() {
     // Wenn es bereits einen gespeicherten Zustand gibt, laden wir diesen
-    const savedState = JSON.parse(localStorage.getItem('gameState'));
-    if (savedState) {
-      Object.assign(this.gameState, savedState);
+    let storageValue = localStorage.getItem("gameState");
+    let savedState = null;
+    if (storageValue && storageValue !== "undefined") {
+    savedState = JSON.parse(storageValue);
+    Object.assign(this, savedState);
     } else {
-      this.stein = 0;
-      this.holz = 0;
-      this.metall = 0;
-      this.kristall = 0;
-      this.rpcStein = 1;
-      this.rpcHolz = 0;
-      this.rpcMetall = 0;
-      this.rpcKristall = 0;
-      this.totalEarned = 0;
-      this.upgrades = [];
+     // Initialisiere Standardwerte wie bisher
+     this.stein = 0;
+     this.holz = 0;
+     this.metall = 0;
+     this.kristall = 0;
+     this.rpcStein = 1;
+     this.rpcHolz = 0;
+     this.rpcMetall = 0;
+     this.rpcKristall = 0;
+     this.totalEarned = 0;
+     this.upgrades = [];
+     this.save();
+      }
     }
     
     this.save();  // Start mit einer initialen Speicherung
