@@ -585,8 +585,8 @@ function initButtons() {
 
   // Reset Button
   document.getElementById("resetBtn").addEventListener('click', () => {
-    reset();
-    render();
+    gameState.reset();
+    this.render();
   });
 
   // Export Button
