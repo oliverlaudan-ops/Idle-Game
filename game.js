@@ -39,8 +39,6 @@ class GameState {
      this.save();
       }
     }
-    
-    this.save();  // Start mit einer initialen Speicherung
   }
 
   // Speichert den aktuellen Zustand im LocalStorage
