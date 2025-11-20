@@ -12,6 +12,7 @@ class Game {
   constructor() {
     this.resources = {};
     this.upgrades = [];
+    this.prestigeUpgrades = [];
     this.tickMs = 1000;
     this.tickTimer = null;
     this.statsBarEl = null;
@@ -77,7 +78,13 @@ class Game {
       id: u.id,
       level: u.level
     }));
+    
+    gameState.prestigeUpgrades = this.prestigeUpgrades.map(u => ({
+    id: u.id,
+    level: u.level  
+    }));
   }
+  
   syncFromState() {
     for (let key in this.resources) {
       this.resources[key].amount = gameState[key] ?? 0;
@@ -88,6 +95,17 @@ class Game {
         u.level = saved ? saved.level : 0;
       }
     }
+  if (Array.isArray(gameState.prestigeUpgrades)) {
+    for (let u of this.prestigeUpgrades) {
+      let saved = gameState.prestigeUpgrades.find(su => su.id === u.id);
+      u.level = saved ? saved.level : 0;
+    }
+  }
+  // Eventuelle Effekte erneut anwenden:
+  for (let u of this.prestigeUpgrades) {
+    if (u.level > 0 && typeof u.applyFn === "function") {
+      for(let i=0; i<u.level; ++i) u.applyFn(this, gameState, u.level);
+    }}
     this.recalculateResourceBonuses();
   }
 
