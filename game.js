@@ -21,7 +21,7 @@ class GameState {
     // Wenn es bereits einen gespeicherten Zustand gibt, laden wir diesen
     const savedState = JSON.parse(localStorage.getItem('gameState'));
     if (savedState) {
-      Object.assign(this, savedState);
+      Object.assign(this.gameState, savedState);
     } else {
       this.stein = 0;
       this.holz = 0;
