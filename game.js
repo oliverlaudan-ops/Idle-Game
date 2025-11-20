@@ -1,7 +1,10 @@
 /* ==========================================================
    From Stone to Civilization – OOP Version (plain JS)
    ========================================================== */
-// const game = new Game(); // Hier wird das Game-Objekt als globale Variable definiert.
+// Globale Objekte, damit alle Funktionen Zugriff haben
+let game;
+let gameState;
+
 /* ---------- Hilfsfunktionen ---------- */
 function formatAmount(n){
   if (n >= 1_000_000) return (n/1_000_000).toFixed(2)+'M';
@@ -16,41 +19,22 @@ function formatRate(n){
   return formatAmount(n);
 }
 
+/* ---------- Klasse: GameState ---------- */
 class GameState {
   constructor() {
-    // Wenn es bereits einen gespeicherten Zustand gibt, laden wir diesen
+    // Robust: Prüfen, ob ein State im LocalStorage definiert und gültig ist
     let storageValue = localStorage.getItem("gameState");
     let savedState = null;
     if (storageValue && storageValue !== "undefined") {
-    savedState = JSON.parse(storageValue);
-    Object.assign(this, savedState);
-    } else {
-     // Initialisiere Standardwerte wie bisher
-     this.stein = 0;
-     this.holz = 0;
-     this.metall = 0;
-     this.kristall = 0;
-     this.rpcStein = 1;
-     this.rpcHolz = 0;
-     this.rpcMetall = 0;
-     this.rpcKristall = 0;
-     this.totalEarned = 0;
-     this.upgrades = [];
-     this.save();
-     initButtons();
+      try {
+        savedState = JSON.parse(storageValue);
+        Object.assign(this, savedState);
+      } catch (e) {
+        // Fehlerhafte oder alte Spielstände ignorieren
       }
     }
-  
-
-  // Speichert den aktuellen Zustand im LocalStorage
-  save() {
-    localStorage.setItem('gameState', JSON.stringify(this.gameState));
-  }
-
-  // Reset der Ressourcen
-  reset() {
-    if (confirm('Wirklich alles zurücksetzen?')) {
-      localStorage.removeItem('gameState');
+    if (!savedState) {
+      // Initialwerte
       this.stein = 0;
       this.holz = 0;
       this.metall = 0;
@@ -65,29 +49,51 @@ class GameState {
     }
   }
 
-  // Export des Spielstands als Base64
+  // Speichern
+  save() {
+    localStorage.setItem('gameState', JSON.stringify(this));
+  }
+
+  // Reset
+  reset() {
+    if (confirm('Wirklich alles zurücksetzen?')) {
+      localStorage.removeItem('gameState');
+      this.stein = 0;
+      this.holz = 0;
+      this.metall = 0;
+      this.kristall = 0;
+      this.rpcStein = 1;
+      this.rpcHolz = 0;
+      this.rpcMetall = 0;
+      this.rpcKristall = 0;
+      this.totalEarned = 0;
+      this.upgrades = [];
+      this.save();
+      alert('Zurückgesetzt!');
+    }
+  }
+
+  // Export als Base64
   export() {
-    const savedState = JSON.stringify(this.gameState);
-    const encoded = btoa(savedState);  // Base64 kodieren
+    const savedState = JSON.stringify(this);
+    const encoded = btoa(savedState);
     alert('Exportiert: ' + encoded);
     return encoded;
   }
 
-  // Import eines Spielstands aus einem Base64-String
+  // Import von Base64
   import(encodedState) {
     try {
       const decoded = atob(encodedState);
       const parsedState = JSON.parse(decoded);
-      Object.assign(this.gameState, parsedState);
-      this.save();  // Speichern nach dem Import
+      Object.assign(this, parsedState);
+      this.save();
       alert('Import erfolgreich!');
     } catch (e) {
       alert('Fehler beim Importieren: ' + e.message);
     }
   }
 }
-
-const gameState = new GameState();
 
 /* ---------- Klasse: Resource ---------- */
 class Resource {
@@ -96,13 +102,11 @@ class Resource {
     this.name = name;
     this.icon = icon;
     this.amount = 0;
-    this.rpc = rpc;       // pro Klick
-    this.rps = rps;       // pro Sekunde
+    this.rpc = rpc;
+    this.rps = rps;
     this.unlocked = unlocked;
   }
-
   add(n){ this.amount += n; }
-
   spend(n){
     if (this.amount >= n){
       this.amount -= n;
@@ -118,40 +122,30 @@ class Upgrade {
     this.id   = opts.id;
     this.name = opts.name;
     this.desc = opts.desc;
-    this.costRes  = opts.costRes;       // z.B. 'stein'
-    this.costBase = opts.costBase;      // Startkosten
+    this.costRes  = opts.costRes;
+    this.costBase = opts.costBase;
     this.costMult = opts.costMult ?? 1.15;
-    this.applyFn  = opts.apply;         // (game) => { ... }
+    this.applyFn  = opts.apply;
     this.single   = !!opts.single;
     this.unlocksResourceId = opts.unlocksResourceId || null;
     this.level = 0;
   }
-
   getCurrentCost(){
     return Math.floor(this.costBase * Math.pow(this.costMult, this.level || 0));
   }
-
   canBuy(game){
     const res = game.getResource(this.costRes);
     if (!res || !res.unlocked) return false;
     if (this.single && this.level > 0) return false;
     return res.amount >= this.getCurrentCost();
   }
-
   buy(game){
     if (!this.canBuy(game)) return false;
     const res   = game.getResource(this.costRes);
     const cost  = this.getCurrentCost();
     if (!res.spend(cost)) return false;
-
     this.level++;
-
-    // Effekt anwenden
-    if (typeof this.applyFn === 'function'){
-      this.applyFn(game);
-    }
-
-    // Ressource freischalten?
+    if (typeof this.applyFn === 'function'){ this.applyFn(game); }
     if (this.unlocksResourceId){
       const r2 = game.getResource(this.unlocksResourceId);
       if (r2){
@@ -159,7 +153,6 @@ class Upgrade {
         if (r2.rpc === 0) r2.rpc = 1;
       }
     }
-
     return true;
   }
 }
@@ -171,39 +164,23 @@ class Game {
     this.upgrades  = [];
     this.tickMs    = 1000;
     this.tickTimer = null;
-
-    // DOM-Referenzen
     this.statsBarEl    = null;
     this.actionsEl     = null;
     this.upgradeGridEl = null;
   }
-
-  addResource(res){
-    this.resources[res.id] = res;
-  }
-
-  getResource(id){
-    return this.resources[id];
-  }
-
-  addUpgrade(upg){
-    this.upgrades.push(upg);
-  }
-
-  /* ----- Initialisierung ----- */
+  addResource(res){ this.resources[res.id] = res; }
+  getResource(id){ return this.resources[id]; }
+  addUpgrade(upg){ this.upgrades.push(upg); }
   setupDOM(){
     this.statsBarEl    = document.getElementById('statsBar');
     this.actionsEl     = document.getElementById('actions');
     this.upgradeGridEl = document.getElementById('upgradeGrid');
   }
-
   setupGameData(){
-    // Ressourcen
     this.addResource(new Resource('stein','Stein','🪨',1,0,true));
     this.addResource(new Resource('holz', 'Holz','🌲',0,0,false));
     this.addResource(new Resource('metall','Metall','⛏️',0,0,false));
-    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false)); // Kristall-Ressource
-
+    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));
     // Upgrades:
     // --- Stein-Upgrade-Kette ---
     this.addUpgrade(new Upgrade({
@@ -436,42 +413,33 @@ this.addUpgrade(new Upgrade({
       }
     }));
   }
-
-  /* ----- Rendering ----- */
+   
   renderStatsBar(){
     if (!this.statsBarEl) return;
     this.statsBarEl.innerHTML = '';
-
     const resList = Object.values(this.resources).filter(r => r.unlocked);
-
     resList.forEach(r => {
       const pill = document.createElement('div');
       pill.className = 'stat-pill';
       pill.id = 'stat-'+r.id;
-
       const label = document.createElement('span');
       label.className = 'label';
       label.textContent = `${r.icon} ${r.name}: ${formatAmount(r.amount)}`;
-
       const details = document.createElement('span');
       details.className = 'details';
       details.textContent = `+${formatRate(r.rps)}/s, +${formatRate(r.rpc)}/Klick`;
-
       pill.appendChild(label);
       pill.appendChild(details);
       this.statsBarEl.appendChild(pill);
     });
-
     const meta = document.createElement('div');
     meta.className = 'stat-meta';
     meta.textContent = `Tick: ${(this.tickMs/1000).toFixed(1)}s`;
     this.statsBarEl.appendChild(meta);
   }
-
   renderActions(){
     if (!this.actionsEl) return;
     this.actionsEl.innerHTML = '';
-
     Object.values(this.resources)
       .filter(r => r.unlocked)
       .forEach(r => {
@@ -487,28 +455,21 @@ this.addUpgrade(new Upgrade({
         this.actionsEl.appendChild(btn);
       });
   }
-
   renderUpgrades(){
     if (!this.upgradeGridEl) return;
     this.upgradeGridEl.innerHTML = '';
-
     this.upgrades.forEach(upg => {
       const costRes = this.getResource(upg.costRes);
       if (!costRes || !costRes.unlocked) return;
-
       const card = document.createElement('div');
       card.className = 'card';
-
       const title = document.createElement('h3');
       title.textContent = upg.name;
-
       const desc = document.createElement('p');
       desc.textContent = upg.desc;
-
       const costP = document.createElement('p');
       const cost = upg.getCurrentCost();
       costP.textContent = `Kosten: ${formatAmount(cost)} ${costRes.name}`;
-
       const owned = document.createElement('p');
       owned.className = 'muted';
       if (upg.single){
@@ -516,7 +477,6 @@ this.addUpgrade(new Upgrade({
       } else {
         owned.textContent = `Stufe: ${upg.level}`;
       }
-
       const btn = document.createElement('button');
       btn.className = 'buy-btn';
       const canBuy = upg.canBuy(this);
@@ -524,35 +484,28 @@ this.addUpgrade(new Upgrade({
       btn.textContent = upg.single && upg.level > 0
         ? 'Gekauft'
         : (canBuy ? 'Kaufen' : 'Nicht genug');
-
       btn.addEventListener('click', () => {
         if (upg.buy(this)){
           this.renderAll();
         }
       });
-
       card.appendChild(title);
       card.appendChild(desc);
       card.appendChild(costP);
       card.appendChild(owned);
       card.appendChild(btn);
-
       this.upgradeGridEl.appendChild(card);
     });
   }
-
   renderAll(){
     this.renderStatsBar();
     this.renderActions();
     this.renderUpgrades();
   }
-
-  /* ----- Tick-Loop ----- */
   startTick(){
     if (this.tickTimer) clearInterval(this.tickTimer);
     this.tickTimer = setInterval(() => this.tick(), this.tickMs);
   }
-
   tick(){
     Object.values(this.resources).forEach(r => {
       if (r.unlocked && r.rps > 0){
@@ -566,33 +519,36 @@ this.addUpgrade(new Upgrade({
 
 /* ---------- Bootstrap ---------- */
 document.addEventListener("DOMContentLoaded", () => {
-  const game = new Game();
+  gameState = new GameState(); // Erstellt und lädt ggf. Spielstand
+  game = new Game();
   game.setupDOM();
   game.setupGameData();
   game.renderAll();
   game.startTick();
-
-  // optional für Debug in der Konsole:
+  initButtons(); // Jetzt existieren game und gameState
   window.idleGame = game;
 });
 
-// Funktion zum Initialisieren der Buttons
 function initButtons() {
-  // Autosave bei jeder Änderung
+  // Autosave
   setInterval(() => {
     gameState.save();
-  }, 5000);  // Alle 5 Sekunden speichern
+  }, 5000);
 
   // Reset Button
   document.getElementById("resetBtn").addEventListener('click', () => {
     gameState.reset();
-    game.render();
+    game.renderAll();
   });
 
   // Export Button
   document.getElementById("exportBtn").addEventListener('click', () => {
     const exportedData = gameState.export();
-    navigator.clipboard.writeText(exportedData);  // Kopiert in die Zwischenablage
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(exportedData);
+    } else {
+      prompt('Daten zum Kopieren:', exportedData);
+    }
   });
 
   // Import Button
@@ -600,7 +556,7 @@ function initButtons() {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
       gameState.import(importedData);
-      game.render();
+      game.renderAll();
     }
   });
 }
