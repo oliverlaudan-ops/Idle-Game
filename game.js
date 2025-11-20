@@ -66,7 +66,7 @@ class GameState {
 
   // Export des Spielstands als Base64
   export() {
-    const savedState = JSON.stringify(this);
+    const savedState = JSON.stringify(this.gameState);
     const encoded = btoa(savedState);  // Base64 kodieren
     alert('Exportiert: ' + encoded);
     return encoded;
@@ -77,7 +77,7 @@ class GameState {
     try {
       const decoded = atob(encodedState);
       const parsedState = JSON.parse(decoded);
-      Object.assign(this, parsedState);
+      Object.assign(this.gameState, parsedState);
       this.save();  // Speichern nach dem Import
       alert('Import erfolgreich!');
     } catch (e) {
