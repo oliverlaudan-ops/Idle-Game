@@ -600,7 +600,7 @@ function initButtons() {
     const importedData = prompt('Füge den Export-String ein:');
     if (importedData) {
       gameState.import(importedData);
-      render();
+      this.render();
     }
   });
 }
