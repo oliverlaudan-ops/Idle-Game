@@ -262,7 +262,7 @@ createUpgradeCard(upg) {
         <strong>Prestige-Punkte:</strong> ${gameState.prestige}<br>
         <strong>Bonus:</strong> x${gameState.prestigeBonus.toFixed(2)}
       </div>
-      <button id="prestigeBtn" ${canPrestige ? '' : 'disabled'}>
+      <button id="prestigeBtn" class="buy-btn" ${canPrestige ? '' : 'disabled'}>
         Prestige durchführen (${toGain} neue Punkte)
       </button>
       <div style="font-size:12px; color:#9aa4b6; margin-top:5px">
