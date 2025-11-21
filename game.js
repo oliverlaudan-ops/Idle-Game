@@ -1,17 +1,17 @@
 import { GameState } from './game-state.js';
 import resourcesList from './resources-def.js';
-// import { Resource } from './resource.js';
-import upgradesList from './upgrades-def.js'; // upgradesList ist default exportiert, daher OK!
-// import { Upgrade } from './upgrade.js';
+import upgradesList from './upgrades-def.js';
 import prestigeUpgradesList, { PrestigeUpgrade } from './prestige-upgrades.js';
+// Prestige-Import NEU:
+import { calculatePrestigePoints, doPrestige } from './prestige.js';
 
 // Hilfsfunktionen
-function formatAmount(n){
-  if (n >= 1_000_000) return (n/1_000_000).toFixed(2)+'M';
-  if (n >= 1_000)     return (n/1_000).toFixed(2)+'K';
+function formatAmount(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(2) + 'K';
   return n.toFixed(0);
 }
-function formatRate(n){
+function formatRate(n) {
   const abs = Math.abs(n);
   if (abs === 0) return '0';
   if (abs < 1) return n.toFixed(2);
@@ -42,37 +42,29 @@ class Game {
   }
 
   setupGameData() {
-  // Ressourcen hinzufügen – jetzt flexibel und zentral verwaltet
-  for (const res of resourcesList) {
-    this.addResource(Object.assign(Object.create(Object.getPrototypeOf(res)), res));
+    for (const res of resourcesList) {
+      this.addResource(Object.assign(Object.create(Object.getPrototypeOf(res)), res));
+    }
+    for (const upg of upgradesList) {
+      this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
+    }
+    this.prestigeUpgrades = prestigeUpgradesList.map(
+      upg => Object.assign(new PrestigeUpgrade({}), upg)
+    );
   }
-  // Normale Upgrades hinzufügen
-  for (const upg of upgradesList) {
-    this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
-  }
-  // Prestige-Upgrades hinzufügen
-  this.prestigeUpgrades = prestigeUpgradesList.map(
-    upg => Object.assign(new PrestigeUpgrade({}), upg)
-  );
-}
 
-
-  // Flexible Rekonstruktion für alle Ressourcen
   recalculateResourceBonuses() {
-    // Alle Ressourcen-Grundwerte dynamisch setzen
     for (const key in this.resources) {
       this.resources[key].rpc = (key === 'stein') ? 1 : 0;
       this.resources[key].rps = 0;
     }
-    // Normale Upgrades erneut anwenden
     for (let upg of this.upgrades) {
       if (upg.level > 0) {
-        for(let i=0; i<upg.level; ++i) {
+        for (let i = 0; i < upg.level; ++i) {
           if (typeof upg.applyFn === 'function') upg.applyFn(this);
         }
       }
     }
-    // Ressourcen-Entsperrungen erneut anwenden
     for (let upg of this.upgrades) {
       if (upg.level > 0 && upg.unlocksResourceId) {
         const res = this.getResource(upg.unlocksResourceId);
@@ -82,10 +74,9 @@ class Game {
         }
       }
     }
-    // Prestige-Upgrades ebenfalls anwenden
     for (let u of this.prestigeUpgrades) {
       if (u.level > 0 && typeof u.applyFn === "function") {
-        for(let i=0; i<u.level; ++i) u.applyFn(this, gameState, u.level);
+        for (let i = 0; i < u.level; ++i) u.applyFn(this, gameState, u.level);
       }
     }
   }
@@ -130,7 +121,7 @@ class Game {
     resList.forEach(r => {
       const pill = document.createElement('div');
       pill.className = 'stat-pill';
-      pill.id = 'stat-'+r.id;
+      pill.id = 'stat-' + r.id;
       const label = document.createElement('span');
       label.className = 'label';
       label.textContent = `${r.icon} ${r.name}: ${formatAmount(r.amount)}`;
@@ -143,7 +134,7 @@ class Game {
     });
     const meta = document.createElement('div');
     meta.className = 'stat-meta';
-    meta.textContent = `Tick: ${(this.tickMs/1000).toFixed(1)}s`;
+    meta.textContent = `Tick: ${(this.tickMs / 1000).toFixed(1)}s`;
     this.statsBarEl.appendChild(meta);
   }
 
@@ -166,135 +157,108 @@ class Game {
       });
   }
 
-renderUpgrades() {
-  if (!this.upgradeGridEl) return;
-  this.upgradeGridEl.innerHTML = '';
+  renderUpgrades() {
+    if (!this.upgradeGridEl) return;
+    this.upgradeGridEl.innerHTML = '';
 
-  // Upgrades nach Gruppe (costRes oder unlock) sortieren
-  const grouped = {};
-  for (const upg of this.upgrades) {
-    // Unlock-Upgrades separat gruppieren
-    if (upg.single && upg.unlocksResourceId) {
-      grouped.unlock = grouped.unlock || [];
-      grouped.unlock.push(upg);
-    } else {
-      const key = upg.costRes || 'Sonstige';
-      grouped[key] = grouped[key] || [];
-      grouped[key].push(upg);
+    // Upgrades nach Gruppe (costRes oder unlock) sortieren
+    const grouped = {};
+    for (const upg of this.upgrades) {
+      if (upg.single && upg.unlocksResourceId) {
+        grouped.unlock = grouped.unlock || [];
+        grouped.unlock.push(upg);
+      } else {
+        const key = upg.costRes || 'Sonstige';
+        grouped[key] = grouped[key] || [];
+        grouped[key].push(upg);
+      }
+    }
+
+    if (grouped.unlock && grouped.unlock.length > 0) {
+      const col = document.createElement('div');
+      col.className = 'upgrade-col upgrade-unlock-col';
+      const header = document.createElement('h4');
+      header.textContent = 'Freischaltungen';
+      col.appendChild(header);
+      grouped.unlock.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+      this.upgradeGridEl.appendChild(col);
+    }
+
+    for (const [res, arr] of Object.entries(grouped)) {
+      if (res === 'unlock') continue;
+      const col = document.createElement('div');
+      col.className = 'upgrade-col';
+      const header = document.createElement('h4');
+      header.textContent = res.charAt(0).toUpperCase() + res.slice(1);
+      col.appendChild(header);
+      arr.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+      this.upgradeGridEl.appendChild(col);
     }
   }
 
-  // Unlock-Upgrades zuerst (eigene Spalte)
-  if (grouped.unlock && grouped.unlock.length > 0) {
-    const col = document.createElement('div');
-    col.className = 'upgrade-col upgrade-unlock-col';
-    const header = document.createElement('h4');
-    header.textContent = 'Freischaltungen';
-    col.appendChild(header);
-    grouped.unlock.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
-    this.upgradeGridEl.appendChild(col);
+  createUpgradeCard(upg) {
+    const costRes = this.getResource(upg.costRes);
+    const card = document.createElement('div');
+    card.className = 'card';
+    const title = document.createElement('h3');
+    title.textContent = upg.name;
+    const desc = document.createElement('p');
+    desc.textContent = upg.desc;
+    const costP = document.createElement('p');
+    const cost = upg.getCurrentCost();
+    costP.textContent = costRes
+      ? `Kosten: ${formatAmount(cost)} ${costRes.name}`
+      : '';
+    const owned = document.createElement('p');
+    owned.className = 'muted';
+    owned.textContent = upg.single
+      ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
+      : `Stufe: ${upg.level}`;
+    const btn = document.createElement('button');
+    btn.className = 'buy-btn';
+    const canBuy = upg.canBuy(this);
+    btn.disabled = !canBuy;
+    btn.textContent = upg.single && upg.level > 0
+      ? 'Gekauft'
+      : (canBuy ? 'Kaufen' : 'Nicht genug');
+    btn.onclick = () => {
+      if (upg.buy(this)) {
+        this.recalculateResourceBonuses();
+        this.renderAll();
+      }
+    };
+    card.appendChild(title);
+    card.appendChild(desc);
+    card.appendChild(costP);
+    card.appendChild(owned);
+    card.appendChild(btn);
+
+    return card;
   }
-
-  // Dann für jede Ressource eine Spalte/Gruppe
-  for (const [res, arr] of Object.entries(grouped)) {
-    if (res === 'unlock') continue;
-    const col = document.createElement('div');
-    col.className = 'upgrade-col';
-    const header = document.createElement('h4');
-    header.textContent = res.charAt(0).toUpperCase() + res.slice(1);
-    col.appendChild(header);
-    arr.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
-    this.upgradeGridEl.appendChild(col);
-  }
-}
-
-// Hilfsfunktion, die eine Upgradekarte erzeugt (aus deiner bisherigen Render-Logik)
-createUpgradeCard(upg) {
-  const costRes = this.getResource(upg.costRes);
-  const card = document.createElement('div');
-  card.className = 'card';
-
-  const title = document.createElement('h3');
-  title.textContent = upg.name;
-  const desc = document.createElement('p');
-  desc.textContent = upg.desc;
-  const costP = document.createElement('p');
-  const cost = upg.getCurrentCost();
-  costP.textContent = costRes
-    ? `Kosten: ${formatAmount(cost)} ${costRes.name}`
-    : '';
-  const owned = document.createElement('p');
-  owned.className = 'muted';
-  owned.textContent = upg.single
-    ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
-    : `Stufe: ${upg.level}`;
-  const btn = document.createElement('button');
-  btn.className = 'buy-btn';
-  const canBuy = upg.canBuy(this);
-  btn.disabled = !canBuy;
-  btn.textContent = upg.single && upg.level > 0
-    ? 'Gekauft'
-    : (canBuy ? 'Kaufen' : 'Nicht genug');
-  btn.onclick = () => {
-    if (upg.buy(this)) {
-      this.recalculateResourceBonuses();
-      this.renderAll();
-    }
-  };
-  card.appendChild(title);
-  card.appendChild(desc);
-  card.appendChild(costP);
-  card.appendChild(owned);
-  card.appendChild(btn);
-
-  return card;
-}
-
-
 
   renderPrestigeContainer() {
     const el = document.getElementById('prestigeContainer');
     if (!el) return;
-    const canPrestige = gameState.stein >= 1_000_000;
-    const toGain = Math.floor(gameState.stein / 1_000_000);
+    // Prestige aus neuem Modul:
+    const pointsNow = calculatePrestigePoints(gameState);
+    const gained = pointsNow - (gameState.prestige || 0);
     el.innerHTML = `
       <div class="prestige-info">
         <strong>Prestige-Punkte:</strong> ${gameState.prestige}<br>
-        <strong>Bonus:</strong> x${gameState.prestigeBonus.toFixed(2)}
+        <strong>Bonus:</strong> x${gameState.prestigeBonus.toFixed(2)}<br>
+        <strong>Möglich:</strong> +${gained} neue Punkte
       </div>
-      <button id="prestigeBtn" class="buy-btn" ${canPrestige ? '' : 'disabled'}>
-        Prestige durchführen (${toGain} neue Punkte)
+      <button id="prestigeBtn" class="buy-btn" ${gained > 0 ? '' : 'disabled'}>
+        Prestige durchführen (+${gained} neue Punkte)
       </button>
       <div style="font-size:12px; color:#9aa4b6; margin-top:5px">
-        Pro 1 Mio Stein erhältst du 1 Prestige-Punkt.<br>
-        Jeder Prestige-Punkt gibt +10% Produktionsbonus.
+        Alle Ressourcen tragen zum Prestige-Fortschritt bei.<br>
+        Je höherwertiger, desto mehr Prestige!
       </div>
     `;
     document.getElementById('prestigeBtn').onclick = () => {
-      this.doPrestige();
+      doPrestige(this, gameState);
     };
-  }
-
-  doPrestige() {
-    if (gameState.stein < 1_000_000) return;
-    const gained = Math.floor(gameState.stein / 1_000_000);
-    gameState.prestige += gained;
-    gameState.prestigeBonus = 1 + gameState.prestige * 0.1;
-    // JETZT ALLE Ressourcen automatisch zurücksetzen und ggf. sperren
-    for (const key in this.resources) {
-      this.resources[key].amount = 0;
-      gameState[key] = 0;
-      if (key !== 'stein') this.resources[key].unlocked = false;
-    }
-    this.upgrades.forEach(u => u.level = 0);
-    this.prestigeUpgrades.forEach(u => {
-      if (!u.persistent) u.level = 0; // Du kannst bei Bedarf PrestigeUpgrades flaggen als "persistent:false"
-    });
-    this.recalculateResourceBonuses();
-    this.syncToState();
-    gameState.save();
-    alert(`Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${gameState.prestigeBonus.toFixed(2)}`);
-    this.renderAll();
   }
 
   renderPrestigeUpgrades() {
@@ -340,7 +304,7 @@ createUpgradeCard(upg) {
   }
   tick() {
     Object.values(this.resources).forEach(r => {
-      if (r.unlocked && r.rps > 0){
+      if (r.unlocked && r.rps > 0) {
         r.add(r.rps * (gameState.prestigeBonus ?? 1));
       }
     });
