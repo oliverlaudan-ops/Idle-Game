@@ -1,25 +1,25 @@
 /* ===============================
    Globales Layout / Theme
-   =============================== */
-:root{
+=============================== */
+
+:root {
   --bg: #05070b;
   --panel: #111522;
-  --panel-soft:#161b2a;
+  --panel-soft: #161b2a;
   --accent: #2fd084;
   --text: #e6edf7;
-  --muted:#9aa4b6;
+  --muted: #9aa4b6;
 }
 
-*{ box-sizing:border-box; }
-html,body{ margin:0; padding:0; height:100%; }
-
-body{
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
   background: radial-gradient(circle at top, #1c2440 0, #05070b 55%);
-  color:var(--text);
-  font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+  color: var(--text);
+  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial;
 }
 
-.app{
+.app {
   max-width: 960px;
   margin: 24px auto 40px;
   padding: 0 16px;
@@ -27,129 +27,104 @@ body{
 
 /* ===============================
    Überschrift
-   =============================== */
-h1{
-  margin:0 0 16px;
-  font-size:28px;
-  letter-spacing:.4px;
+=============================== */
+
+h1 {
+  margin: 0 0 16px;
+  font-size: 28px;
+  letter-spacing: .4px;
 }
-h2{
-  margin:24px 0 10px;
-  font-size:18px;
-  color:var(--muted);
+h2 {
+  margin: 24px 0 10px;
+  font-size: 18px;
+  color: var(--muted);
 }
 
 /* ===============================
    Stats Bar (oben)
-   =============================== */
-.stats-bar{
+=============================== */
+
+.stats-bar {
   position: sticky;
   top: 0;
   z-index: 10;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;
-  padding:10px 12px;
-  margin:0 0 16px;
-  background:rgba(5,7,11,0.92);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  margin: 0 0 16px;
+  background: rgba(5,7,11,0.92);
   backdrop-filter: blur(8px);
-  border-bottom:1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-.stat-pill{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-  border-radius:999px;
-  background:var(--panel);
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 8px 22px rgba(0,0,0,0.45);
-  white-space:nowrap;
-  font-size:13px;
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+  white-space: nowrap;
+  font-size: 13px;
 }
-
-.stat-pill span.label{
-  font-weight:600;
-}
-.stat-pill span.details{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.stat-meta{
-  margin-left:auto;
-  font-size:12px;
-  color:var(--muted);
-}
+.stat-pill span.label { font-weight: 600; }
+.stat-pill span.details { font-size: 12px; color: var(--muted); }
+.stat-meta { margin-left:auto; font-size: 12px; color: var(--muted); }
 
 /* ===============================
    Action Buttons
-   =============================== */
-.actions{
-  display:flex;
-  flex-wrap:wrap;
-  position:sticky;
-  gap:10px;
-  margin-bottom:18px;
-  top: 120px; /* Position unterhalb der StatsBar */
-  z-index: 100; /* Sicherstellen, dass die Buttons immer oben bleiben */
-  background: var(--panel); /* Hintergrundfarbe für die Buttons */
+=============================== */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  position: sticky;
+  gap: 10px;
+  margin-bottom: 18px;
+  top: 120px;
+  z-index: 100;
+  background: var(--panel);
   padding: 12px;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Optional: für einen schwebenden Effekt */ 
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.action-btn{
-  appearance:none;
-  border:none;
-  outline:none;
-  cursor:pointer;
-  padding:10px 16px;
-  border-radius:999px;
-  font-size:14px;
-  font-weight:500;
-  color:var(--text);
-  background:linear-gradient(135deg,#1b2437,#222c44);
-  box-shadow:0 10px 26px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  transition:transform .08s ease, box-shadow .12s ease, filter .12s ease;
+.action-btn {
+  appearance: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  background: linear-gradient(135deg,#1b2437,#222c44);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .08s ease, box-shadow .12s ease, filter .12s ease;
 }
-
-.action-btn:hover{
-  filter:brightness(1.06);
-  transform:translateY(-1px);
-  box-shadow:0 14px 34px rgba(0,0,0,0.75);
-}
-.action-btn:active{
-  transform:translateY(0);
-  box-shadow:0 10px 26px rgba(0,0,0,0.6);
-}
-
-/* leichte Farbnuancen für verschiedene Ressourcen */
-.action-btn.stein{ box-shadow:0 10px 26px rgba(0,0,0,0.6),0 0 20px rgba(120,160,255,0.28); }
-.action-btn.holz{  box-shadow:0 10px 26px rgba(0,0,0,0.6),0 0 20px rgba(120,220,160,0.28); }
-.action-btn.metall{box-shadow:0 10px 26px rgba(0,0,0,0.6),0 0 20px rgba(180,180,255,0.35); }
+.action-btn:hover { filter: brightness(1.06); transform: translateY(-1px); box-shadow: 0 14px 34px rgba(0,0,0,0.75);}
+.action-btn:active { transform: translateY(0); box-shadow:0 10px 26px rgba(0,0,0,0.6);}
+.action-btn.stein   { box-shadow: 0 10px 26px rgba(0,0,0,0.6), 0 0 20px rgba(120,160,255,0.28);}
+.action-btn.holz    { box-shadow: 0 10px 26px rgba(0,0,0,0.6), 0 0 20px rgba(120,220,160,0.28);}
+.action-btn.metall  { box-shadow: 0 10px 26px rgba(0,0,0,0.6), 0 0 20px rgba(180,180,255,0.35);}
 
 /* ===============================
-   Upgrade Cards
-   =============================== */
-.upgrade-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-  gap:14px;
-}
+   Upgrade Cards & Grid
+=============================== */
 
-.card{
-  background:var(--panel-soft);
-  border-radius:14px;
-  padding:12px 14px;
-  margin-bottom: 16px;
-  box-shadow:0 10px 26px rgba(0,0,0,0.55);
-  border:1px solid rgba(255,255,255,0.04);
+.upgrade-grid, #upgradeGrid {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  justify-content: center;
 }
 
 .upgrade-col {
@@ -157,7 +132,6 @@ h2{
   min-width: 220px;
   max-width: 290px;
 }
-
 .upgrade-unlock-col {
   flex: 1 1 0;
   min-width: 180px;
@@ -165,44 +139,42 @@ h2{
   border-right: 1px solid var(--panel-soft);
   margin-right: 16px;
   padding-right: 12px;
-
-.card h3{
-  margin:0 0 4px;
-  font-size:16px;
-}
-.card p{
-  margin:2px 0;
-  font-size:13px;
-}
-.card p.muted{
-  color:var(--muted);
-  font-size:12px;
 }
 
-.buy-btn{
-  margin-top:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  border:none;
-  cursor:pointer;
-  font-size:13px;
-  font-weight:600;
-  color:#fff;
-  background:var(--accent);
-  box-shadow:0 6px 16px rgba(0,0,0,0.6);
-  transition:filter .1s ease, transform .06s ease;
+.card {
+  background: var(--panel-soft);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.04);
 }
-.buy-btn:hover:not(:disabled){ filter:brightness(1.06); }
-.buy-btn:active:not(:disabled){ transform:translateY(1px); }
-.buy-btn:disabled{
-  background:#4c5465;
-  cursor:not-allowed;
-  opacity:0.7;
+.card h3 { margin: 0 0 4px; font-size: 16px; }
+.card p { margin: 2px 0; font-size: 13px; }
+.card p.muted { color: var(--muted); font-size: 12px; }
+
+/* Kaufen Button – einheitlich für alle Upgrades und Prestige */
+.buy-btn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+  transition: filter .1s ease, transform .06s ease;
 }
+.buy-btn:hover:not(:disabled) { filter: brightness(1.06); }
+.buy-btn:active:not(:disabled) { transform: translateY(1px);}
+.buy-btn:disabled { background: #4c5465; cursor: not-allowed; opacity: 0.7; }
 
 /* ===============================
-   Prestige
-   =============================== */
+   Prestigebereich
+=============================== */
+
 .prestige-section {
   display: flex;
   flex-direction: column;
@@ -211,7 +183,7 @@ h2{
 
 .prestige-block {
   width: 100%;
-  max-width: 960px; /* oder gleiche Breite wie upgrade-grid cards */
+  max-width: 960px;
   margin: 0 auto 32px auto;
   background: var(--panel-soft);
   border-radius: 14px;
@@ -220,43 +192,21 @@ h2{
   padding: 16px 18px;
   box-sizing: border-box;
 }
+.prestige-block .prestige-info { margin-bottom: 12px; font-size: 14px; }
+/* Prestige-Buy-Button, über buy-btn schon abgedeckt */
 
-.prestige-block .prestige-info {
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-.prestige-block button {
-  font-size: 15px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  border: none;
-  background: var(--accent);
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(47, 208, 132, 0.15);
-  transition: filter .1s;
-}
-.prestige-block button:disabled {
-  background: #4c5465;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-#prestigeUpgrades .card {
-  margin-bottom: 16px;
-}
+/* Extra Abstand für PrestigeUpgrade-Karten */
+#prestigeUpgrades .card { margin-bottom: 16px; }
 
 /* ===============================
-Utility Buttons
+   Utility Buttons (Speichern/Export)
 =============================== */
-
 #saveOptions {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin: 20px 0;
 }
-
 #saveOptions button {
   padding: 10px 20px;
   font-size: 14px;
@@ -266,30 +216,32 @@ Utility Buttons
   cursor: pointer;
   transition: transform 0.2s ease;
 }
-
-#saveOptions button:hover {
-  transform: scale(1.05);
-}
+#saveOptions button:hover { transform: scale(1.05); }
 
 /* ===============================
-   Kaufen Buttons
-   =============================== */
-.buy-btn {
-  margin-top:10px;
-  padding:8px 12px;
-  border-radius:999px;
-  border:none;
-  cursor:pointer;
-  font-size:13px;
-  font-weight:600;
-  color:#fff;
-  background:var(--accent);
-  box-shadow:0 6px 16px rgba(0,0,0,0.6);
-  transition:filter .1s ease, transform .06s ease;
+   Responsive
+=============================== */
+@media (max-width: 720px) {
+  h1 { font-size: 24px; }
+  .stats-bar { gap: 6px; }
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .upgrade-grid, #upgradeGrid {
+    flex-direction: column;
+    gap: 0;
+  }
+  .upgrade-col, .upgrade-unlock-col {
+    min-width: 160px;
+    max-width: unset;
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+  }
+  .prestige-block { max-width: 98vw; }
 }
-.buy-btn:hover:not(:disabled) { filter:brightness(1.06); }
-.buy-btn:active:not(:disabled) { transform:translateY(1px); }
-.buy-btn:disabled { background:#4c5465; cursor:not-allowed; opacity:0.7; }
+
 
    
 /* ===============================
