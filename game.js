@@ -166,47 +166,91 @@ class Game {
       });
   }
 
-  renderUpgrades() {
-    if (!this.upgradeGridEl) return;
-    this.upgradeGridEl.innerHTML = '';
-    this.upgrades.forEach(upg => {
-      const costRes = this.getResource(upg.costRes);
-      if (!costRes || !costRes.unlocked) return;
-      const card = document.createElement('div');
-      card.className = 'card';
-      const title = document.createElement('h3');
-      title.textContent = upg.name;
-      const desc = document.createElement('p');
-      desc.textContent = upg.desc;
-      const costP = document.createElement('p');
-      const cost = upg.getCurrentCost();
-      costP.textContent = `Kosten: ${formatAmount(cost)} ${costRes.name}`;
-      const owned = document.createElement('p');
-      owned.className = 'muted';
-      owned.textContent = upg.single
-        ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
-        : `Stufe: ${upg.level}`;
-      const btn = document.createElement('button');
-      btn.className = 'buy-btn';
-      const canBuy = upg.canBuy(this);
-      btn.disabled = !canBuy;
-      btn.textContent = upg.single && upg.level > 0
-        ? 'Gekauft'
-        : (canBuy ? 'Kaufen' : 'Nicht genug');
-      btn.onclick = () => {
-        if (upg.buy(this)){
-          this.recalculateResourceBonuses();
-          this.renderAll();
-        }
-      };
-      card.appendChild(title);
-      card.appendChild(desc);
-      card.appendChild(costP);
-      card.appendChild(owned);
-      card.appendChild(btn);
-      this.upgradeGridEl.appendChild(card);
-    });
+renderUpgrades() {
+  if (!this.upgradeGridEl) return;
+  this.upgradeGridEl.innerHTML = '';
+
+  // Upgrades nach Gruppe (costRes oder unlock) sortieren
+  const grouped = {};
+  for (const upg of this.upgrades) {
+    // Unlock-Upgrades separat gruppieren
+    if (upg.single && upg.unlocksResourceId) {
+      grouped.unlock = grouped.unlock || [];
+      grouped.unlock.push(upg);
+    } else {
+      const key = upg.costRes || 'Sonstige';
+      grouped[key] = grouped[key] || [];
+      grouped[key].push(upg);
+    }
   }
+
+  // Unlock-Upgrades zuerst (eigene Spalte)
+  if (grouped.unlock && grouped.unlock.length > 0) {
+    const col = document.createElement('div');
+    col.className = 'upgrade-col upgrade-unlock-col';
+    const header = document.createElement('h4');
+    header.textContent = 'Freischaltungen';
+    col.appendChild(header);
+    grouped.unlock.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+    this.upgradeGridEl.appendChild(col);
+  }
+
+  // Dann für jede Ressource eine Spalte/Gruppe
+  for (const [res, arr] of Object.entries(grouped)) {
+    if (res === 'unlock') continue;
+    const col = document.createElement('div');
+    col.className = 'upgrade-col';
+    const header = document.createElement('h4');
+    header.textContent = res.charAt(0).toUpperCase() + res.slice(1);
+    col.appendChild(header);
+    arr.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+    this.upgradeGridEl.appendChild(col);
+  }
+}
+
+// Hilfsfunktion, die eine Upgradekarte erzeugt (aus deiner bisherigen Render-Logik)
+createUpgradeCard(upg) {
+  const costRes = this.getResource(upg.costRes);
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const title = document.createElement('h3');
+  title.textContent = upg.name;
+  const desc = document.createElement('p');
+  desc.textContent = upg.desc;
+  const costP = document.createElement('p');
+  const cost = upg.getCurrentCost();
+  costP.textContent = costRes
+    ? `Kosten: ${formatAmount(cost)} ${costRes.name}`
+    : '';
+  const owned = document.createElement('p');
+  owned.className = 'muted';
+  owned.textContent = upg.single
+    ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
+    : `Stufe: ${upg.level}`;
+  const btn = document.createElement('button');
+  btn.className = 'buy-btn';
+  const canBuy = upg.canBuy(this);
+  btn.disabled = !canBuy;
+  btn.textContent = upg.single && upg.level > 0
+    ? 'Gekauft'
+    : (canBuy ? 'Kaufen' : 'Nicht genug');
+  btn.onclick = () => {
+    if (upg.buy(this)) {
+      this.recalculateResourceBonuses();
+      this.renderAll();
+    }
+  };
+  card.appendChild(title);
+  card.appendChild(desc);
+  card.appendChild(costP);
+  card.appendChild(owned);
+  card.appendChild(btn);
+
+  return card;
+}
+
+
 
   renderPrestigeContainer() {
     const el = document.getElementById('prestigeContainer');
