@@ -91,7 +91,8 @@ h4 {
   flex-wrap: wrap;
   position: sticky;
   gap: 12px;
-  margin-top: 60px;
+  top: 64px;   /* Passe ggf. auf deine tatsächliche Stats-Bar-Höhe an */
+  margin-top: 20px;
   margin-bottom: 18px;
   padding: 13px 11px;
   background: var(--panel);
