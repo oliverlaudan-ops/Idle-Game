@@ -224,6 +224,9 @@ h2{
   opacity: 0.7;
 }
 
+#prestigeUpgrades .card {
+  margin-bottom: 16px;
+}
 
 #saveOptions {
   display: flex;
