@@ -1,4 +1,5 @@
 import GameState from './game-state.js';
+import resourcesList from './resources-def.js';
 import Resource from './resource.js';
 import upgradesList from './upgrades-def.js';
 import Upgrade from './upgrade.js';
@@ -41,20 +42,20 @@ class Game {
   }
 
   setupGameData() {
-    // Ressourcen flexibel hinzufügen
-    this.addResource(new Resource('stein', 'Stein', '🪨', 1, 0, true));
-    this.addResource(new Resource('holz', 'Holz', '🌲', 0, 0, false));
-    this.addResource(new Resource('metall', 'Metall', '⛏️', 0, 0, false));
-    this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));
-
-    for (const upg of upgradesList) {
-      this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
-    }
-    // Prestige-Upgrades
-    this.prestigeUpgrades = prestigeUpgradesList.map(
-      upg => Object.assign(new PrestigeUpgrade({}), upg)
-    );
+  // Ressourcen hinzufügen – jetzt flexibel und zentral verwaltet
+  for (const res of resourcesList) {
+    this.addResource(Object.assign(Object.create(Object.getPrototypeOf(res)), res));
   }
+  // Normale Upgrades hinzufügen
+  for (const upg of upgradesList) {
+    this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
+  }
+  // Prestige-Upgrades hinzufügen
+  this.prestigeUpgrades = prestigeUpgradesList.map(
+    upg => Object.assign(new PrestigeUpgrade({}), upg)
+  );
+}
+
 
   // Flexible Rekonstruktion für alle Ressourcen
   recalculateResourceBonuses() {
