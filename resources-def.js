@@ -5,7 +5,7 @@ import { Resource } from './resource.js';
 const resourcesList = [
   new Resource('stein', 'Stein', '🪨', 1, 0, true),      // Startressource
   new Resource('holz',  'Holz',  '🌲', 0, 0, false),     // Wird freigeschaltet
-  new Resource('ton', 'Ton', '🧱', 0, 0, false) // <--- NEU
+  new Resource('ton', 'Ton', '🧱', 0, 0, false), // <--- NEU
   new Resource('metall','Metall','⛏️', 0, 0, false),    // Wird freigeschaltet
   new Resource('kristall','Kristall','💎', 0, 0, false)  // Wird freigeschaltet
  
