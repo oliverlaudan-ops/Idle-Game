@@ -272,6 +272,27 @@ Utility Buttons
 }
 
 /* ===============================
+   Kaufen Buttons
+   =============================== */
+.buy-btn {
+  margin-top:10px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:600;
+  color:#fff;
+  background:var(--accent);
+  box-shadow:0 6px 16px rgba(0,0,0,0.6);
+  transition:filter .1s ease, transform .06s ease;
+}
+.buy-btn:hover:not(:disabled) { filter:brightness(1.06); }
+.buy-btn:active:not(:disabled) { transform:translateY(1px); }
+.buy-btn:disabled { background:#4c5465; cursor:not-allowed; opacity:0.7; }
+
+   
+/* ===============================
    Responsive
    =============================== */
 @media (max-width:720px){
