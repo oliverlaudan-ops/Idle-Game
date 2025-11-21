@@ -1,8 +1,7 @@
-import GameState from './game-state.js';
-import resourcesList from './resources-def.js';
-import Resource from './resource.js';
-import upgradesList from './upgrades-def.js';
-import Upgrade from './upgrade.js';
+import { GameState } from './game-state.js';
+import { Resource } from './resource.js';
+import upgradesList from './upgrades-def.js'; // upgradesList ist default exportiert, daher OK!
+import { Upgrade } from './upgrade.js';
 import prestigeUpgradesList, { PrestigeUpgrade } from './prestige-upgrades.js';
 
 // Hilfsfunktionen
