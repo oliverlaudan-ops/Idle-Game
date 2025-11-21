@@ -1,4 +1,5 @@
 import { GameState } from './game-state.js';
+import resourcesList from './resources-def.js';
 import { Resource } from './resource.js';
 import upgradesList from './upgrades-def.js'; // upgradesList ist default exportiert, daher OK!
 import { Upgrade } from './upgrade.js';
