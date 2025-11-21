@@ -1,5 +1,5 @@
 // resources-def.js
-import Resource from './resource.js';
+import { Resource } from './resource.js';
 
 // Alle Ressourcen als Array definieren
 const resourcesList = [
