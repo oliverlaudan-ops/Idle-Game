@@ -116,6 +116,44 @@ const upgradesList = [
       game.getResource('holz').rps += 5;
     }
   }),
+  // Ton Upgrades
+  new Upgrade({
+    id:'toepferei',
+    name:'Töpferei',
+    desc:'Schaltet TON frei',
+    costRes:'stein',
+    costBase:600,
+    costMult:1.8,
+    single:true,
+    unlocksResourceId:'ton',
+    apply:(game)=>{
+      const res = game.getResource('ton');
+      res.rpc = Math.max(res.rpc,1);
+    }
+  }),
+  new Upgrade({
+    id:'lehmgrube',
+    name:'Lehmgrube',
+    desc:'+1 Ton pro Klick',
+    costRes:'ton',
+    costBase:200,
+    costMult:1.20,
+    apply:(game)=>{
+      game.getResource('ton').rpc += 1;
+    }
+  }),
+  new Upgrade({
+    id:'ziegelei',
+    name:'Ziegelei',
+    desc:'+2 Ton / Sekunde',
+    costRes:'ton',
+    costBase:1500,
+    costMult:1.35,
+    apply:(game)=>{
+      game.getResource('ton').rps += 2;
+    }
+  }),
+  // ...weitere Ton-Upgrades...
   // Metall freischalten & verbessern
   new Upgrade({
     id:'schmiede',
