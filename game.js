@@ -1,13 +1,23 @@
-// game.js
-
-import { GameState } from './game-state.js';
-import { Resource } from './resource.js';
+import GameState from './game-state.js';
+import Resource from './resource.js';
 import upgradesList from './upgrades-def.js';
-import { Upgrade } from './upgrade.js';
+import Upgrade from './upgrade.js';
 import prestigeUpgradesList, { PrestigeUpgrade } from './prestige-upgrades.js';
 
+// Hilfsfunktionen
+function formatAmount(n){
+  if (n >= 1_000_000) return (n/1_000_000).toFixed(2)+'M';
+  if (n >= 1_000)     return (n/1_000).toFixed(2)+'K';
+  return n.toFixed(0);
+}
+function formatRate(n){
+  const abs = Math.abs(n);
+  if (abs === 0) return '0';
+  if (abs < 1) return n.toFixed(2);
+  if (abs < 1000) return n.toFixed(1);
+  return formatAmount(n);
+}
 
-// Main Game Class
 class Game {
   constructor() {
     this.resources = {};
@@ -25,32 +35,35 @@ class Game {
   addUpgrade(upg) { this.upgrades.push(upg); }
 
   setupDOM() {
-    this.statsBarEl    = document.getElementById('statsBar');
-    this.actionsEl     = document.getElementById('actions');
+    this.statsBarEl = document.getElementById('statsBar');
+    this.actionsEl = document.getElementById('actions');
     this.upgradeGridEl = document.getElementById('upgradeGrid');
   }
 
   setupGameData() {
-    this.addResource(new Resource('stein','Stein','🪨',1,0,true));
-    this.addResource(new Resource('holz', 'Holz','🌲',0,0,false));
-    this.addResource(new Resource('metall','Metall','⛏️',0,0,false));
+    // Ressourcen flexibel hinzufügen
+    this.addResource(new Resource('stein', 'Stein', '🪨', 1, 0, true));
+    this.addResource(new Resource('holz', 'Holz', '🌲', 0, 0, false));
+    this.addResource(new Resource('metall', 'Metall', '⛏️', 0, 0, false));
     this.addResource(new Resource('kristall', 'Kristall', '💎', 0, 0, false));
+
     for (const upg of upgradesList) {
       this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
     }
+    // Prestige-Upgrades
+    this.prestigeUpgrades = prestigeUpgradesList.map(
+      upg => Object.assign(new PrestigeUpgrade({}), upg)
+    );
   }
 
+  // Flexible Rekonstruktion für alle Ressourcen
   recalculateResourceBonuses() {
-    // Grundwerte
-    this.getResource('stein').rpc = 1;
-    this.getResource('holz').rpc = 0;
-    this.getResource('metall').rpc = 0;
-    this.getResource('kristall').rpc = 0;
-    this.getResource('stein').rps = 0;
-    this.getResource('holz').rps = 0;
-    this.getResource('metall').rps = 0;
-    this.getResource('kristall').rps = 0;
-    // Upgrades erneut anwenden
+    // Alle Ressourcen-Grundwerte dynamisch setzen
+    for (const key in this.resources) {
+      this.resources[key].rpc = (key === 'stein') ? 1 : 0;
+      this.resources[key].rps = 0;
+    }
+    // Normale Upgrades erneut anwenden
     for (let upg of this.upgrades) {
       if (upg.level > 0) {
         for(let i=0; i<upg.level; ++i) {
@@ -68,6 +81,12 @@ class Game {
         }
       }
     }
+    // Prestige-Upgrades ebenfalls anwenden
+    for (let u of this.prestigeUpgrades) {
+      if (u.level > 0 && typeof u.applyFn === "function") {
+        for(let i=0; i<u.level; ++i) u.applyFn(this, gameState, u.level);
+      }
+    }
   }
 
   syncToState() {
@@ -78,13 +97,12 @@ class Game {
       id: u.id,
       level: u.level
     }));
-    
     gameState.prestigeUpgrades = this.prestigeUpgrades.map(u => ({
-    id: u.id,
-    level: u.level  
+      id: u.id,
+      level: u.level
     }));
   }
-  
+
   syncFromState() {
     for (let key in this.resources) {
       this.resources[key].amount = gameState[key] ?? 0;
@@ -95,17 +113,12 @@ class Game {
         u.level = saved ? saved.level : 0;
       }
     }
-  if (Array.isArray(gameState.prestigeUpgrades)) {
-    for (let u of this.prestigeUpgrades) {
-      let saved = gameState.prestigeUpgrades.find(su => su.id === u.id);
-      u.level = saved ? saved.level : 0;
+    if (Array.isArray(gameState.prestigeUpgrades)) {
+      for (let u of this.prestigeUpgrades) {
+        let saved = gameState.prestigeUpgrades.find(su => su.id === u.id);
+        u.level = saved ? saved.level : 0;
+      }
     }
-  }
-  // Eventuelle Effekte erneut anwenden:
-  for (let u of this.prestigeUpgrades) {
-    if (u.level > 0 && typeof u.applyFn === "function") {
-      for(let i=0; i<u.level; ++i) u.applyFn(this, gameState, u.level);
-    }}
     this.recalculateResourceBonuses();
   }
 
@@ -222,17 +235,16 @@ class Game {
     const gained = Math.floor(gameState.stein / 1_000_000);
     gameState.prestige += gained;
     gameState.prestigeBonus = 1 + gameState.prestige * 0.1;
-    for (const rId in this.resources) {
-      this.resources[rId].amount = 0;
-      if (rId !== 'stein') this.resources[rId].unlocked = false;
-    }
-    this.upgrades.forEach(u => u.level = 0);
+    // JETZT ALLE Ressourcen automatisch zurücksetzen und ggf. sperren
     for (const key in this.resources) {
       this.resources[key].amount = 0;
-      gameState[key] = 0; // sorgt auch im Spielstand für den Reset
-      // Optional: Sperre alle außer Basis-Resource nach Prestige
+      gameState[key] = 0;
       if (key !== 'stein') this.resources[key].unlocked = false;
     }
+    this.upgrades.forEach(u => u.level = 0);
+    this.prestigeUpgrades.forEach(u => {
+      if (!u.persistent) u.level = 0; // Du kannst bei Bedarf PrestigeUpgrades flaggen als "persistent:false"
+    });
     this.recalculateResourceBonuses();
     this.syncToState();
     gameState.save();
@@ -241,34 +253,33 @@ class Game {
   }
 
   renderPrestigeUpgrades() {
-  const el = document.getElementById('prestigeUpgrades');
-  if (!el) return;
-  el.innerHTML = '<h3>Prestige Upgrades</h3>';
-  this.prestigeUpgrades.forEach(upg => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <strong>${upg.name}</strong><br>
-      <span>${upg.desc}</span><br>
-      <span>Kosten: ${upg.getCurrentCost()} Prestige-Punkte</span><br>
-      <span>Level: ${upg.level}</span>
-    `;
-    const btn = document.createElement('button');
-    btn.className = 'buy-btn';
-    btn.disabled = !upg.canBuy(gameState);
-    btn.textContent = upg.single && upg.level > 0 ? 'Gekauft' : (btn.disabled ? 'Nicht genug' : 'Kaufen');
-    btn.onclick = () => {
-      if (upg.buy(this, gameState)) {
-        this.syncToState();
-        gameState.save();
-        this.renderAll();
-      }
-    };
-    card.appendChild(btn);
-    el.appendChild(card);
-  });
-}
-
+    const el = document.getElementById('prestigeUpgrades');
+    if (!el) return;
+    el.innerHTML = '<h3>Prestige Upgrades</h3>';
+    this.prestigeUpgrades.forEach(upg => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <strong>${upg.name}</strong><br>
+        <span>${upg.desc}</span><br>
+        <span>Kosten: ${upg.getCurrentCost()} Prestige-Punkte</span><br>
+        <span>Level: ${upg.level}</span>
+      `;
+      const btn = document.createElement('button');
+      btn.className = 'buy-btn';
+      btn.disabled = !upg.canBuy(gameState);
+      btn.textContent = upg.single && upg.level > 0 ? 'Gekauft' : (btn.disabled ? 'Nicht genug' : 'Kaufen');
+      btn.onclick = () => {
+        if (upg.buy(this, gameState)) {
+          this.syncToState();
+          gameState.save();
+          this.renderAll();
+        }
+      };
+      card.appendChild(btn);
+      el.appendChild(card);
+    });
+  }
 
   renderAll() {
     this.renderStatsBar();
@@ -293,21 +304,7 @@ class Game {
   }
 }
 
-// Hilfsfunktionen wie vorher
-function formatAmount(n){
-  if (n >= 1_000_000) return (n/1_000_000).toFixed(2)+'M';
-  if (n >= 1_000)     return (n/1_000).toFixed(2)+'K';
-  return n.toFixed(0);
-}
-function formatRate(n){
-  const abs = Math.abs(n);
-  if (abs === 0) return '0';
-  if (abs < 1) return n.toFixed(2);
-  if (abs < 1000) return n.toFixed(1);
-  return formatAmount(n);
-}
-
-// Init/Bootstrapping
+// Bootstrap
 let gameState, game;
 
 document.addEventListener("DOMContentLoaded", () => {
