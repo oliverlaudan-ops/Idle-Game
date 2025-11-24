@@ -146,6 +146,7 @@ class Game {
     meta.className = 'stat-meta';
     meta.textContent = `Tick: ${(this.tickMs / 1000).toFixed(1)}s`;
     this.statsBarEl.appendChild(meta);
+    updateActionsStickyTop();
   }
 
   renderActions() {
@@ -165,6 +166,7 @@ class Game {
         };
         this.actionsEl.appendChild(btn);
       });
+    updateActionsStickyTop();
   }
 
   renderUpgrades() {
