@@ -257,6 +257,42 @@ const upgradesList = [
       game.getResource('metall').rps += 5;
     }
   }),
+    new Upgrade({
+    id:'eisenwerk',
+    name:'Eisenwerk',
+    desc:'+20 Metall / Sekunde',
+    costRes:'metall',
+    costBase:5000,
+    costMult:1.55,
+    apply:(game)=>{
+      game.getResource('metall').rps += 20;
+    }
+  }),
+    new Upgrade({
+    id:'shahl_fabrik',
+    name:'Stahl-Fabrik',
+    desc:'+100 Metall / Sekunde',
+    costRes:'metall',
+    costBase:15000,
+    costMult:1.6,
+    apply:(game)=>{
+      game.getResource('metall').rps += 100;
+    }
+  }),
+  // Metall Multiplikator
+  new Upgrade({
+    id: 'metall_multiplikator',
+    name: 'Effizienzverbesserung',
+    desc: 'Erhöht METALL Produktionsrate um 1.5x',
+    costRes: 'metall',
+    costBase: 5000,
+    costMult: 1.5,
+    single: true,
+    apply: (game) => {
+      game.getResource('metall').rpc *= 1.5;
+      game.getResource('metall').rps *= 1.5;
+    }
+  }),
   // Kristall freischalten & verbessern
   new Upgrade({
     id:'kristallberg',
@@ -303,6 +339,42 @@ const upgradesList = [
     costMult:2,
     apply:(game)=>{
       game.getResource('kristall').rps += 15;
+    }
+  }),
+   new Upgrade({
+    id:'kristallsauger',
+    name:'Kristall-Sauger',
+    desc:'+60 Kristall / Sekunde',
+    costRes:'kristall',
+    costBase:10000,
+    costMult:2.15,
+    apply:(game)=>{
+      game.getResource('kristall').rps += 60;
+    }
+  }),
+   new Upgrade({
+    id:'kristall_fabrik',
+    name:'Kristall-Fabrik',
+    desc:'+175 Kristall / Sekunde',
+    costRes:'kristall',
+    costBase:25000,
+    costMult:2.5,
+    apply:(game)=>{
+      game.getResource('kristall').rps += 175;
+    }
+  }),
+  // Kristall Multiplikator
+  new Upgrade({
+    id: 'metall_multiplikator',
+    name: 'Effizienzverbesserung',
+    desc: 'Erhöht Kristall Produktionsrate um 1.5x',
+    costRes: 'kristall',
+    costBase: 2500,
+    costMult: 1.5,
+    single: true,
+    apply: (game) => {
+      game.getResource('kristall').rpc *= 1.5;
+      game.getResource('´kristall').rps *= 1.5;
     }
   })
 ];
