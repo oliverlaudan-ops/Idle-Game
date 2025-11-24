@@ -19,6 +19,16 @@ function formatRate(n) {
   return formatAmount(n);
 }
 
+function updateActionsStickyTop() {
+  const statsBar = document.querySelector('.stats-bar');
+  const actions = document.querySelector('.actions');
+  if (statsBar && actions) {
+    const barHeight = statsBar.offsetHeight;
+    actions.style.top = (barHeight + 12) + 'px'; // 12px als Abstand
+  }
+}
+
+
 class Game {
   constructor() {
     this.resources = {};
