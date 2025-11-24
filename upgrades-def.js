@@ -51,7 +51,7 @@ const upgradesList = [
   // Stein Multiplikator
   new Upgrade({
     id: 'stein_multiplikator',
-    name: 'Effizienzverbesserung',
+    name: 'Stein-Effizienzverbesserung',
     desc: 'Erhöht STEIN Produktionsrate um 1.5x',
     costRes: 'stein',
     costBase: 10000,
@@ -124,7 +124,7 @@ const upgradesList = [
   // Holz Multiplikator
   new Upgrade({
     id: 'holz_multiplikator',
-    name: 'Effizienzverbesserung',
+    name: 'Holz-Effizienzverbesserung',
     desc: 'Erhöht HOLZ Produktionsrate um 1.5x',
     costRes: 'holz',
     costBase: 10000,
@@ -177,7 +177,7 @@ const upgradesList = [
     name:'Ton-Manufaktur',
     desc:'+10 Ton / Sekunde',
     costRes:'ton',
-    costBase:1750,
+    costBase:2500,
     costMult:1.4,
     apply:(game)=>{
       game.getResource('ton').rps += 10;
@@ -197,7 +197,7 @@ const upgradesList = [
   // Ton Multiplikator
   new Upgrade({
     id: 'ton_multiplikator',
-    name: 'Effizienzverbesserung',
+    name: 'Ton-Effizienzverbesserung',
     desc: 'Erhöht TON Produktionsrate um 1.5x',
     costRes: 'ton',
     costBase: 10000,
@@ -282,15 +282,15 @@ const upgradesList = [
   // Metall Multiplikator
   new Upgrade({
     id: 'metall_multiplikator',
-    name: 'Effizienzverbesserung',
+    name: 'Metall-Effizienzverbesserung',
     desc: 'Erhöht METALL Produktionsrate um 1.5x',
     costRes: 'metall',
-    costBase: 10000,
+    costBase: 15000,
     costMult: 1.5,
     single: true,
     apply: (game) => {
-      game.getResource('metall').rpc *= 1.5;
-      game.getResource('metall').rps *= 1.5;
+      game.getResource('metall').rpc *= 1.6;
+      game.getResource('metall').rps *= 1.6;
     }
   }),
   // Kristall freischalten & verbessern
@@ -366,15 +366,15 @@ const upgradesList = [
   // Kristall Multiplikator
   new Upgrade({
     id: 'kristall_multiplikator',
-    name: 'Effizienzverbesserung',
+    name: 'Kristall-Effizienzverbesserung',
     desc: 'Erhöht Kristall Produktionsrate um 1.5x',
     costRes: 'kristall',
-    costBase: 10000,
+    costBase: 25000,
     costMult: 1.5,
     single: true,
     apply: (game) => {
-      game.getResource('kristall').rpc *= 1.5;
-      game.getResource('kristall').rps *= 1.5;
+      game.getResource('kristall').rpc *= 1.75;
+      game.getResource('kristall').rps *= 1.75;
     }
   })
 ];
