@@ -238,7 +238,9 @@ class Game {
     progress.className = 'progress';
     progress.style.width = percent + '%';
     progressBar.appendChild(progress);
-
+    // Fortschrittsleiste zwischen Kostenanzeige und Kaufen-Button einfügen
+    card.appendChild(progressBar);
+    }
     const btn = document.createElement('button');
     btn.className = 'buy-btn';
     const canBuy = upg.canBuy(this);
