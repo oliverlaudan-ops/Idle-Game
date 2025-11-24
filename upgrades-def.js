@@ -200,7 +200,7 @@ const upgradesList = [
     name: 'Effizienzverbesserung',
     desc: 'Erhöht TON Produktionsrate um 1.5x',
     costRes: 'ton',
-    costBase: 7500,
+    costBase: 10000,
     costMult: 1.5,
     single: true,
     apply: (game) => {
@@ -285,7 +285,7 @@ const upgradesList = [
     name: 'Effizienzverbesserung',
     desc: 'Erhöht METALL Produktionsrate um 1.5x',
     costRes: 'metall',
-    costBase: 5000,
+    costBase: 10000,
     costMult: 1.5,
     single: true,
     apply: (game) => {
@@ -369,7 +369,7 @@ const upgradesList = [
     name: 'Effizienzverbesserung',
     desc: 'Erhöht Kristall Produktionsrate um 1.5x',
     costRes: 'kristall',
-    costBase: 2500,
+    costBase: 10000,
     costMult: 1.5,
     single: true,
     apply: (game) => {
