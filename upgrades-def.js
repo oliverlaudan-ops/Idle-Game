@@ -110,6 +110,17 @@ const upgradesList = [
       game.getResource('holz').rps += 5;
     }
   }),
+  new Upgrade({
+    id:'tischlerei',
+    name:'Tischlerei',
+    desc:'+20 Holz / Sekunde',
+    costRes:'holz',
+    costBase:4500,
+    costMult:1.5,
+    apply:(game)=>{
+      game.getResource('holz').rps += 20;
+    }
+  }),
   // Holz Multiplikator
   new Upgrade({
     id: 'holz_multiplikator',
