@@ -239,7 +239,6 @@ class Game {
     progress.style.width = percent + '%';
     progressBar.appendChild(progress);
     // Fortschrittsleiste zwischen Kostenanzeige und Kaufen-Button einfügen
-    card.appendChild(progressBar);
     }
     const btn = document.createElement('button');
     btn.className = 'buy-btn';
@@ -259,6 +258,7 @@ class Game {
     card.appendChild(costP);
     card.appendChild(owned);
     card.appendChild(btn);
+    card.appendChild(progressBar);
 
     return card;
   }
