@@ -226,6 +226,19 @@ class Game {
     owned.textContent = upg.single
       ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
       : `Stufe: ${upg.level}`;
+    if (costRes) {
+    const current = costRes.amount;
+    const nextCost = upg.getCurrentCost();
+    const percent = Math.min(100, (current / nextCost) * 100);
+
+    const progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+
+    const progress = document.createElement('div');
+    progress.className = 'progress';
+    progress.style.width = percent + '%';
+    progressBar.appendChild(progress);
+
     const btn = document.createElement('button');
     btn.className = 'buy-btn';
     const canBuy = upg.canBuy(this);
