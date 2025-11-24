@@ -48,24 +48,18 @@ const upgradesList = [
       game.getResource('stein').rps += 20;
     }
   }),
-  // Globaler Multiplikator
+  // Stein Multiplikator
   new Upgrade({
-    id: 'globaler-multiplikator',
+    id: 'stein_multiplikator',
     name: 'Effizienzverbesserung',
-    desc: 'Erhöht alle Produktionsraten um 1.5x',
+    desc: 'Erhöht STEIN Produtionsrate um 1.5x',
     costRes: 'stein',
     costBase: 10000,
     costMult: 1.5,
     single: true,
     apply: (game) => {
       game.getResource('stein').rpc *= 1.5;
-      game.getResource('holz').rpc *= 1.5;
-      game.getResource('metall').rpc *= 1.5;
-      game.getResource('kristall').rpc *= 1.5;
       game.getResource('stein').rps *= 1.5;
-      game.getResource('holz').rps *= 1.5;
-      game.getResource('metall').rps *= 1.5;
-      game.getResource('kristall').rps *= 1.5;
     }
   }),
   // Holz-Upgradekette
@@ -114,6 +108,20 @@ const upgradesList = [
     costMult:1.4,
     apply:(game)=>{
       game.getResource('holz').rps += 5;
+    }
+  }),
+  // Holz Multiplikator
+  new Upgrade({
+    id: 'holz_multiplikator',
+    name: 'Effizienzverbesserung',
+    desc: 'Erhöht HOLZ Produtionsrate um 1.5x',
+    costRes: 'HOLZ',
+    costBase: 10000,
+    costMult: 1.5,
+    single: true,
+    apply: (game) => {
+      game.getResource('holz').rpc *= 1.5;
+      game.getResource('holz').rps *= 1.5;
     }
   }),
   // Ton Upgrades
