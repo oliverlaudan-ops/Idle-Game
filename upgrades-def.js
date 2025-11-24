@@ -269,7 +269,7 @@ const upgradesList = [
     }
   }),
     new Upgrade({
-    id:'shahl_fabrik',
+    id:'stahl_fabrik',
     name:'Stahl-Fabrik',
     desc:'+100 Metall / Sekunde',
     costRes:'metall',
@@ -365,7 +365,7 @@ const upgradesList = [
   }),
   // Kristall Multiplikator
   new Upgrade({
-    id: 'metall_multiplikator',
+    id: 'kristall_multiplikator',
     name: 'Effizienzverbesserung',
     desc: 'Erhöht Kristall Produktionsrate um 1.5x',
     costRes: 'kristall',
@@ -374,7 +374,7 @@ const upgradesList = [
     single: true,
     apply: (game) => {
       game.getResource('kristall').rpc *= 1.5;
-      game.getResource('´kristall').rps *= 1.5;
+      game.getResource('kristall').rps *= 1.5;
     }
   })
 ];
