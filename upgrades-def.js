@@ -174,7 +174,7 @@ const upgradesList = [
   }),
   new Upgrade({
     id:'ton_manufaktur',
-    name:'Ton-Manukaktur',
+    name:'Ton-Manufaktur',
     desc:'+10 Ton / Sekunde',
     costRes:'ton',
     costBase:1750,
