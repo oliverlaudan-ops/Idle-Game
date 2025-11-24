@@ -52,7 +52,7 @@ const upgradesList = [
   new Upgrade({
     id: 'stein_multiplikator',
     name: 'Effizienzverbesserung',
-    desc: 'Erhöht STEIN Produtionsrate um 1.5x',
+    desc: 'Erhöht STEIN Produktionsrate um 1.5x',
     costRes: 'stein',
     costBase: 10000,
     costMult: 1.5,
@@ -125,8 +125,8 @@ const upgradesList = [
   new Upgrade({
     id: 'holz_multiplikator',
     name: 'Effizienzverbesserung',
-    desc: 'Erhöht HOLZ Produtionsrate um 1.5x',
-    costRes: 'HOLZ',
+    desc: 'Erhöht HOLZ Produktionsrate um 1.5x',
+    costRes: 'holz',
     costBase: 10000,
     costMult: 1.5,
     single: true,
