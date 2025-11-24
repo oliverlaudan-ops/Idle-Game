@@ -172,6 +172,42 @@ const upgradesList = [
       game.getResource('ton').rps += 2;
     }
   }),
+  new Upgrade({
+    id:'ton_manufaktur',
+    name:'Ton-Manukaktur',
+    desc:'+10 Ton / Sekunde',
+    costRes:'ton',
+    costBase:1750,
+    costMult:1.4,
+    apply:(game)=>{
+      game.getResource('ton').rps += 10;
+    }
+  }),
+  new Upgrade({
+    id:'ziegel_fabrik',
+    name:'Ziegel-Fabrik',
+    desc:'+50 Ton / Sekunde',
+    costRes:'ton',
+    costBase:15000,
+    costMult:1.5,
+    apply:(game)=>{
+      game.getResource('ton').rps += 50;
+    }
+  }),
+  // Ton Multiplikator
+  new Upgrade({
+    id: 'ton_multiplikator',
+    name: 'Effizienzverbesserung',
+    desc: 'Erhöht TON Produktionsrate um 1.5x',
+    costRes: 'ton',
+    costBase: 7500,
+    costMult: 1.5,
+    single: true,
+    apply: (game) => {
+      game.getResource('ton').rpc *= 1.5;
+      game.getResource('ton').rps *= 1.5;
+    }
+  }),
   // ...weitere Ton-Upgrades...
   // Metall freischalten & verbessern
   new Upgrade({
