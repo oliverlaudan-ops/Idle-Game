@@ -58,7 +58,11 @@ class Game {
         btn.classList.add("active");
         btn.classList.add("buy-btn");
         document.querySelectorAll(".upgrade-grid").forEach(grid => {
-          grid.style.display = grid.dataset.tab === target ? "grid" : "none";
+        if (grid.dataset.tab === target) {
+          grid.style.display = "flex";   // wichtig: Flex für Spalten-Layout
+        } else {
+          grid.style.display = "none";
+        }
         });
       });
     });
