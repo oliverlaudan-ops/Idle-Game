@@ -1,16 +1,17 @@
 // upgrade.js
 
 export class Upgrade {
-  constructor(opts){
-    this.id   = opts.id;
+  constructor(opts) {
+    this.id = opts.id;
     this.name = opts.name;
     this.desc = opts.desc;
-    this.costRes  = opts.costRes;
+    this.costRes = opts.costRes;
     this.costBase = opts.costBase;
     this.costMult = opts.costMult ?? 1.15;
-    this.applyFn  = opts.apply;
-    this.single   = !!opts.single;
-    this.unlocksResourceId = opts.unlocksResourceId || null;
+    this.applyFn = opts.apply;
+    this.single = !!opts.single;
+    this.unlocksResourceId = opts.unlocksResourceId ?? null;
+    this.research = !!opts.research; // NEU
     this.level = 0;
   }
 
