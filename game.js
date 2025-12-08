@@ -49,6 +49,18 @@ class Game {
     this.statsBarEl = document.getElementById('statsBar');
     this.actionsEl = document.getElementById('actions');
     this.upgradeGridEl = document.getElementById('upgradeGrid');
+    this.researchGridEl = document.getElementById("researchGrid"); // NEU
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.dataset.tab;
+        tabButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.querySelectorAll(".upgrade-grid").forEach(grid => {
+          grid.style.display = grid.dataset.tab === target ? "grid" : "none";
+        });
+      });
+    });
   }
 
   setupGameData() {
@@ -170,43 +182,61 @@ class Game {
   }
 
   renderUpgrades() {
-    if (!this.upgradeGridEl) return;
-    this.upgradeGridEl.innerHTML = '';
+  if (!this.upgradeGridEl || !this.researchGridEl) return;
 
-    // Upgrades nach Gruppe (costRes oder unlock) sortieren
-    const grouped = {};
-    for (const upg of this.upgrades) {
-      if (upg.single && upg.unlocksResourceId) {
-        grouped.unlock = grouped.unlock || [];
-        grouped.unlock.push(upg);
-      } else {
-        const key = upg.costRes || 'Sonstige';
-        grouped[key] = grouped[key] || [];
-        grouped[key].push(upg);
-      }
-    }
+  this.upgradeGridEl.innerHTML = "";
+  this.researchGridEl.innerHTML = "";
 
-    if (grouped.unlock && grouped.unlock.length > 0) {
-      const col = document.createElement('div');
-      col.className = 'upgrade-col upgrade-unlock-col';
-      const header = document.createElement('h4');
-      header.textContent = 'Freischaltungen';
-      col.appendChild(header);
-      grouped.unlock.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
-      this.upgradeGridEl.appendChild(col);
-    }
+  const normalUpgrades = this.upgrades.filter(u => !u.research);
+  const researchUpgrades = this.upgrades.filter(u => u.research);
 
-    for (const [res, arr] of Object.entries(grouped)) {
-      if (res === 'unlock') continue;
-      const col = document.createElement('div');
-      col.className = 'upgrade-col';
-      const header = document.createElement('h4');
-      header.textContent = res.charAt(0).toUpperCase() + res.slice(1);
-      col.appendChild(header);
-      arr.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
-      this.upgradeGridEl.appendChild(col);
+  // Bisherige Gruppierungslogik (unlock / nach Ressource)
+  const grouped = {};
+  for (const upg of normalUpgrades) {
+    if (upg.single && upg.unlocksResourceId) {
+      grouped.unlock = grouped.unlock || [];
+      grouped.unlock.push(upg);
+    } else {
+      const key = upg.costRes || "Sonstige";
+      grouped[key] = grouped[key] || [];
+      grouped[key].push(upg);
     }
   }
+
+  // Normale Upgrades wie bisher ins upgradeGridEl
+  if (grouped.unlock && grouped.unlock.length > 0) {
+    const col = document.createElement("div");
+    col.className = "upgrade-col upgrade-unlock-col";
+    const header = document.createElement("h4");
+    header.textContent = "Freischaltungen";
+    col.appendChild(header);
+    grouped.unlock.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+    this.upgradeGridEl.appendChild(col);
+  }
+
+  for (const [res, arr] of Object.entries(grouped)) {
+    if (res === "unlock") continue;
+    const col = document.createElement("div");
+    col.className = "upgrade-col";
+    const header = document.createElement("h4");
+    header.textContent = res.charAt(0).toUpperCase() + res.slice(1);
+    col.appendChild(header);
+    arr.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+    this.upgradeGridEl.appendChild(col);
+  }
+
+  // Forschungs-Upgrades in separatem Grid
+  if (researchUpgrades.length > 0) {
+    const col = document.createElement("div");
+    col.className = "upgrade-col";
+    const header = document.createElement("h4");
+    header.textContent = "Forschung";
+    col.appendChild(header);
+    researchUpgrades.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+    this.researchGridEl.appendChild(col);
+  }
+}
+
 
   createUpgradeCard(upg) {
     const costRes = this.getResource(upg.costRes);
