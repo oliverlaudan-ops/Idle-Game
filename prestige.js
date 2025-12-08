@@ -35,9 +35,11 @@ export function doPrestige(game, gameState) {
   // Wenn nichts zu gewinnen, brich ab
   if (gained <= 0) return false;
 
-  // Setze den Prestige-Zähler und den Prestige-Bonus (z.B. +10% pro Punkt)
+  // Setze den Prestige-Zähler und den Prestige-Bonus 
   gameState.prestige = totalPrestige;
-  gameState.prestigeBonus = 1 + gameState.prestige * 0.1;
+  // Neuer Prestige-Bonus: sanftere Wurzel-Skalierung
+  const p = gameState.prestige;
+  gameState.prestigeBonus = 1 + Math.sqrt(p) * 0.1;
 
   // Setze alle Ressourcen auf null (Soft-Reset)
   for (const key in game.resources) {
