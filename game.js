@@ -230,14 +230,22 @@ class Game {
     this.upgradeGridEl.appendChild(col);
   }
 
-  // Forschungs-Upgrades in separatem Grid
-  if (researchUpgrades.length > 0) {
+  // Forschungs-Upgrades nach costRes gruppieren
+  const researchByRes = {};
+  for (const upg of researchUpgrades) {
+    const key = upg.costRes || "sonstige";
+    if (!researchByRes[key]) researchByRes[key] = [];
+    researchByRes[key].push(upg);
+  }
+
+  for (const [res, arr] of Object.entries(researchByRes)) {
     const col = document.createElement("div");
     col.className = "upgrade-col";
     const header = document.createElement("h4");
-    header.textContent = "Forschung";
+    header.textContent = res.charAt(0).toUpperCase() + res.slice(1) + " Forschung";
     col.appendChild(header);
-    researchUpgrades.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
+
+    arr.forEach(upg => col.appendChild(this.createUpgradeCard(upg)));
     this.researchGridEl.appendChild(col);
   }
 }
