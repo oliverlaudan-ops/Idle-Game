@@ -1,6 +1,7 @@
 import { GameState } from './game-state.js';
 import resourcesList from './resources-def.js';
 import upgradesList from './upgrades-def.js';
+import researchUpgradesList from "./research-def.js"; // NEU
 import prestigeUpgradesList, { PrestigeUpgrade } from './prestige-upgrades.js';
 // Prestige-Import NEU:
 import { calculatePrestigePoints, doPrestige } from './prestige.js';
@@ -74,6 +75,9 @@ class Game {
     }
     for (const upg of upgradesList) {
       this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
+    }
+    for (const upg of researchUpgradesList) {          // NEU
+    this.addUpgrade(Object.assign(Object.create(Object.getPrototypeOf(upg)), upg));
     }
     this.prestigeUpgrades = prestigeUpgradesList.map(
       upg => Object.assign(new PrestigeUpgrade({}), upg)
