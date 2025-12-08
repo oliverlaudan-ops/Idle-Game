@@ -21,26 +21,33 @@
       <!-- Upgrade-Bereich -->
       <section>
         <h2>Upgrades</h2>
-        <div id="upgradeGrid" class="upgrade-grid"></div>
+      
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="normal">Produktion</button>
+          <button class="tab-btn" data-tab="research">Forschung</button>
+        </div>
+      
+        <div id="upgradeGrid" class="upgrade-grid" data-tab="normal"></div>
+        <div id="researchGrid" class="upgrade-grid" data-tab="research" style="display:none;"></div>
       </section>
-    </div>
+
 
     <!-- Prestige -->
     <section class="prestige-section">
-  <h2>Prestige</h2>
-  <div id="prestigeContainer" class="prestige-block"></div>
-  <div id="prestigeUpgrades" class="prestige-block"></div>
-</section>
+      <h2>Prestige</h2>
+      <div id="prestigeContainer" class="prestige-block"></div>
+      <div id="prestigeUpgrades" class="prestige-block"></div>
+    </section>
     
     
     <!-- Buttons für Import, Export und Reset -->
-<div id="saveOptions" class="row" style="gap: 10px;">
-  <button id="exportBtn" class="action-btn">Spiel exportieren</button>
-  <button id="importBtn" class="action-btn">Spiel importieren</button>
-  <button id="resetBtn" class="action-btn">Spiel zurücksetzen</button>
-</div>
+    <div id="saveOptions" class="row" style="gap: 10px;">
+      <button id="exportBtn" class="action-btn">Spiel exportieren</button>
+      <button id="importBtn" class="action-btn">Spiel importieren</button>
+      <button id="resetBtn" class="action-btn">Spiel zurücksetzen</button>
+    </div>
 
     <!-- Spiel-Logik -->
-<script type="module" src="game.js"></script>
+    <script type="module" src="game.js"></script>
   </body>
 </html>
