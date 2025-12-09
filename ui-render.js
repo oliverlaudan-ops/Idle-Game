@@ -3,7 +3,7 @@
  * Alle Rendering- und Formatierungsfunktionen
  */
 
-import { gameState } from './game-state.js';
+import gameState from './game-state.js';
 import { getEffectivePrestigeBonus } from './prestige.js';
 
 // ========== Formatierungs-Hilfsfunktionen ==========
