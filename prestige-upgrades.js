@@ -1,4 +1,5 @@
 // prestige-upgrades.js
+import { getEffectivePrestigeBonus } from './prestige.js';
 
 export class PrestigeUpgrade {
   constructor(opts) {
