@@ -1,15 +1,17 @@
 // prestige-upgrades.js
-import { getEffectivePrestigeBonus } from './prestige.js';
+
+import { getEffectivePrestigeBonus } from "./prestige.js";
 
 export class PrestigeUpgrade {
   constructor(opts) {
-    this.id = opts.id;
-    this.name = opts.name;
-    this.desc = opts.desc;
-    this.prestigeCost = opts.prestigeCost; // Wieviel Prestige-Punkte kostet das Upgrade?
-    this.single = !!opts.single; // Nur einmal kaufbar?
-    this.applyFn = opts.apply;
-    this.level = 0;
+    this.id           = opts.id;
+    this.name         = opts.name;
+    this.desc         = opts.desc;
+    this.prestigeCost = opts.prestigeCost; // Kosten in Prestige-Punkten
+    this.single       = !!opts.single;     // Nur einmal kaufbar?
+    this.applyFn      = opts.apply;
+    this.level        = 0;
+    this.persistent   = opts.persistent ?? true; // Standard: bleibt über Prestiges erhalten
   }
 
   canBuy(gameState) {
@@ -18,53 +20,69 @@ export class PrestigeUpgrade {
   }
 
   getCurrentCost() {
-    // Du könntest auch skalierende Kosten pro Stufe umsetzen
+    // aktuell feste Kosten, könnte später skalieren
     return this.prestigeCost;
   }
 
   buy(game, gameState) {
     if (!this.canBuy(gameState)) return false;
+
     gameState.prestige -= this.getCurrentCost();
     this.level++;
-    if (typeof this.applyFn === 'function') this.applyFn(game, gameState, this.level);
+
+    if (typeof this.applyFn === "function") {
+      this.applyFn(game, gameState, this.level);
+    }
+
+    gameState.save();
     return true;
   }
 }
 
 // Beispiel-Liste für Prestige-Upgrades
 const prestigeUpgradesList = [
+  // 1) Globaler Multiplikator – wirkt nur auf prestigeUpgradeMult
   new PrestigeUpgrade({
-  id: "global-mult-2x",
-  name: "Globaler Multiplikator 2x",
-  desc: "Alle Ressourcen-Produktion dauerhaft x2.",
-  prestigeCost: 5,
-  single: true,
-  apply: (game, gameState, level) => {
-    gameState.prestigeUpgradeMult = (gameState.prestigeUpgradeMult ?? 1) * 2;
-  }
-}),
+    id: "global-mult-2x",
+    name: "Globaler Multiplikator 2x",
+    desc: "Verdoppelt dauerhaft deinen Prestige-Upgrade-Multiplikator.",
+    prestigeCost: 5,
+    single: true,
+    apply: (game, gameState, level) => {
+      gameState.prestigeUpgradeMult =
+        (gameState.prestigeUpgradeMult ?? 1) * 2;
+    }
+  }),
 
+  // 2) Automatischer Klicker
   new PrestigeUpgrade({
     id: "auto-click",
     name: "Automatischer Klicker",
-    desc: "Alle 5 Sekunden erhältst du automatisch einen Klick auf die zuletzt freigeschaltete Ressource.",
+    desc: "Alle 5 Sekunden ein automatischer Klick auf die zuletzt freigeschaltete Ressource.",
     prestigeCost: 8,
     single: true,
     apply: (game, gameState) => {
       if (game.autoClickerTimer) clearInterval(game.autoClickerTimer);
+
       game.autoClickerTimer = setInterval(() => {
-        // Wichtig: auf die höchste freigeschaltete Ressource anwenden!
-        const unlocked = Object.values(game.resources).filter(r => r.unlocked);
+        const unlocked = Object.values(game.resources).filter(
+          r => r.unlocked
+        );
         const last = unlocked[unlocked.length - 1];
-        if (last) last.add(last.rpc * getEffectivePrestigeBonus(gameState));
+        if (!last) return;
+
+        const mult = getEffectivePrestigeBonus(gameState);
+        last.add(last.rpc * mult);
         game.renderStatsBar();
       }, 5000);
     }
   }),
+
+  // 3) Offline-Erträge (Flag im State)
   new PrestigeUpgrade({
     id: "offline-bonus",
     name: "Offline-Erträge",
-    desc: "Du erhältst bei Rückkehr zusätzliche Ressourcen basierend auf deiner Spielzeit.",
+    desc: "Du erhältst bei Rückkehr zusätzliche Ressourcen basierend auf deiner Offline-Spielzeit.",
     prestigeCost: 12,
     single: true,
     apply: (game, gameState) => {
@@ -74,4 +92,3 @@ const prestigeUpgradesList = [
 ];
 
 export default prestigeUpgradesList;
-
