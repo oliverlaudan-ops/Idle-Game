@@ -100,3 +100,10 @@ export class GameState {
     }
   }
 }
+
+const gameState = new GameState();
+
+// WICHTIG:
+export default gameState;
+// Falls du die Klasse auch brauchst:
+// export { GameState };
