@@ -1,78 +1,92 @@
 // prestige.js
-export const resourcePrestigeValue = { stein: 1, holz: 2, ton: 4 , metall: 10, kristall: 50};
 
-export function calculatePrestigePoints(gameState) {
-  // Map: Jede Ressource bekommt einen Wert-Faktor pro Prestige-System
-  const resourcePrestigeValue = {
-    stein: 1,      // 1 Mio Stein = 1 Prestigepunkt
-    holz: 2,       // 0.5 Mio Holz = 1 Punkt
-    metall: 10,    // 0.1 Mio Metall = 1 Punkt
-    kristall: 50,  // 20k Kristall = 1 Punkt
-    ton: 4         // 0.25 Mio Ton = 1 Punkt
-  };
+export const resourcePrestigeValue = {
+  stein:    1,  // 1 Mio Stein = 1 Punkt
+  holz:     2,  // 0.5 Mio Holz = 1 Punkt
+  ton:      4,  // 0.25 Mio Ton = 1 Punkt
+  metall:  10,  // 0.1 Mio Metall = 1 Punkt
+  kristall: 50  // 20k Kristall = 1 Punkt
+};
 
-  let total = 0;
-  // Gehe alle Ressourcen durch, die relevant sind
-  for (const res in resourcePrestigeValue) {
-    // Hole die „totalEarned“-Menge (oder aktuellen Stand, falls nicht vorhanden)
-    const earned = (gameState.totalEarned && gameState.totalEarned[res]) || gameState[res] || 0;
-
-    // Teile den Wert durch das Prestigelimit dieser Ressource
-    // Beispiel: 2,000,000 Stein / 1,000,000 = 2 Prestige-Punkte aus Stein
-    total += earned / (1_000_000 / resourcePrestigeValue[res]);
-  }
-  // Runde am Ende ab, damit nur volle Punkte verteilt werden (keine Nachkommastellen)
-  return Math.floor(total);
-}
-
+// Zentraler Helper: effektiver Prestige-Bonus
 export function getEffectivePrestigeBonus(gameState) {
-  const base = gameState.prestigeBaseBonus ?? 1;
+  const base = gameState.prestigeBaseBonus  ?? 1;
   const upg  = gameState.prestigeUpgradeMult ?? 1;
   return base * upg;
 }
 
+export function calculatePrestigePoints(gameState) {
+  let total = 0;
+
+  for (const res in resourcePrestigeValue) {
+    const limitFactor = resourcePrestigeValue[res];
+
+    // Gesamtverdienst bevorzugen, sonst aktueller Stand
+    const earned =
+      (gameState.totalEarned &&
+        typeof gameState.totalEarned[res] === "number"
+        ? gameState.totalEarned[res]
+        : 0) ||
+      gameState[res] ||
+      0;
+
+    // Beispiel: 2.000.000 Stein / (1.000.000 / 1) = 2 Punkte
+    total += earned / (1_000_000 / limitFactor);
+  }
+
+  return Math.floor(total); // nur ganze Punkte
+}
 
 export function doPrestige(game, gameState) {
-  // Berechne das berechtigte Prestige nach aktuellem Stand
   const totalPrestige = calculatePrestigePoints(gameState);
-
-  // Wieviel wäre „neu“? (Maximalwert minus schon vergebene Punkte)
   const gained = totalPrestige - (gameState.prestige || 0);
 
-  // Wenn nichts zu gewinnen, brich ab
   if (gained <= 0) return false;
 
-  // Setze den Prestige-Zähler
+  // Prestige-Zähler aktualisieren
   gameState.prestige = totalPrestige;
-  
-  // Neuer Prestige-Basis-Bonus: sanftere Wurzel-Skalierung
+
+  // Basis-Bonus nur aus Prestige-Punkten (sanfte Wurzel-Skalierung)
   const p = gameState.prestige;
   gameState.prestigeBaseBonus = 1 + Math.sqrt(p) * 0.1;
-  
-  // NICHT mehr: gameState.prestigeBonus = ...
 
-  // Setze alle Ressourcen auf null (Soft-Reset)
+  // Ressourcen soft-resetten
   for (const key in game.resources) {
     game.resources[key].amount = 0;
     gameState[key] = 0;
-    if (key !== 'stein') game.resources[key].unlocked = false;
-  }
-  // Setze alle Upgrade-Stufen zurück
-  game.upgrades.forEach(u => u.level = 0);
-  // Setze Prestige-Upgrades sofern nötig zurück (je nach persistent-Flag)
-  game.prestigeUpgrades.forEach(u => { if (!u.persistent) u.level = 0; });
 
-  // Aktualisiere die Boni und speichere den Spielstand
+    if (key !== "stein") {
+      game.resources[key].unlocked = false;
+    }
+  }
+
+  // TotalEarned zurücksetzen (optional, sonst Prestige-Werte explodieren)
+  if (gameState.totalEarned) {
+    for (const res in gameState.totalEarned) {
+      gameState.totalEarned[res] = 0;
+    }
+  }
+
+  // Alle normalen Upgrades zurücksetzen
+  game.upgrades.forEach(u => (u.level = 0));
+
+  // Prestige-Upgrades nur zurücksetzen, wenn nicht persistent
+  game.prestigeUpgrades.forEach(u => {
+    if (!u.persistent) u.level = 0;
+  });
+
+  // Boni neu berechnen und speichern
   game.recalculateResourceBonuses();
   game.syncToState();
   gameState.save();
 
-  // Zeige eine freundliche Info an den Spieler
-  const effBonus = (gameState.prestigeBaseBonus ?? 1) * (gameState.prestigeUpgradeMult ?? 1);
-  alert(`Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${effBonus.toFixed(2)}`);
+  const effBonus = getEffectivePrestigeBonus(gameState);
+  alert(
+    `Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${effBonus.toFixed(
+      2
+    )}`
+  );
 
-  // Zeichne das UI neu (alle Werte wurden ja zurückgesetzt)
   game.renderAll();
   return true;
 }
-
