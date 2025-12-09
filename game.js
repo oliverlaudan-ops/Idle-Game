@@ -29,6 +29,12 @@ function updateActionsStickyTop() {
   }
 }
 
+function getEffectivePrestigeBonus(gameState) {
+  const base = gameState.prestigeBaseBonus ?? 1;
+  const upg  = gameState.prestigeUpgradeMult ?? 1;
+  return base * upg;
+}
+
 
 class Game {
   constructor() {
@@ -180,8 +186,8 @@ class Game {
         btn.className = `action-btn ${r.id}`;
         btn.id = r.id + 'Btn';
         btn.textContent = `${r.icon} ${r.name} sammeln (+${formatRate(r.rpc)})`;
-       btn.onclick = () => {
-        const mult = (gameState.prestigeBonus ?? 1) * (gameState.globalMult ?? 1);
+        btn.onclick = () => {
+        const mult = getEffectivePrestigeBonus(gameState);
         r.add(r.rpc * mult);
         this.renderStatsBar();
         this.renderUpgrades();
@@ -380,15 +386,15 @@ class Game {
     this.tickTimer = setInterval(() => this.tick(), this.tickMs);
   }
   tick() {
-    const mult = (gameState.prestigeBonus ?? 1) * (gameState.globalMult ?? 1);
-    Object.values(this.resources).forEach(r => {
-      if (r.unlocked && r.rps > 0) {
-        r.add(r.rps * mult);
-      }
-    });
-    this.renderStatsBar();
-    this.renderUpgrades();
-  }
+  const mult = getEffectivePrestigeBonus(gameState);
+  Object.values(this.resources).forEach(r => {
+    if (r.unlocked && r.rps > 0) {
+      r.add(r.rps * mult);
+    }
+  });
+  this.renderStatsBar();
+  this.renderUpgrades();
+}
 }
 
 // Bootstrap
