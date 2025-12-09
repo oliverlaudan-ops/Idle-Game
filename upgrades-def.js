@@ -55,8 +55,8 @@ const upgradesList = [
     desc: 'Erhöht STEIN Produktionsrate um 1.5x',
     costRes: 'stein',
     costBase: 10000,
-    costMult: 1.5,
-    single: true,
+    costMult: 2.5,
+    single: false,
     apply: (game) => {
       game.getResource('stein').rpc *= 1.5;
       game.getResource('stein').rps *= 1.5;
@@ -71,7 +71,7 @@ const upgradesList = [
     costRes:'stein',
     costBase:80,
     costMult:2.0,
-    single:true,
+    single: true,
     unlocksResourceId:'holz',
     apply:(game)=>{
       const holz = game.getResource('holz');
@@ -129,8 +129,8 @@ const upgradesList = [
     desc: 'Erhöht HOLZ Produktionsrate um 1.5x',
     costRes: 'holz',
     costBase: 10000,
-    costMult: 1.5,
-    single: true,
+    costMult: 3,
+    single: false,
     apply: (game) => {
       game.getResource('holz').rpc *= 1.5;
       game.getResource('holz').rps *= 1.5;
@@ -203,8 +203,8 @@ const upgradesList = [
     desc: 'Erhöht TON Produktionsrate um 1.5x',
     costRes: 'ton',
     costBase: 10000,
-    costMult: 1.5,
-    single: true,
+    costMult: 3.5,
+    single: false,
     apply: (game) => {
       game.getResource('ton').rpc *= 1.5;
       game.getResource('ton').rps *= 1.5;
@@ -289,8 +289,8 @@ const upgradesList = [
     desc: 'Erhöht METALL Produktionsrate um 1.5x',
     costRes: 'metall',
     costBase: 15000,
-    costMult: 1.5,
-    single: true,
+    costMult: 4,
+    single: false,
     apply: (game) => {
       game.getResource('metall').rpc *= 1.6;
       game.getResource('metall').rps *= 1.6;
@@ -374,8 +374,8 @@ const upgradesList = [
     desc: 'Erhöht Kristall Produktionsrate um 1.5x',
     costRes: 'kristall',
     costBase: 25000,
-    costMult: 1.5,
-    single: true,
+    costMult: 4.5,
+    single: false,
     apply: (game) => {
       game.getResource('kristall').rpc *= 1.75;
       game.getResource('kristall').rps *= 1.75;
