@@ -1,4 +1,4 @@
-import Upgrade from "./upgrade.js";
+import { Upgrade } from "./upgrade.js";
 
 const researchUpgradesList = [
   new Upgrade({
