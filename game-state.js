@@ -4,47 +4,78 @@ export class GameState {
   constructor() {
     let storageValue = localStorage.getItem("gameState");
     let savedState = null;
+
     if (storageValue && storageValue !== "undefined") {
       try {
         savedState = JSON.parse(storageValue);
         Object.assign(this, savedState);
-      } catch (e) {}
+      } catch (e) {
+        // Ignoriere kaputte Saves, verwende Defaults
+      }
     }
-    // Fallback-Defaults (wird nur gesetzt, falls Wer­te nicht bereits existieren)
-    this.stein = this.stein ?? 0;
-    this.holz = this.holz ?? 0;
-    this.metall = this.metall ?? 0;
-    this.kristall = this.kristall ?? 0;
-    this.totalEarned = this.totalEarned ?? 0;
-    this.upgrades = this.upgrades ?? [];
-    // Prestige-System:
-    // Prestige-System:
-    this.prestige = this.prestige ?? 0;
-    // NEU: Basis-Bonus nur aus Prestige-Punkten
-    this.prestigeBaseBonus = this.prestigeBaseBonus ?? 1;
-    // NEU: Multiplikator aus Prestige-Upgrades (z.B. Globaler Multiplikator)
+
+    // Fallback-Defaults (wird nur gesetzt, falls Werte nicht bereits existieren)
+    this.stein       = this.stein       ?? 0;
+    this.holz        = this.holz        ?? 0;
+    this.metall      = this.metall      ?? 0;
+    this.kristall    = this.kristall    ?? 0;
+    this.ton         = this.ton         ?? 0;
+
+    // Optional: Gesamtverdienst-Tracking nach Ressource
+    this.totalEarned = this.totalEarned ?? {
+      stein: 0,
+      holz: 0,
+      metall: 0,
+      kristall: 0,
+      ton: 0
+    };
+
+    this.upgrades          = this.upgrades          ?? [];
+    this.prestigeUpgrades  = this.prestigeUpgrades  ?? [];
+
+    // Prestige-System
+    this.prestige           = this.prestige           ?? 0;
+
+    // Basis-Bonus nur aus Prestige-Punkten (wird in doPrestige gesetzt)
+    this.prestigeBaseBonus  = this.prestigeBaseBonus  ?? 1;
+
+    // Multiplikator aus Prestige-Upgrades (z. B. Globaler Multiplikator)
     this.prestigeUpgradeMult = this.prestigeUpgradeMult ?? 1;
+
+    // Sonstige Prestige-Flags
+    this.hasOfflineBonus    = this.hasOfflineBonus    ?? false;
+
     this.save();
   }
 
   // Spielstand speichern
   save() {
-    localStorage.setItem('gameState', JSON.stringify(this));
+    localStorage.setItem("gameState", JSON.stringify(this));
   }
 
   // Spielstand zurücksetzen (alles außer Prestige)
   reset() {
-    if (confirm('Wirklich alles zurücksetzen?')) {
-      localStorage.removeItem('gameState');
-      this.stein = 0;
-      this.holz = 0;
-      this.metall = 0;
+    if (confirm("Wirklich alles zurücksetzen?")) {
+      localStorage.removeItem("gameState");
+
+      this.stein    = 0;
+      this.holz     = 0;
+      this.metall   = 0;
       this.kristall = 0;
-      this.totalEarned = 0;
-      this.upgrades = [];
-      // Prestige bleibt erhalten!
+      this.ton      = 0;
+
+      this.totalEarned = {
+        stein: 0,
+        holz: 0,
+        metall: 0,
+        kristall: 0,
+        ton: 0
+      };
+
+      this.upgrades         = [];
+      // Prestige-Punkte + Prestige-Upgrades bleiben erhalten
       this.save();
-      alert('Zurückgesetzt!');
+      alert("Zurückgesetzt!");
     }
   }
 
@@ -52,7 +83,7 @@ export class GameState {
   export() {
     const savedState = JSON.stringify(this);
     const encoded = btoa(savedState);
-    alert('Exportiert: ' + encoded);
+    alert("Exportiert: " + encoded);
     return encoded;
   }
 
@@ -63,10 +94,9 @@ export class GameState {
       const parsedState = JSON.parse(decoded);
       Object.assign(this, parsedState);
       this.save();
-      alert('Import erfolgreich!');
+      alert("Import erfolgreich!");
     } catch (e) {
-      alert('Fehler beim Importieren: ' + e.message);
+      alert("Fehler beim Importieren: " + e.message);
     }
   }
 }
-
