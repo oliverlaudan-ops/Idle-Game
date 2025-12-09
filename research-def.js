@@ -1,3 +1,5 @@
+//research-def.js
+
 import { Upgrade } from "./upgrade.js";
 
 const researchUpgradesList = [
