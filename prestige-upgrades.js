@@ -55,7 +55,7 @@ const prestigeUpgradesList = [
         // Wichtig: auf die höchste freigeschaltete Ressource anwenden!
         const unlocked = Object.values(game.resources).filter(r => r.unlocked);
         const last = unlocked[unlocked.length - 1];
-        if (last) last.add(last.rpc * (gameState.prestigeBonus ?? 1));
+        if (last) last.add(last.rpc * getEffectivePrestigeBonus(gameState));
         game.renderStatsBar();
       }, 5000);
     }
