@@ -4,7 +4,7 @@ import upgradesList from './upgrades-def.js';
 import researchUpgradesList from "./research-def.js"; // NEU
 import prestigeUpgradesList, { PrestigeUpgrade } from './prestige-upgrades.js';
 // Prestige-Import NEU:
-import { calculatePrestigePoints, doPrestige } from './prestige.js';
+import { calculatePrestigePoints, doPrestige, getEffectivePrestigeBonus } from './prestige.js';
 
 // Hilfsfunktionen
 function formatAmount(n) {
@@ -28,13 +28,6 @@ function updateActionsStickyTop() {
     actions.style.top = (barHeight + 12) + 'px'; // 12px als Abstand
   }
 }
-
-function getEffectivePrestigeBonus(gameState) {
-  const base = gameState.prestigeBaseBonus ?? 1;
-  const upg  = gameState.prestigeUpgradeMult ?? 1;
-  return base * upg;
-}
-
 
 class Game {
   constructor() {
