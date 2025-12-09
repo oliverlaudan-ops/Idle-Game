@@ -3,7 +3,7 @@
  * Kernspiellogik ohne DOM-Manipulation
  */
 
-import { GameState } from './game-state.js';
+import gameState from './game-state.js';
 import resourcesList from './resources-def.js';
 import upgradesList from './upgrades-def.js';
 import researchUpgradesList from './research-def.js';
