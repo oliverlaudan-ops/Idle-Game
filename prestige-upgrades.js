@@ -33,16 +33,16 @@ export class PrestigeUpgrade {
 // Beispiel-Liste für Prestige-Upgrades
 const prestigeUpgradesList = [
   new PrestigeUpgrade({
-    id: "global-mult-2x",
-    name: "Globaler Multiplikator 2x",
-    desc: "Alle Ressourcen-Produktion dauerhaft x2.",
-    prestigeCost: 5,
-    single: true,
-   apply: (game, gameState, level) => {
-    // Statt kompletten Bonus verdoppeln:
-    gameState.globalMult = (gameState.globalMult ?? 1) * 1.5;
-    }
-  }),
+  id: "global-mult-2x",
+  name: "Globaler Multiplikator 2x",
+  desc: "Alle Ressourcen-Produktion dauerhaft x2.",
+  prestigeCost: 5,
+  single: true,
+  apply: (game, gameState, level) => {
+    gameState.prestigeUpgradeMult = (gameState.prestigeUpgradeMult ?? 1) * 2;
+  }
+}),
+
   new PrestigeUpgrade({
     id: "auto-click",
     name: "Automatischer Klicker",
