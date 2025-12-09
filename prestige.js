@@ -61,7 +61,8 @@ export function doPrestige(game, gameState) {
   gameState.save();
 
   // Zeige eine freundliche Info an den Spieler
-  alert(`Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${gameState.prestigeBonus.toFixed(2)}`);
+  const effBonus = (gameState.prestigeBaseBonus ?? 1) * (gameState.prestigeUpgradeMult ?? 1);
+  alert(`Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${effBonus.toFixed(2)}`);
 
   // Zeichne das UI neu (alle Werte wurden ja zurückgesetzt)
   game.renderAll();
