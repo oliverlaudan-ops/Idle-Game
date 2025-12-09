@@ -5,7 +5,7 @@
 
 import Game from './game-core.js';
 import { initializeGame } from './ui-init.js';
-import { gameState } from './game-state.js';
+import gameState from './game-state.js';
 
 // ========== Global Game Instance ==========
 
