@@ -25,6 +25,13 @@ export function calculatePrestigePoints(gameState) {
   return Math.floor(total);
 }
 
+export function getEffectivePrestigeBonus(gameState) {
+  const base = gameState.prestigeBaseBonus ?? 1;
+  const upg  = gameState.prestigeUpgradeMult ?? 1;
+  return base * upg;
+}
+
+
 export function doPrestige(game, gameState) {
   // Berechne das berechtigte Prestige nach aktuellem Stand
   const totalPrestige = calculatePrestigePoints(gameState);
