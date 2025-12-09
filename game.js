@@ -318,10 +318,11 @@ class Game {
     // Prestige aus neuem Modul:
     const pointsNow = calculatePrestigePoints(gameState);
     const gained = pointsNow - (gameState.prestige || 0);
+    const effBonus = getEffectivePrestigeBonus(gameState);
     el.innerHTML = `
       <div class="prestige-info">
         <strong>Prestige-Punkte:</strong> ${gameState.prestige}<br>
-        <strong>Bonus:</strong> x${gameState.prestigeBonus.toFixed(2)}<br>
+        <strong>Bonus</strong> x${effBonus.toFixed(2)}<br>
         <strong>Möglich:</strong> +${gained} neue Punkte
       </div>
       <button id="prestigeBtn" class="buy-btn" ${gained > 0 ? '' : 'disabled'}>
