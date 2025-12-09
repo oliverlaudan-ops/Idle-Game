@@ -20,6 +20,7 @@ export class GameState {
     // Prestige-System:
     this.prestige = this.prestige ?? 0;
     this.prestigeBonus = this.prestigeBonus ?? 1;
+    this.globalMult = this.globalMult ?? 1;
     this.save();
   }
 
