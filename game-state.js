@@ -18,9 +18,12 @@ export class GameState {
     this.totalEarned = this.totalEarned ?? 0;
     this.upgrades = this.upgrades ?? [];
     // Prestige-System:
+    // Prestige-System:
     this.prestige = this.prestige ?? 0;
-    this.prestigeBonus = this.prestigeBonus ?? 1;
-    this.globalMult = this.globalMult ?? 1;
+    // NEU: Basis-Bonus nur aus Prestige-Punkten
+    this.prestigeBaseBonus = this.prestigeBaseBonus ?? 1;
+    // NEU: Multiplikator aus Prestige-Upgrades (z.B. Globaler Multiplikator)
+    this.prestigeUpgradeMult = this.prestigeUpgradeMult ?? 1;
     this.save();
   }
 
