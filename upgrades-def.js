@@ -52,7 +52,7 @@ const upgradesList = [
   new Upgrade({
     id: 'stein_multiplikator',
     name: 'Stein-Effizienzverbesserung',
-    desc: 'Erhöht STEIN Produktionsrate um 1.5x',
+    desc: 'Erhöht STEIN Produktionsrate um 1.5x pro stufe',
     costRes: 'stein',
     costBase: 10000,
     costMult: 2.5,
@@ -126,7 +126,7 @@ const upgradesList = [
   new Upgrade({
     id: 'holz_multiplikator',
     name: 'Holz-Effizienzverbesserung',
-    desc: 'Erhöht HOLZ Produktionsrate um 1.5x',
+    desc: 'Erhöht HOLZ Produktionsrate um 1.5x pro Stufe',
     costRes: 'holz',
     costBase: 10000,
     costMult: 3,
@@ -200,7 +200,7 @@ const upgradesList = [
   new Upgrade({
     id: 'ton_multiplikator',
     name: 'Ton-Effizienzverbesserung',
-    desc: 'Erhöht TON Produktionsrate um 1.5x',
+    desc: 'Erhöht TON Produktionsrate um 1.5x pro Stufe',
     costRes: 'ton',
     costBase: 10000,
     costMult: 3.5,
@@ -286,7 +286,7 @@ const upgradesList = [
   new Upgrade({
     id: 'metall_multiplikator',
     name: 'Metall-Effizienzverbesserung',
-    desc: 'Erhöht METALL Produktionsrate um 1.5x',
+    desc: 'Erhöht METALL Produktionsrate um 1.5x pro Stufe',
     costRes: 'metall',
     costBase: 15000,
     costMult: 4,
@@ -371,7 +371,7 @@ const upgradesList = [
   new Upgrade({
     id: 'kristall_multiplikator',
     name: 'Kristall-Effizienzverbesserung',
-    desc: 'Erhöht Kristall Produktionsrate um 1.5x',
+    desc: 'Erhöht Kristall Produktionsrate um 1.5x pro Stufe',
     costRes: 'kristall',
     costBase: 25000,
     costMult: 4.5,
