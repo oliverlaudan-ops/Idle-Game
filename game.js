@@ -180,11 +180,12 @@ class Game {
         btn.className = `action-btn ${r.id}`;
         btn.id = r.id + 'Btn';
         btn.textContent = `${r.icon} ${r.name} sammeln (+${formatRate(r.rpc)})`;
-        btn.onclick = () => {
-          r.add(r.rpc * (gameState.prestigeBonus ?? 1));
-          this.renderStatsBar();
-          this.renderUpgrades();
-        };
+       btn.onclick = () => {
+        const mult = (gameState.prestigeBonus ?? 1) * (gameState.globalMult ?? 1);
+        r.add(r.rpc * mult);
+        this.renderStatsBar();
+        this.renderUpgrades();
+      };
         this.actionsEl.appendChild(btn);
       });
     updateActionsStickyTop();
@@ -379,9 +380,10 @@ class Game {
     this.tickTimer = setInterval(() => this.tick(), this.tickMs);
   }
   tick() {
+    const mult = (gameState.prestigeBonus ?? 1) * (gameState.globalMult ?? 1);
     Object.values(this.resources).forEach(r => {
       if (r.unlocked && r.rps > 0) {
-        r.add(r.rps * (gameState.prestigeBonus ?? 1));
+        r.add(r.rps * mult);
       }
     });
     this.renderStatsBar();
