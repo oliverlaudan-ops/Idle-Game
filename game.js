@@ -104,12 +104,8 @@ class Game {
         }
       }
     }
-    for (let u of this.prestigeUpgrades) {
-      if (u.level > 0 && typeof u.applyFn === "function") {
-        for (let i = 0; i < u.level; ++i) u.applyFn(this, gameState, u.level);
-      }
-    }
   }
+  
 
   syncToState() {
     for (let key in this.resources) {
