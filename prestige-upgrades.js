@@ -38,8 +38,9 @@ const prestigeUpgradesList = [
     desc: "Alle Ressourcen-Produktion dauerhaft x2.",
     prestigeCost: 5,
     single: true,
-    apply: (game, gameState) => {
-      gameState.prestigeBonus = (gameState.prestigeBonus ?? 1) * 2; // Kombiniert mit dem Basis-Bonus
+   apply: (game, gameState, level) => {
+    // Statt kompletten Bonus verdoppeln:
+    gameState.globalMult = (gameState.globalMult ?? 1) * 1.5;
     }
   }),
   new PrestigeUpgrade({
