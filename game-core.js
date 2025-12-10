@@ -224,8 +224,12 @@ class Game {
   // ========== Prestige Logic ==========
   
   canPrestige() {
-    const steinRes = this.getResource('stein');
-    return steinRes && steinRes.amount >= 1000;
+    // Prüft, ob mindestens 1 Prestige-Punkt gewonnen werden würde
+    const pointsNow = calculatePrestigePoints(gameState);
+    const currentPoints = gameState.prestige || 0;
+    const gained = pointsNow - currentPoints;
+    
+    return gained > 0;
   }
 
   performPrestige() {
