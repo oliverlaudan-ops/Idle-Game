@@ -76,8 +76,15 @@ export function renderActions(game) {
       btn.onclick = () => {
         const mult = getEffectivePrestigeBonus(gameState);
         r.add(r.rpc * mult);
+        
+        // Klick-Counter erhöhen ← NEU
+        game.totalClicks++;
+        
         renderStatsBar(game);
         renderUpgrades(game);
+        
+        // Achievements prüfen ← NEU
+        game.checkAchievements();
       };
       
       game.actionsEl.appendChild(btn);
@@ -85,6 +92,7 @@ export function renderActions(game) {
   
   updateActionsStickyTop();
 }
+
 
 // ========== Upgrades Rendering ==========
 
