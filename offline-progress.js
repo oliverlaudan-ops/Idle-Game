@@ -15,17 +15,22 @@ const CONFIG = {
   tickInterval: 1                       // Normales Tick-Intervall in Sekunden
 };
 
-
 /**
  * Berechnet Offline-Fortschritt
  * @param {Game} game - Game-Instanz
  * @param {number} offlineTime - Zeit in Sekunden
  * @returns {Object} Offline-Erträge
  */
-const cappedTime = Math.min(offlineTime, maxTime);
+export function calculateOfflineProgress(game, offlineTime) {
+  // je nach Prestige-Upgrade konfigurieren
+  const maxTime = gameState.hasOfflineBonus
+    ? CONFIG.upgradedMaxOfflineTime
+    : CONFIG.baseMaxOfflineTime;
+
+  const cappedTime = Math.min(offlineTime, maxTime);
 
   // Effizienz berechnen (Basis + Prestige-Upgrade)
-  let efficiency = gameState.hasOfflineBonus
+  const efficiency = gameState.hasOfflineBonus
     ? CONFIG.upgradedEfficiency
     : CONFIG.baseEfficiency;
 
@@ -65,7 +70,7 @@ export function applyOfflineProgress(game, progress) {
       res.add(progress.earnings[key]);
     }
   }
-  
+
   // Speichern
   game.syncToState();
   gameState.save();
@@ -80,7 +85,7 @@ export function formatDuration(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = Math.floor(seconds % 60);
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes}m`;
   } else if (minutes > 0) {
