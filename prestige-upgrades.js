@@ -15,8 +15,15 @@ export class PrestigeUpgrade {
   }
 
   canBuy(gameState) {
-    if (this.single && this.level > 0) return false;
-    return (gameState.prestige ?? 0) >= this.getCurrentCost();
+  // Einmal-Upgrade schon gekauft?
+    if (this.single && this.level > 0) {
+      return false;
+    }
+  
+    const currentPrestige = gameState?.prestige ?? 0;
+    const cost = this.getCurrentCost();
+  
+    return currentPrestige >= cost;
   }
 
   getCurrentCost() {
@@ -25,18 +32,18 @@ export class PrestigeUpgrade {
   }
 
   buy(game, gameState) {
-    if (!this.canBuy(gameState)) return false;
+  if (!this.canBuy(gameState)) return false;
 
-    gameState.prestige -= this.getCurrentCost();
-    this.level++;
+  const cost = this.getCurrentCost();
+  gameState.prestige = (gameState.prestige ?? 0) - cost;
+  this.level++;
 
-    if (typeof this.applyFn === "function") {
-      this.applyFn(game, gameState, this.level);
-    }
-
-    gameState.save();
-    return true;
+  if (typeof this.applyFn === 'function') {
+    this.applyFn(game, gameState, this.level);
   }
+
+  gameState.save();
+  return true;
 }
 
 // Beispiel-Liste für Prestige-Upgrades
