@@ -505,5 +505,13 @@ export function renderAll(game) {
   renderActions(game);
   renderUpgrades(game);
   renderPrestigeContainer(game);
-  renderAchievements(game); // ← Wichtig!
+  
+  // Achievements nur rendern, wenn Tab aktiv ist
+  const achievementContainer = document.getElementById('achievementsContainer');
+  if (achievementContainer && achievementContainer.style.display !== 'none') {
+    console.log('🏆 Rendering Achievements (Tab aktiv)...');
+    renderAchievements(game);
+  }
+}
+
 }
