@@ -40,7 +40,6 @@ export function calculatePrestigePoints(gameState) {
 export function doPrestige(game, gameState) {
   const totalPrestige = calculatePrestigePoints(gameState);
   const gained = totalPrestige - (gameState.prestige || 0);
-
   if (gained <= 0) return false;
 
   // Prestige-Zähler aktualisieren
@@ -54,13 +53,12 @@ export function doPrestige(game, gameState) {
   for (const key in game.resources) {
     game.resources[key].amount = 0;
     gameState[key] = 0;
-
     if (key !== "stein") {
       game.resources[key].unlocked = false;
     }
   }
 
-  // TotalEarned zurücksetzen (optional, sonst Prestige-Werte explodieren)
+  // TotalEarned zurücksetzen
   if (gameState.totalEarned) {
     for (const res in gameState.totalEarned) {
       gameState.totalEarned[res] = 0;
@@ -69,11 +67,14 @@ export function doPrestige(game, gameState) {
 
   // Alle normalen Upgrades zurücksetzen
   game.upgrades.forEach(u => (u.level = 0));
-
+  
   // Prestige-Upgrades nur zurücksetzen, wenn nicht persistent
   game.prestigeUpgrades.forEach(u => {
     if (!u.persistent) u.level = 0;
   });
+
+  // WICHTIG: hasOfflineBonus NICHT zurücksetzen - bleibt bestehen!
+  // gameState.hasOfflineBonus bleibt wie es ist
 
   // Boni neu berechnen und speichern
   game.recalculateResourceBonuses();
@@ -82,11 +83,10 @@ export function doPrestige(game, gameState) {
 
   const effBonus = getEffectivePrestigeBonus(gameState);
   alert(
-    `Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${effBonus.toFixed(
-      2
-    )}`
+    `Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${effBonus.toFixed(2)}`
   );
 
   game.renderAll();
   return true;
 }
+
