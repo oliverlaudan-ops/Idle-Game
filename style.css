@@ -340,10 +340,37 @@ button.buy-btn, .buy-btn {
   position: relative;
 }
 
+/* Achievement Progress Bar - Verbessertes Design */
 .achievement-progress-bar.small {
-  height: 6px;
-  margin-top: 8px;
+  height: 20px; /* Höher für bessere Lesbarkeit */
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+.achievement-progress-bar.small .achievement-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.achievement-progress-bar.small .progress-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+  z-index: 1;
+  white-space: nowrap;
+}
+
 
 .achievement-progress {
   background: linear-gradient(90deg, #4CAF50, #8BC34A);
