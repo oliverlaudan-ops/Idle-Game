@@ -89,6 +89,7 @@ if (document.readyState === 'loading') {
 window.addEventListener('beforeunload', () => {
   if (gameInstance) {
     gameInstance.syncToState();
+    gameState.save(); // ← WICHTIG!
     console.log('💾 Spiel vor dem Schließen gespeichert');
   }
 });
