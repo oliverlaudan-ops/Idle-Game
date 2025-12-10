@@ -7,10 +7,14 @@ import gameState from './game-state.js';
 
 // Konfiguration
 const CONFIG = {
-  maxOfflineTime: 8 * 60 * 60, // Maximal 8 Stunden in Sekunden
-  baseEfficiency: 0.5,          // 50% Basis-Effizienz offline
-  tickInterval: 1               // Normale Tick-Interval in Sekunden
+  // Basiswerte ohne Prestige-Upgrade
+  baseMaxOfflineTime: 4 * 60 * 60,      // 4 Stunden in Sekunden
+  upgradedMaxOfflineTime: 8 * 60 * 60,  // 8 Stunden in Sekunden
+  baseEfficiency: 0.5,                  // 50 % ohne Upgrade
+  upgradedEfficiency: 1.0,              // 100 % mit Upgrade
+  tickInterval: 1                       // Normales Tick-Intervall in Sekunden
 };
+
 
 /**
  * Berechnet Offline-Fortschritt
@@ -18,23 +22,20 @@ const CONFIG = {
  * @param {number} offlineTime - Zeit in Sekunden
  * @returns {Object} Offline-Erträge
  */
-export function calculateOfflineProgress(game, offlineTime) {
-  // Maximal-Zeit begrenzen
-  const cappedTime = Math.min(offlineTime, CONFIG.maxOfflineTime);
-  
+const cappedTime = Math.min(offlineTime, maxTime);
+
   // Effizienz berechnen (Basis + Prestige-Upgrade)
-  let efficiency = CONFIG.baseEfficiency;
-  if (gameState.hasOfflineBonus) {
-    efficiency = 1.0; // 100% mit Prestige-Upgrade
-  }
-  
+  let efficiency = gameState.hasOfflineBonus
+    ? CONFIG.upgradedEfficiency
+    : CONFIG.baseEfficiency;
+
   // Anzahl der Ticks berechnen
   const ticks = cappedTime / CONFIG.tickInterval;
-  
+
   // Ressourcen-Ertrag berechnen
   const earnings = {};
   const prestigeMultiplier = game.achievementPrestigeBonus || 1;
-  
+
   for (let key in game.resources) {
     const res = game.resources[key];
     if (res.unlocked && res.rps > 0) {
@@ -42,13 +43,13 @@ export function calculateOfflineProgress(game, offlineTime) {
       earnings[key] = baseEarnings;
     }
   }
-  
+
   return {
     time: cappedTime,
-    efficiency: efficiency,
-    ticks: ticks,
-    earnings: earnings,
-    wasCapped: offlineTime > CONFIG.maxOfflineTime
+    efficiency,
+    ticks,
+    earnings,
+    wasCapped: offlineTime > maxTime
   };
 }
 
