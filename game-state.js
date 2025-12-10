@@ -10,8 +10,10 @@ export class GameState {
         savedState = JSON.parse(storageValue);
         Object.assign(this, savedState);
       } catch (e) {
-        // Ignoriere kaputte Saves, verwende Defaults
+        // Ignoriere kaputte Saves, verwende Default
       }
+      // Offline-Progress Tracking
+      this.lastOnline = this.lastOnline ?? Date.now();
     }
 
     // Fallback-Defaults (wird nur gesetzt, falls Werte nicht bereits existieren)
