@@ -3,7 +3,7 @@
  * UI-Initialisierung, Event-Listener und DOM-Setup
  */
 
-import { renderAll, renderStatsBar, renderUpgrades } from './ui-render.js';
+import { renderAll, renderStatsBar, renderUpgrades, renderAchievements, showAchievementNotification } from './ui-render.js'; // ← renderAchievements 
 
 // ========== DOM Setup ==========
 
@@ -179,19 +179,33 @@ export function initializeGame(game) {
   game.syncFromState();
   console.log('✅ Spielstand geladen');
   
-  // 3. DOM einrichten
+  // 3. Achievements laden ← NEU
+  game.setupAchievements();
+  console.log('✅ Achievements geladen');
+  
+  // 4. Achievement-Callback setzen ← NEU
+  game.onAchievementUnlock = (achievement) => {
+    showAchievementNotification(achievement);
+    renderAchievements(game);
+    // Boni neu berechnen, da manche Achievements Rewards haben
+    game.recalculateResourceBonuses();
+    renderAll(game);
+  };
+  
+  // 5. DOM einrichten
   setupDOM(game);
   console.log('✅ DOM eingerichtet');
   
-  // 4. Initial rendern
+  // 6. Initial rendern
   renderAll(game);
+  renderAchievements(game); // ← NEU
   console.log('✅ UI gerendert');
   
-  // 5. Game Loop starten
+  // 7. Game Loop starten
   setupGameLoop(game);
   console.log('✅ Game Loop gestartet');
   
-  // 6. Keyboard Shortcuts
+  // 8. Keyboard Shortcuts
   setupKeyboardShortcuts(game);
   console.log('✅ Keyboard Shortcuts aktiviert');
   
