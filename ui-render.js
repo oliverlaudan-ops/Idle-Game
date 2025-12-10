@@ -513,5 +513,3 @@ export function renderAll(game) {
     renderAchievements(game);
   }
 }
-
-}
