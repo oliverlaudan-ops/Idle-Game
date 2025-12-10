@@ -24,8 +24,7 @@ export function setupDOM(game) {
   setupAutosave(game);
 }
 
-// ========== Tab-System ==========
-
+// Tab-System
 function setupTabs() {
   const tabButtons = document.querySelectorAll('.tab-btn');
   
@@ -37,7 +36,8 @@ function setupTabs() {
       tabButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
-      // Tab-Inhalte umschalten
+      // Tab-Inhalte umschalten - ERWEITERT
+      // Upgrade-Grids
       document.querySelectorAll('.upgrade-grid').forEach(grid => {
         if (grid.dataset.tab === target) {
           grid.style.display = 'flex'; // Flex für Spalten-Layout
@@ -45,6 +45,16 @@ function setupTabs() {
           grid.style.display = 'none';
         }
       });
+      
+      // Achievement-Container ← NEU
+      const achievementsContainer = document.getElementById('achievementsContainer');
+      if (achievementsContainer) {
+        if (target === 'achievements') {
+          achievementsContainer.style.display = 'block';
+        } else {
+          achievementsContainer.style.display = 'none';
+        }
+      }
     });
   });
   
@@ -53,6 +63,7 @@ function setupTabs() {
     tabButtons[0].click();
   }
 }
+
 
 // ========== Window Resize Handler ==========
 
