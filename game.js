@@ -6,6 +6,7 @@
 import Game from './game-core.js';
 import { initializeGame } from './ui-init.js';
 import gameState from './game-state.js';
+import { calculateOfflineProgress, applyOfflineProgress, formatDuration, shouldShowOfflineProgress } from './offline-progress.js'; // ← NEU
 
 // ========== Global Game Instance ==========
 
@@ -23,6 +24,9 @@ function startGame() {
     // Vollständige Initialisierung
     initializeGame(gameInstance);
     
+    // Offline-Progress prüfen ← NEU
+    checkOfflineProgress(gameInstance);
+    
     // Global verfügbar machen (für Debugging in Console)
     window.game = gameInstance;
     window.gameState = gameState;
@@ -34,6 +38,69 @@ function startGame() {
     console.error('❌ Fehler beim Starten des Spiels:', error);
     showErrorScreen(error);
   }
+}
+
+// ========== Offline Progress Check ========== NEU
+
+function checkOfflineProgress(game) {
+  const now = Date.now();
+  const lastOnline = gameState.lastOnline || now;
+  const offlineTimeMs = now - lastOnline;
+  const offlineTimeSec = Math.floor(offlineTimeMs / 1000);
+  
+  console.log(`⏰ Offline-Zeit: ${formatDuration(offlineTimeSec)}`);
+  
+  if (shouldShowOfflineProgress(offlineTimeSec)) {
+    const progress = calculateOfflineProgress(game, offlineTimeSec);
+    applyOfflineProgress(game, progress);
+    showOfflineModal(progress);
+  }
+  
+  // Zeitstempel aktualisieren
+  gameState.lastOnline = now;
+  gameState.save();
+}
+
+function showOfflineModal(progress) {
+  const modal = document.createElement('div');
+  modal.className = 'offline-modal-overlay';
+  
+  const content = document.createElement('div');
+  content.className = 'offline-modal';
+  
+  let earningsList = '';
+  for (let key in progress.earnings) {
+    const amount = progress.earnings[key];
+    if (amount > 0) {
+      const resource = gameInstance.getResource(key);
+      earningsList += `<div class="offline-earning">
+        <span>${resource.icon} ${resource.name}:</span>
+        <strong>+${formatAmount(amount)}</strong>
+      </div>`;
+    }
+  }
+  
+  content.innerHTML = `
+    <h2>💤 Willkommen zurück!</h2>
+    <p class="offline-time">Du warst <strong>${formatDuration(progress.time)}</strong> offline</p>
+    <p class="offline-efficiency">Offline-Effizienz: <strong>${(progress.efficiency * 100).toFixed(0)}%</strong></p>
+    
+    <div class="offline-earnings">
+      <h3>Gesammelte Ressourcen:</h3>
+      ${earningsList}
+    </div>
+    
+    ${progress.wasCapped ? '<p class="offline-warning">⚠️ Maximal 8 Stunden werden berechnet</p>' : ''}
+    
+    <button class="offline-close-btn" onclick="this.closest('.offline-modal-overlay').remove()">
+      Weiter spielen
+    </button>
+  `;
+  
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+  
+  console.log('💤 Offline-Progress angezeigt:', progress);
 }
 
 // ========== Error Handling ==========
@@ -75,6 +142,13 @@ function showErrorScreen(error) {
   document.body.appendChild(errorDiv);
 }
 
+// Hilfsfunktion für Formatierung (von ui-render importieren oder hier duplizieren)
+function formatAmount(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(2) + 'K';
+  return n.toFixed(0);
+}
+
 // ========== Page Load Event ==========
 
 if (document.readyState === 'loading') {
@@ -89,7 +163,7 @@ if (document.readyState === 'loading') {
 window.addEventListener('beforeunload', () => {
   if (gameInstance) {
     gameInstance.syncToState();
-    gameState.save(); // ← WICHTIG!
+    gameState.save();
     console.log('💾 Spiel vor dem Schließen gespeichert');
   }
 });
@@ -103,8 +177,13 @@ document.addEventListener('visibilitychange', () => {
     console.log('⏸️ Tab inaktiv - Game Loop pausiert');
     gameInstance.stopGameLoop();
     gameInstance.syncToState();
+    gameState.save();
   } else {
     console.log('▶️ Tab aktiv - Game Loop fortgesetzt');
+    
+    // Offline-Progress beim Zurückkehren prüfen
+    checkOfflineProgress(gameInstance);
+    
     gameInstance.startGameLoop();
   }
 });
