@@ -21,7 +21,14 @@ export function setupDOM(game) {
   setupResizeHandler();
   
   // Autosave einrichten
-  setupAutosave(game);
+  function setupAutosave(game) {
+    setInterval(() => {
+      game.syncToState();
+      gameState.save(); // ← WICHTIG: gameState.save() aufrufen!
+      console.log('✅ Autosave ausgeführt');
+    }, 30000); // Alle 30 Sekunden
+  }
+
 }
 
 // Tab-System
