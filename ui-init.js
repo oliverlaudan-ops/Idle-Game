@@ -3,6 +3,7 @@
  * UI-Initialisierung, Event-Listener und DOM-Setup
  */
 
+import gameState from './game-state.js'; // ← Am Anfang der Datei hinzufügen
 import { renderAll, renderStatsBar, renderUpgrades, renderAchievements, showAchievementNotification } from './ui-render.js'; // ← renderAchievements 
 
 // ========== DOM Setup ==========
