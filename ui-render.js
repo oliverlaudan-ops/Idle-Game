@@ -312,6 +312,158 @@ export function renderPrestigeUpgrades(game) {
   });
 }
 
+// ========== Achievement Rendering ========== ← NEU
+
+import achievementManager from './achievement-manager.js';
+
+export function renderAchievements(game) {
+  const container = document.getElementById('achievementsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // Statistik-Header
+  const stats = achievementManager.getStats();
+  const header = document.createElement('div');
+  header.className = 'achievement-header';
+  header.innerHTML = `
+    <h2>🏆 Achievements</h2>
+    <div class="achievement-stats">
+      <span class="stat-highlight">${stats.unlocked} / ${stats.total}</span>
+      <span class="stat-label">freigeschaltet (${stats.percent.toFixed(1)}%)</span>
+    </div>
+    <div class="achievement-progress-bar">
+      <div class="achievement-progress" style="width: ${stats.percent}%"></div>
+    </div>
+  `;
+  container.appendChild(header);
+  
+  // Nach Kategorien gruppieren
+  for (let catKey in achievementManager.categories) {
+    const category = achievementManager.categories[catKey];
+    const achievements = achievementManager.getByCategory(catKey);
+    
+    if (achievements.length === 0) continue;
+    
+    const catStats = stats.byCategory[catKey];
+    
+    const section = document.createElement('div');
+    section.className = 'achievement-category';
+    
+    const catHeader = document.createElement('div');
+    catHeader.className = 'achievement-category-header';
+    catHeader.style.borderLeftColor = category.color;
+    catHeader.innerHTML = `
+      <h3>${category.icon} ${category.name}</h3>
+      <span class="category-progress">${catStats.unlocked} / ${catStats.total}</span>
+    `;
+    section.appendChild(catHeader);
+    
+    const grid = document.createElement('div');
+    grid.className = 'achievement-grid';
+    
+    achievements.forEach(ach => {
+      const card = createAchievementCard(ach);
+      grid.appendChild(card);
+    });
+    
+    section.appendChild(grid);
+    container.appendChild(section);
+  }
+  
+  // Versteckte Achievements-Sektion
+  const hidden = achievementManager.getHidden();
+  if (hidden.length > 0) {
+    const section = document.createElement('div');
+    section.className = 'achievement-category';
+    section.innerHTML = `
+      <div class="achievement-category-header">
+        <h3>❓ Versteckte Achievements</h3>
+        <span class="category-progress">${hidden.length} verborgen</span>
+      </div>
+      <p class="muted" style="padding: 10px;">
+        ${hidden.length} versteckte Achievement${hidden.length > 1 ? 's' : ''} warten darauf, entdeckt zu werden...
+      </p>
+    `;
+    container.appendChild(section);
+  }
+}
+
+function createAchievementCard(achievement) {
+  const card = document.createElement('div');
+  card.className = `achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+  
+  const icon = document.createElement('div');
+  icon.className = 'achievement-icon';
+  icon.textContent = achievement.icon;
+  
+  const content = document.createElement('div');
+  content.className = 'achievement-content';
+  
+  const name = document.createElement('h4');
+  name.textContent = achievement.name;
+  
+  const desc = document.createElement('p');
+  desc.className = 'achievement-desc';
+  desc.textContent = achievement.desc;
+  
+  content.appendChild(name);
+  content.appendChild(desc);
+  
+  // Fortschrittsbalken (falls vorhanden)
+  if (!achievement.unlocked && achievement.progressFn && achievement.maxProgress > 0) {
+    const progressPercent = achievement.getProgressPercent();
+    const progressBar = document.createElement('div');
+    progressBar.className = 'achievement-progress-bar small';
+    progressBar.innerHTML = `
+      <div class="achievement-progress" style="width: ${progressPercent}%"></div>
+      <span class="progress-text">${formatAmount(achievement.progress)} / ${formatAmount(achievement.maxProgress)}</span>
+    `;
+    content.appendChild(progressBar);
+  }
+  
+  // Unlock-Zeitstempel
+  if (achievement.unlocked && achievement.unlockedAt) {
+    const date = new Date(achievement.unlockedAt);
+    const timeAgo = document.createElement('p');
+    timeAgo.className = 'achievement-time';
+    timeAgo.textContent = `Freigeschaltet: ${date.toLocaleDateString('de-DE')}`;
+    content.appendChild(timeAgo);
+  }
+  
+  card.appendChild(icon);
+  card.appendChild(content);
+  
+  return card;
+}
+
+// Achievement-Notification anzeigen
+export function showAchievementNotification(achievement) {
+  const notification = document.createElement('div');
+  notification.className = 'achievement-notification';
+  notification.innerHTML = `
+    <div class="achievement-notification-content">
+      <div class="achievement-notification-icon">${achievement.icon}</div>
+      <div class="achievement-notification-text">
+        <strong>Achievement freigeschaltet!</strong>
+        <p>${achievement.name}</p>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Animation
+  setTimeout(() => notification.classList.add('show'), 100);
+  
+  // Nach 4 Sekunden ausblenden
+  setTimeout(() => {
+    notification.classList.remove('show');
+    setTimeout(() => notification.remove(), 300);
+  }, 4000);
+}
+
+
 // ========== Utility Functions ==========
 
 export function updateActionsStickyTop() {
