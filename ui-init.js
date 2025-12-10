@@ -3,8 +3,8 @@
  * UI-Initialisierung, Event-Listener und DOM-Setup
  */
 
-import gameState from './game-state.js'; // ← Am Anfang der Datei hinzufügen
-import { renderAll, renderStatsBar, renderUpgrades, renderAchievements, showAchievementNotification } from './ui-render.js'; // ← renderAchievements 
+import { renderAll, renderStatsBar, renderUpgrades, renderAchievements, showAchievementNotification } from './ui-render.js';
+import gameState from './game-state.js'; // ← WICHTIG: Import hinzufügen
 
 // ========== DOM Setup ==========
 
@@ -22,17 +22,11 @@ export function setupDOM(game) {
   setupResizeHandler();
   
   // Autosave einrichten
-  function setupAutosave(game) {
-    setInterval(() => {
-      game.syncToState();
-      gameState.save(); // ← WICHTIG: gameState.save() aufrufen!
-      console.log('✅ Autosave ausgeführt');
-    }, 30000); // Alle 30 Sekunden
-  }
-
+  setupAutosave(game);
 }
 
-// Tab-System
+// ========== Tab-System ==========
+
 function setupTabs() {
   const tabButtons = document.querySelectorAll('.tab-btn');
   
@@ -44,8 +38,7 @@ function setupTabs() {
       tabButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       
-      // Tab-Inhalte umschalten - ERWEITERT
-      // Upgrade-Grids
+      // Tab-Inhalte umschalten
       document.querySelectorAll('.upgrade-grid').forEach(grid => {
         if (grid.dataset.tab === target) {
           grid.style.display = 'flex'; // Flex für Spalten-Layout
@@ -54,7 +47,7 @@ function setupTabs() {
         }
       });
       
-      // Achievement-Container ← NEU
+      // Achievement-Container
       const achievementsContainer = document.getElementById('achievementsContainer');
       if (achievementsContainer) {
         if (target === 'achievements') {
@@ -71,7 +64,6 @@ function setupTabs() {
     tabButtons[0].click();
   }
 }
-
 
 // ========== Window Resize Handler ==========
 
@@ -101,6 +93,7 @@ function updateActionsStickyTop() {
 function setupAutosave(game) {
   setInterval(() => {
     game.syncToState();
+    gameState.save(); // ← WICHTIG!
     console.log('✅ Autosave ausgeführt');
   }, 30000); // Alle 30 Sekunden
 }
@@ -126,6 +119,7 @@ export function setupKeyboardShortcuts(game) {
     if (e.ctrlKey && e.key === 's') {
       e.preventDefault();
       game.syncToState();
+      gameState.save(); // ← WICHTIG!
       showNotification('Spiel gespeichert!');
     }
     
@@ -188,74 +182,3 @@ function showNotification(message, duration = 2000) {
 // ========== Initialization Helper ==========
 
 export function initializeGame(game) {
-  console.log('🎮 Initialisiere Spiel...');
-  
-  // 1. Game-Daten laden
-  game.setupGameData();
-  console.log('✅ Game-Daten geladen');
-  
-  // 2. Spielstand laden
-  game.syncFromState();
-  console.log('✅ Spielstand geladen');
-  
-  // 3. Achievements laden ← NEU
-  game.setupAchievements();
-  console.log('✅ Achievements geladen');
-  
-  // 4. Achievement-Callback setzen ← NEU
-  game.onAchievementUnlock = (achievement) => {
-    showAchievementNotification(achievement);
-    renderAchievements(game);
-    // Boni neu berechnen, da manche Achievements Rewards haben
-    game.recalculateResourceBonuses();
-    renderAll(game);
-  };
-  
-  // 5. DOM einrichten
-  setupDOM(game);
-  console.log('✅ DOM eingerichtet');
-  
-  // 6. Initial rendern
-  renderAll(game);
-  renderAchievements(game); // ← NEU
-  console.log('✅ UI gerendert');
-  
-  // 7. Game Loop starten
-  setupGameLoop(game);
-  console.log('✅ Game Loop gestartet');
-  
-  // 8. Keyboard Shortcuts
-  setupKeyboardShortcuts(game);
-  console.log('✅ Keyboard Shortcuts aktiviert');
-  
-  console.log('🎉 Spiel erfolgreich gestartet!');
-}
-
-// ========== CSS für Notifications ==========
-
-// Animation für Notifications als Style-Tag einfügen
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideOut {
-    from {
-      transform: translateX(0);
-      opacity: 1;
-    }
-    to {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-  }
-`;
-document.head.appendChild(style);
