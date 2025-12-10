@@ -312,7 +312,7 @@ export function renderPrestigeUpgrades(game) {
     btn.textContent = canBuy ? 'Kaufen' : 'Nicht genug Punkte';
     
     btn.onclick = () => {
-      if (upg.buy(gameState)) {
+      if (upg.buy(game, gameState)) {
         game.syncToState();
         gameState.save();
         renderPrestigeContainer(game);
