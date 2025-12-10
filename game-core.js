@@ -9,6 +9,7 @@ import upgradesList from './upgrades-def.js';
 import researchUpgradesList from './research-def.js';
 import prestigeUpgradesList, { PrestigeUpgrade } from './prestige-upgrades.js';
 import { calculatePrestigePoints, doPrestige, getEffectivePrestigeBonus } from './prestige.js';
+import achievementManager from './achievement-manager.js'; // ← NEU
 
 class Game {
   constructor() {
@@ -23,6 +24,13 @@ class Game {
     this.actionsEl = null;
     this.upgradeGridEl = null;
     this.researchGridEl = null;
+    
+    // Achievement-Tracking ← NEU
+    this.totalClicks = 0;
+    this.prestigeCount = 0;
+    this.totalPrestigePoints = 0;
+    this.startTime = Date.now();
+    this.achievementPrestigeBonus = 1;
   }
 
   // ========== Resource Management ==========
@@ -63,6 +71,26 @@ class Game {
     this.prestigeUpgrades = prestigeUpgradesList.map(
       upg => Object.assign(new PrestigeUpgrade({}), upg)
     );
+  }
+
+  // ========== Achievement Setup ========== ← NEU
+  
+  setupAchievements() {
+    achievementManager.loadAchievements();
+    achievementManager.syncFromState();
+    
+    // Callback für Achievement-Unlock setzen
+    achievementManager.onAchievementUnlock = (achievement) => {
+      if (this.onAchievementUnlock) {
+        this.onAchievementUnlock(achievement);
+      }
+    };
+  }
+
+  // ========== Achievement Checking ========== ← NEU
+  
+  checkAchievements() {
+    return achievementManager.checkAll(this);
   }
 
   // ========== Game Logic ==========
@@ -108,6 +136,9 @@ class Game {
         res.add(res.rps * mult);
       }
     }
+    
+    // Achievements bei jedem Tick prüfen ← NEU
+    this.checkAchievements();
   }
 
   startGameLoop() {
@@ -147,6 +178,15 @@ class Game {
       id: u.id,
       level: u.level
     }));
+    
+    // Achievement-Tracking speichern ← NEU
+    gameState.totalClicks = this.totalClicks;
+    gameState.prestigeCount = this.prestigeCount;
+    gameState.totalPrestigePoints = this.totalPrestigePoints;
+    gameState.startTime = this.startTime;
+    gameState.achievementPrestigeBonus = this.achievementPrestigeBonus;
+    
+    achievementManager.syncToState();
   }
 
   syncFromState() {
@@ -171,6 +211,13 @@ class Game {
       }
     }
 
+    // Achievement-Tracking laden ← NEU
+    this.totalClicks = gameState.totalClicks ?? 0;
+    this.prestigeCount = gameState.prestigeCount ?? 0;
+    this.totalPrestigePoints = gameState.totalPrestigePoints ?? 0;
+    this.startTime = gameState.startTime ?? Date.now();
+    this.achievementPrestigeBonus = gameState.achievementPrestigeBonus ?? 1;
+
     this.recalculateResourceBonuses();
   }
 
@@ -187,8 +234,15 @@ class Game {
     const pointsGained = calculatePrestigePoints(gameState);
     doPrestige(gameState);
     
+    // Achievement-Tracking aktualisieren ← NEU
+    this.prestigeCount++;
+    this.totalPrestigePoints = gameState.prestige || 0;
+    
     // Game neu initialisieren
     this.syncFromState();
+    
+    // Achievements prüfen ← NEU
+    this.checkAchievements();
     
     return true;
   }
