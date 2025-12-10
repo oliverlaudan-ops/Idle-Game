@@ -80,15 +80,16 @@ const prestigeUpgradesList = [
 
   // 3) Offline-Erträge (Flag im State)
   new PrestigeUpgrade({
-    id: "offline-bonus",
-    name: "Offline-Erträge",
-    desc: "Du erhältst bei Rückkehr zusätzliche Ressourcen basierend auf deiner Offline-Spielzeit.",
-    prestigeCost: 12,
-    single: true,
-    apply: (game, gameState) => {
-      gameState.hasOfflineBonus = true;
-    }
-  })
+  id: "offline-bonus",
+  name: "Offline-Erträge",
+  desc: "Offline-Produktion: 100% statt 50% Effizienz. Maximale Offline-Zeit erhöht auf 8 Stunden.",
+  prestigeCost: 12,
+  single: true,
+  persistent: true, // ← WICHTIG: Bleibt nach Prestige erhalten
+  apply: (game, gameState) => {
+    gameState.hasOfflineBonus = true;
+  }
+})
 ];
 
 export default prestigeUpgradesList;
