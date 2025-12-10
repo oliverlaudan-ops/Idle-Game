@@ -33,7 +33,7 @@ export class PrestigeUpgrade {
 
   buy(game, gameState) {
   if (!this.canBuy(gameState)) return false;
-
+  console.log('BUY called', this.id, 'prestige:', gameState.prestige, 'cost:';
   const cost = this.getCurrentCost();
   gameState.prestige = (gameState.prestige ?? 0) - cost;
   this.level++;
