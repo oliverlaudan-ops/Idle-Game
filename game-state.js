@@ -52,6 +52,7 @@ export class GameState {
 
   // Spielstand speichern
   save() {
+    this.lastOnline = Date.now(); // ← Zeitstempel aktualisieren
     localStorage.setItem("gameState", JSON.stringify(this));
   }
 
