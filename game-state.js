@@ -47,6 +47,10 @@ export class GameState {
     // Sonstige Prestige-Flags
     this.hasOfflineBonus    = this.hasOfflineBonus    ?? false;
 
+    // Offline-Tracking
+    this.lastOnline = this.lastOnline ?? Date.now();
+
+
     this.save();
   }
 
