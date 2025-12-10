@@ -5,6 +5,7 @@
 
 import gameState from './game-state.js';
 import { getEffectivePrestigeBonus } from './prestige.js';
+import achievementManager from './achievement-manager.js'; // ← NEU
 
 // ========== Formatierungs-Hilfsfunktionen ==========
 
@@ -77,13 +78,13 @@ export function renderActions(game) {
         const mult = getEffectivePrestigeBonus(gameState);
         r.add(r.rpc * mult);
         
-        // Klick-Counter erhöhen ← NEU
+        // Klick-Counter erhöhen
         game.totalClicks++;
         
         renderStatsBar(game);
         renderUpgrades(game);
         
-        // Achievements prüfen ← NEU
+        // Achievements prüfen
         game.checkAchievements();
       };
       
@@ -92,7 +93,6 @@ export function renderActions(game) {
   
   updateActionsStickyTop();
 }
-
 
 // ========== Upgrades Rendering ==========
 
@@ -209,6 +209,9 @@ export function createUpgradeCard(game, upg) {
     if (upg.buy(game)) {
       game.recalculateResourceBonuses();
       renderAll(game);
+      
+      // Achievements prüfen nach Upgrade-Kauf
+      game.checkAchievements();
     }
   };
   
@@ -273,7 +276,7 @@ export function renderPrestigeContainer(game) {
 // ========== Prestige Upgrades Rendering ==========
 
 export function renderPrestigeUpgrades(game) {
-  const grid = document.getElementById('prestigeUpgradeGrid');
+  const grid = document.getElementById('prestigeUpgrades');
   if (!grid) return;
   
   grid.innerHTML = '';
@@ -305,6 +308,7 @@ export function renderPrestigeUpgrades(game) {
     btn.onclick = () => {
       if (upg.buy(gameState)) {
         game.syncToState();
+        gameState.save();
         renderPrestigeContainer(game);
         renderStatsBar(game);
       }
@@ -320,13 +324,16 @@ export function renderPrestigeUpgrades(game) {
   });
 }
 
-// ========== Achievement Rendering ========== ← NEU
-
-import achievementManager from './achievement-manager.js';
+// ========== Achievement Rendering ========== NEU!
 
 export function renderAchievements(game) {
   const container = document.getElementById('achievementsContainer');
-  if (!container) return;
+  if (!container) {
+    console.error('❌ achievementsContainer nicht gefunden!');
+    return;
+  }
+  
+  console.log('🏆 Rendering Achievements...');
   
   container.innerHTML = '';
   
@@ -395,6 +402,8 @@ export function renderAchievements(game) {
     `;
     container.appendChild(section);
   }
+  
+  console.log(`✅ ${stats.total} Achievements gerendert`);
 }
 
 function createAchievementCard(achievement) {
@@ -471,7 +480,6 @@ export function showAchievementNotification(achievement) {
   }, 4000);
 }
 
-
 // ========== Utility Functions ==========
 
 export function updateActionsStickyTop() {
@@ -480,7 +488,7 @@ export function updateActionsStickyTop() {
   
   if (statsBar && actions) {
     const barHeight = statsBar.offsetHeight;
-    actions.style.top = (barHeight + 12) + 'px'; // 12px Abstand
+    actions.style.top = (barHeight + 12) + 'px';
   }
 }
 
@@ -491,4 +499,5 @@ export function renderAll(game) {
   renderActions(game);
   renderUpgrades(game);
   renderPrestigeContainer(game);
+  renderAchievements(game); // ← Wichtig!
 }
