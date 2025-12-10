@@ -259,6 +259,11 @@ button.buy-btn, .buy-btn {
 #saveOptions { user-select: none; }
 
 /* ========== ACHIEVEMENTS ========== */
+#achievementsContainer {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
 .achievement-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
