@@ -45,6 +45,7 @@ export class PrestigeUpgrade {
   gameState.save();
   return true;
 }
+}
 
 // Beispiel-Liste für Prestige-Upgrades
 const prestigeUpgradesList = [
