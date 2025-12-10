@@ -256,8 +256,13 @@ export function renderPrestigeContainer(game) {
     <p>Effektiver Bonus: <strong>×${info.effectiveBonus.toFixed(2)}</strong></p>
     <p>Bei Prestige erhältst du: <strong>+${info.gained}</strong> Punkte</p>
     <button id="prestigeBtn" class="prestige-btn" ${game.canPrestige() ? '' : 'disabled'}>
-      Prestige ausführen (${game.canPrestige() ? 'Bereit' : 'Benötigt 1000 Stein'})
+      ${game.canPrestige() 
+        ? `Prestige ausführen (+${info.gained} Punkt${info.gained !== 1 ? 'e' : ''})`
+        : 'Noch nicht genug Ressourcen (benötigt 1 Punkt)'}
     </button>
+    <p style="font-size: 12px; color: #9aa4b6; margin-top: 10px;">
+      Tipp: 1 Mio Stein, 500k Holz, 250k Ton, 100k Metall oder 20k Kristall = 1 Punkt
+    </p>
   `;
   
   const prestigeBtn = document.getElementById('prestigeBtn');
@@ -272,6 +277,7 @@ export function renderPrestigeContainer(game) {
   
   renderPrestigeUpgrades(game);
 }
+
 
 // ========== Prestige Upgrades Rendering ==========
 
