@@ -182,3 +182,73 @@ function showNotification(message, duration = 2000) {
 // ========== Initialization Helper ==========
 
 export function initializeGame(game) {
+  console.log('🎮 Initialisiere Spiel...');
+  
+  // 1. Game-Daten laden
+  game.setupGameData();
+  console.log('✅ Game-Daten geladen');
+  
+  // 2. Spielstand laden
+  game.syncFromState();
+  console.log('✅ Spielstand geladen');
+  
+  // 3. Achievements laden
+  game.setupAchievements();
+  console.log('✅ Achievements geladen');
+  
+  // 4. Achievement-Callback setzen
+  game.onAchievementUnlock = (achievement) => {
+    showAchievementNotification(achievement);
+    renderAchievements(game);
+    game.recalculateResourceBonuses();
+    renderAll(game);
+  };
+  
+  // 5. DOM einrichten
+  setupDOM(game);
+  console.log('✅ DOM eingerichtet');
+  
+  // 6. Initial rendern
+  renderAll(game);
+  renderAchievements(game);
+  console.log('✅ UI gerendert');
+  
+  // 7. Game Loop starten
+  setupGameLoop(game);
+  console.log('✅ Game Loop gestartet');
+  
+  // 8. Keyboard Shortcuts
+  setupKeyboardShortcuts(game);
+  console.log('✅ Keyboard Shortcuts aktiviert');
+  
+  console.log('🎉 Spiel erfolgreich gestartet!');
+}
+
+// ========== CSS für Notifications ==========
+
+// Animation für Notifications als Style-Tag einfügen
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
