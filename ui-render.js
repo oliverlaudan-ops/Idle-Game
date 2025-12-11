@@ -7,6 +7,11 @@ import gameState from './game-state.js';
 import { getEffectivePrestigeBonus } from './prestige.js';
 import achievementManager from './achievement-manager.js'; // ← NEU
 
+// Achievement-Notification Queue
+let achievementQueue = [];
+let isShowingAchievement = false;
+
+
 // ========== Formatierungs-Hilfsfunktionen ==========
 
 export function formatAmount(n) {
@@ -462,29 +467,55 @@ function createAchievementCard(achievement) {
 
 // Achievement-Notification anzeigen
 export function showAchievementNotification(achievement) {
-  const notification = document.createElement('div');
-  notification.className = 'achievement-notification';
-  notification.innerHTML = `
-    <div class="achievement-notification-content">
-      <div class="achievement-notification-icon">${achievement.icon}</div>
-      <div class="achievement-notification-text">
-        <strong>Achievement freigeschaltet!</strong>
-        <p>${achievement.name}</p>
-      </div>
-    </div>
-  `;
-  
-  document.body.appendChild(notification);
-  
-  // Animation
-  setTimeout(() => notification.classList.add('show'), 100);
-  
-  // Nach 4 Sekunden ausblenden
-  setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => notification.remove(), 300);
-  }, 4000);
+    achievementQueue.push(achievement);
+    if (!isShowingAchievement) {
+        processNextAchievementNotification();
+    }
 }
+
+function processNextAchievementNotification() {
+    if (achievementQueue.length === 0) {
+        isShowingAchievement = false;
+        return;
+    }
+
+    isShowingAchievement = true;
+    const achievement = achievementQueue.shift();
+
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.setAttribute('role', 'status');
+    notification.setAttribute('aria-live', 'polite');
+
+    notification.innerHTML = `
+        <div class="achievement-notification-content">
+            <div class="achievement-notification-icon">${achievement.icon}</div>
+            <div class="achievement-notification-text">
+                <strong>Achievement freigeschaltet!</strong>
+                <p>${achievement.name}</p>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    // Einblenden
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 100);
+
+    const displayDuration = 4000; // später leicht variabel machbar
+
+    // Ausblenden & aufräumen
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+            processNextAchievementNotification(); // nächstes in der Queue anzeigen
+        }, 300);
+    }, displayDuration);
+}
+
 
 // ========== Utility Functions ==========
 
