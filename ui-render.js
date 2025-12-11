@@ -275,13 +275,10 @@ export function renderPrestigeContainer(game) {
     prestigeBtn.onclick = () => {
       if (game.performPrestige()) {
         renderAll(game);
-        renderPrestigeContainer(game);
-        renderPrestigeUpgrades(game);
         alert(`Prestige erfolgreich! Du hast ${info.gained} Punkte erhalten.`);
       }
     };
   }
-  
   renderPrestigeUpgrades(game);
 }
 
