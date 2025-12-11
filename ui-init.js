@@ -79,7 +79,7 @@ function setupSaveButtons(game) {
     gameState.achievementPrestigeBonus = 1;
 
     // gespeicherten Stand löschen
-    localStorage.removeItem('idleGameState');
+    localStorage.removeItem('gameState');
 
     // Seite neu laden
     location.reload();
