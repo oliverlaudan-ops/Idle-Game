@@ -236,7 +236,7 @@ class Game {
     if (!this.canPrestige()) return false;
 
     const pointsGained = calculatePrestigePoints(gameState);
-    doPrestige(gameState);
+    doPrestige(this, gameState);
     
     // Achievement-Tracking aktualisieren ← NEU
     this.prestigeCount++;
