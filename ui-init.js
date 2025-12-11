@@ -64,10 +64,25 @@ function setupSaveButtons(game) {
   }
 
   if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
-      localStorage.removeItem('idleGameState');
-      location.reload();
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
+
+    // Prestige & verwandte Werte zurücksetzen
+    gameState.prestige = 0;
+    gameState.prestigeBaseBonus = 1;
+    gameState.prestigeUpgradeMult = 1;
+    gameState.totalPrestigePoints = 0;
+
+    // Optional auch Achievement-/Tracking-Werte zurücksetzen
+    gameState.totalClicks = 0;
+    gameState.prestigeCount = 0;
+    gameState.achievementPrestigeBonus = 1;
+
+    // gespeicherten Stand löschen
+    localStorage.removeItem('idleGameState');
+
+    // Seite neu laden
+    location.reload();
     });
   }
 }
