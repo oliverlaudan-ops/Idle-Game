@@ -85,8 +85,6 @@ export function doPrestige(game, gameState) {
   alert(
     `Du hast ${gained} Prestige-Punkte erhalten!\nBonus jetzt: x${effBonus.toFixed(2)}`
   );
-
-  game.renderAll();
   return true;
 }
 
