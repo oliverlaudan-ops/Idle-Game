@@ -538,6 +538,7 @@ export function renderAll(game) {
   renderActions(game);
   renderUpgrades(game);
   renderPrestigeContainer(game);
+  renderPrestigeUpgrades(game);
   
   // Achievements nur rendern, wenn Tab aktiv ist
   const achievementContainer = document.getElementById('achievementsContainer');
