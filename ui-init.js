@@ -23,6 +23,53 @@ export function setupDOM(game) {
   
   // Autosave einrichten
   setupAutosave(game);
+
+  setupSaveButtons(game); // <— NEU
+}
+
+// ========= Utility-Buttons ======
+function setupSaveButtons(game) {
+  const exportBtn = document.getElementById('exportBtn');
+  const importBtn = document.getElementById('importBtn');
+  const resetBtn  = document.getElementById('resetBtn');
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      game.syncToState();
+      const data = JSON.stringify(gameState);
+      navigator.clipboard.writeText(data).then(() => {
+        alert('Spielstand in die Zwischenablage kopiert.');
+      }).catch(() => {
+        alert('Kopieren fehlgeschlagen. Bitte manuell speichern.');
+        console.log(data);
+      });
+    });
+  }
+
+  if (importBtn) {
+    importBtn.addEventListener('click', () => {
+      const input = prompt('Füge hier den exportierten Spielstand ein:');
+      if (!input) return;
+      try {
+        const loaded = JSON.parse(input);
+        Object.assign(gameState, loaded);
+        game.syncFromState();
+        renderAll(game);
+        alert('Spielstand erfolgreich importiert.');
+      } catch (e) {
+        console.error(e);
+        alert('Import fehlgeschlagen. Ungültiges Format.');
+      }
+    });
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
+      localStorage.removeItem('idleGameState');
+      location.reload();
+    });
+  }
 }
 
 // ========== Tab-System ==========
