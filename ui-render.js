@@ -156,7 +156,7 @@ export function renderUpgrades(game) {
   if (!game.upgradeGridEl || !game.researchGridEl) return;
   
   game.upgradeGridEl.innerHTML = '';
-  game.researchGridEl.innerHTML = '<p style="font-size: 12px; color: #9aa4b6; margin-top: 10px;">Forschung verstärkt bestehende Produktion und skaliert mit deiner aktuellen RPS.</p>';
+  game.researchGridEl.innerHTML = '';
   
   // Upgrades nach Typ trennen
   const normalUpgrades = game.upgrades.filter(u => !u.research);
@@ -215,8 +215,22 @@ export function renderUpgrades(game) {
     const col = document.createElement('div');
     col.className = 'upgrade-col';
     
+    const col = document.createElement('div');
+    col.className = 'upgrade-col';
+  
     const header = document.createElement('h4');
-    header.textContent = res.charAt(0).toUpperCase() + res.slice(1) + ' Forschung';
+  
+    const titleSpan = document.createElement('span');
+    titleSpan.textContent = res.charAt(0).toUpperCase() + res.slice(1) + ' Forschung';
+  
+    const info = document.createElement('span');
+    info.className = 'info-icon';
+    info.textContent = 'i';
+    info.title = 'Forschung verstärkt bestehende Produktion und skaliert mit deiner aktuellen RPS.';
+  
+    header.appendChild(titleSpan);
+    header.appendChild(info);
+    
     col.appendChild(header);
     
     arr.forEach(upg => col.appendChild(createUpgradeCard(game, upg)));
