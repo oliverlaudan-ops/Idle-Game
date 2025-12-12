@@ -1,4 +1,5 @@
 // resource.js
+import gameState from './game-state.js';
 
 export class Resource {
   constructor(id, name, icon, rpc = 1, rps = 0, unlocked = true){
@@ -11,9 +12,17 @@ export class Resource {
     this.unlocked = unlocked;
   }
 
-  add(n){
-    // Beachte: Der Prestige-Bonus wird von der Spiel-Logik (im Game) beim Aufruf add() ergänzt!
-    this.amount += n;
+  add(amount) {
+    this.amount += amount;
+
+    // TotalEarned mitzählen (falls im State vorhanden)
+    if (!gameState.totalEarned) {
+      gameState.totalEarned = {};
+    }
+    if (typeof gameState.totalEarned[this.id] !== 'number') {
+      gameState.totalEarned[this.id] = 0;
+    }
+    gameState.totalEarned[this.id] += amount;
   }
 
   spend(n){
