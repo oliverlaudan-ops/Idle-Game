@@ -83,9 +83,7 @@ function setupSaveButtons(game) {
     
       game.syncToState();
       gameState.save();
-      console.log(gameState);
       renderAll(game);
-    
       alert('Spiel vollständig zurückgesetzt!');
       });
     }
