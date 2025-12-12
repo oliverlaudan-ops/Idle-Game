@@ -237,13 +237,13 @@ export function createUpgradeCard(game, upg) {
   const desc = document.createElement('p');
   desc.textContent = upg.desc;
 
-  // NEU: Buy-Mode INITIAL direkt setzen
-  if (!upg.buyMode) {
+  // Kosten-Element
+  const costP = document.createElement('p');
+
+  // Buy-Mode nur für nicht-single Upgrades initialisieren
+  if (!upg.single && !upg.buyMode) {
     upg.buyMode = 'x1';
   }
-  // Kosten
-  // Kosten-Element vorbereiten
-  const costP = document.createElement('p');
 
   function updateCostText() {
     if (!costRes) {
@@ -251,24 +251,26 @@ export function createUpgradeCard(game, upg) {
       return;
     }
 
-    // Für single-Upgrades immer nur Einzelkosten anzeigen
+    // Single-Upgrades: immer Einzelkosten
     if (upg.single) {
       const cost1 = upg.getCurrentCost();
       costP.textContent = `Kosten: ${formatAmount(cost1)} ${costRes.name}`;
       return;
     }
 
-    if (upg.buyMode === 'x1') {
+    const mode = upg.buyMode || 'x1';
+
+    if (mode === 'x1') {
       const cost1 = upg.getCurrentCost();
       costP.textContent = `Kosten: ${formatAmount(cost1)} ${costRes.name}`;
       return;
     }
 
-    // Gesamtkosten für x10 oder Max berechnen
+    // Levels je nach Modus
     let levels = 1;
-    if (upg.buyMode === 'x10') {
+    if (mode === 'x10') {
       levels = 10;
-    } else if (upg.buyMode === 'max') {
+    } else if (mode === 'max') {
       levels = getMaxAffordableLevels(game, upg);
       if (levels <= 0) levels = 0;
     }
@@ -285,7 +287,6 @@ export function createUpgradeCard(game, upg) {
 
     let totalCost;
     if (mult <= 1) {
-      // Fallback: linear schätzen
       totalCost = base * levels;
     } else {
       const factor = Math.pow(mult, level);
@@ -294,10 +295,10 @@ export function createUpgradeCard(game, upg) {
     }
 
     costP.textContent =
-      `Kosten (${upg.buyMode.toUpperCase()}): ${formatAmount(totalCost)} ${costRes.name}`;
+      `Kosten (${mode.toUpperCase()}): ${formatAmount(totalCost)} ${costRes.name}`;
   }
 
-  // Anfangs-Kosten setzen
+  // Initiale Kostenanzeige
   updateCostText();
 
   // Besitzstatus
@@ -307,36 +308,35 @@ export function createUpgradeCard(game, upg) {
     ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
     : `Stufe: ${upg.level}`;
 
-  // NEU: Buy-Mode initialisieren
-  if (!upg.buyMode) {
-    upg.buyMode = 'x1'; // 'x1' | 'x10' | 'max'
-  }
-
-  // NEU: Buy-Mode-Leiste
+  // Buy-Mode-Leiste nur für nicht-single Upgrades
   let modeBar = null;
-  if (!upg.single)modeBar = document.createElement('div');
-  modeBar.className = 'buy-mode-bar';
+  if (!upg.single) {
+    modeBar = document.createElement('div');
+    modeBar.className = 'buy-mode-bar';
 
-  const modes = [
-    { key: 'x1',  label: 'x1' },
-    { key: 'x10', label: 'x10' },
-    { key: 'max', label: 'Max' }
-  ];
+    const modes = [
+      { key: 'x1',  label: 'x1' },
+      { key: 'x10', label: 'x10' },
+      { key: 'max', label: 'Max' }
+    ];
 
-  modes.forEach(m => {
-    const mBtn = document.createElement('button');
-    mBtn.type = 'button';
-    mBtn.className = 'buy-mode-btn' + (upg.buyMode === m.key ? ' active' : '');
-    mBtn.textContent = m.label;
-    mBtn.onclick = (e) => {
-      e.stopPropagation();
-      upg.buyMode = m.key;
-      modeBar.querySelectorAll('.buy-mode-btn').forEach(b => b.classList.remove('active'));
-      mBtn.classList.add('active');
-      updateCostText(); // ← Kostenanzeige aktualisieren
-    };
-    modeBar.appendChild(mBtn);
-  });
+    modes.forEach(m => {
+      const mBtn = document.createElement('button');
+      mBtn.type = 'button';
+      mBtn.className = 'buy-mode-btn' + (upg.buyMode === m.key ? ' active' : '');
+      mBtn.textContent = m.label;
+      mBtn.onclick = (e) => {
+        e.stopPropagation();
+        upg.buyMode = m.key;
+        if (modeBar) {
+          modeBar.querySelectorAll('.buy-mode-btn').forEach(b => b.classList.remove('active'));
+        }
+        mBtn.classList.add('active');
+        updateCostText();
+      };
+      modeBar.appendChild(mBtn);
+    });
+  }
 
   // Kauf-Button
   const btn = document.createElement('button');
@@ -352,10 +352,12 @@ export function createUpgradeCard(game, upg) {
     if (upg.single && upg.level > 0) return;
 
     let timesToBuy = 1;
-    if (upg.buyMode === 'x10') {
-      timesToBuy = 10;
-    } else if (upg.buyMode === 'max') {
-      timesToBuy = getMaxAffordableLevels(game, upg);
+    if (!upg.single) {
+      if (upg.buyMode === 'x10') {
+        timesToBuy = 10;
+      } else if (upg.buyMode === 'max') {
+        timesToBuy = getMaxAffordableLevels(game, upg);
+      }
     }
 
     if (timesToBuy <= 0) return;
@@ -375,15 +377,15 @@ export function createUpgradeCard(game, upg) {
     }
   };
 
-  // Card zusammenbauen (Reihenfolge wichtig für Optik)
+  // Card zusammenbauen
   card.appendChild(title);
   card.appendChild(desc);
   card.appendChild(costP);
   card.appendChild(owned);
-  if (modeBar) card.appendChild(modeBar);   // NEU: Modus-Leiste
+  if (modeBar) card.appendChild(modeBar); // nur bei mehrfachen Upgrades
   card.appendChild(btn);
 
-  // Progress Bar
+  // Progress-Bar (wie bisher)
   if (costRes) {
     const current = costRes.amount;
     const nextCost = upg.getCurrentCost();
