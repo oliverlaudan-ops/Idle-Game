@@ -28,6 +28,62 @@ export function formatRate(n) {
   return formatAmount(n);
 }
 
+// Buy-Mode button Hilfsfunktion
+function getMaxAffordableLevels(game, upg) {
+  const res = game.getResource(upg.costRes);
+  if (!res) return 0;
+
+  const currentAmount = res.amount;
+  const base = upg.costBase;
+  const mult = upg.costMult || 1;
+
+  // Falls kein Multiplier (z.B. 1): fallback auf lineares Hochzählen
+  if (mult <= 1) {
+    let count = 0;
+    let cost = upg.getCurrentCost();
+    let remaining = currentAmount;
+    while (remaining >= cost && count < 1000) { // Hardcap zur Sicherheit
+      remaining -= cost;
+      count++;
+      // nächster Preis (lineare Annahme: gleichbleibend)
+      // wenn du hier anders skalierst, ggf. anpassen
+    }
+    return count;
+  }
+
+  // Geometrische Reihe: Kosten ab aktueller Stufe
+  // cost_n = base * mult^(level + n - 1)
+  // Summe_k = base * mult^level * (mult^k - 1) / (mult - 1)
+  const level = upg.level || 0;
+  const factor = Math.pow(mult, level);
+  const A = base * factor;
+  const B = mult;
+
+  // Binäre Suche nach maximalem k mit Summe_k <= currentAmount
+  let low = 0;
+  let high = 1;
+
+  const sumCost = (k) => {
+    if (k <= 0) return 0;
+    return A * (Math.pow(B, k) - 1) / (B - 1);
+  };
+
+  while (sumCost(high) <= currentAmount && high < 1e6) {
+    high *= 2;
+  }
+
+  while (low < high) {
+    const mid = Math.floor((low + high + 1) / 2);
+    if (sumCost(mid) <= currentAmount) {
+      low = mid;
+    } else {
+      high = mid - 1;
+    }
+  }
+
+  return low;
+}
+
 // ========== Stats Bar Rendering ==========
 
 export function renderStatsBar(game) {
@@ -174,61 +230,58 @@ export function renderUpgrades(game) {
 }
 
 // ========== Upgrade Card Creation ==========
-
 export function createUpgradeCard(game, upg) {
   const costRes = game.getResource(upg.costRes);
-  
   const card = document.createElement('div');
   card.className = 'card';
-  
+
   // Titel
   const title = document.createElement('h3');
   title.textContent = upg.name;
-  
+
   // Beschreibung
   const desc = document.createElement('p');
   desc.textContent = upg.desc;
-  
+
   // Kosten
   const costP = document.createElement('p');
   const cost = upg.getCurrentCost();
   costP.textContent = costRes ? `Kosten: ${formatAmount(cost)} ${costRes.name}` : '';
-  
+
   // Besitzstatus
   const owned = document.createElement('p');
   owned.className = 'muted';
-  owned.textContent = upg.single 
+  owned.textContent = upg.single
     ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
     : `Stufe: ${upg.level}`;
-  
-  // NEU: Kaufmodus-Status am Upgrade speichern (Fallback auf x1)
+
+  // NEU: Buy-Mode initialisieren
   if (!upg.buyMode) {
     upg.buyMode = 'x1'; // 'x1' | 'x10' | 'max'
   }
 
-  // NEU: Kaufmodus-Leiste
+  // NEU: Buy-Mode-Leiste
   const modeBar = document.createElement('div');
   modeBar.className = 'buy-mode-bar';
 
   const modes = [
-    { key: 'x1', label: 'x1' },
+    { key: 'x1',  label: 'x1' },
     { key: 'x10', label: 'x10' },
     { key: 'max', label: 'Max' }
   ];
 
   modes.forEach(m => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'buy-mode-btn' + (upg.buyMode === m.key ? ' active' : '');
-    btn.textContent = m.label;
-    btn.onclick = (e) => {
+    const mBtn = document.createElement('button');
+    mBtn.type = 'button';
+    mBtn.className = 'buy-mode-btn' + (upg.buyMode === m.key ? ' active' : '');
+    mBtn.textContent = m.label;
+    mBtn.onclick = (e) => {
       e.stopPropagation();
       upg.buyMode = m.key;
-      // Active-Styles aktualisieren
       modeBar.querySelectorAll('.buy-mode-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      mBtn.classList.add('active');
     };
-    modeBar.appendChild(btn);
+    modeBar.appendChild(mBtn);
   });
 
   // Kauf-Button
@@ -267,31 +320,29 @@ export function createUpgradeCard(game, upg) {
       game.checkAchievements();
     }
   };
-  
-  // Card zusammenbauen
+
+  // Card zusammenbauen (Reihenfolge wichtig für Optik)
   card.appendChild(title);
   card.appendChild(desc);
   card.appendChild(costP);
   card.appendChild(owned);
+  card.appendChild(modeBar);   // NEU: Modus-Leiste
   card.appendChild(btn);
-  
+
   // Progress Bar
   if (costRes) {
     const current = costRes.amount;
     const nextCost = upg.getCurrentCost();
     const percent = Math.min(100, (current / nextCost) * 100);
-    
     const progressBar = document.createElement('div');
     progressBar.className = 'progress-bar';
-    
     const progress = document.createElement('div');
     progress.className = 'progress';
     progress.style.width = percent + '%';
-    
     progressBar.appendChild(progress);
     card.appendChild(progressBar);
   }
-  
+
   return card;
 }
 
@@ -575,62 +626,6 @@ export function updateActionsStickyTop() {
     actions.style.top = (barHeight + 12) + 'px';
   }
 }
-
-function getMaxAffordableLevels(game, upg) {
-  const res = game.getResource(upg.costRes);
-  if (!res) return 0;
-
-  const currentAmount = res.amount;
-  const base = upg.costBase;
-  const mult = upg.costMult || 1;
-
-  // Falls kein Multiplier (z.B. 1): fallback auf lineares Hochzählen
-  if (mult <= 1) {
-    let count = 0;
-    let cost = upg.getCurrentCost();
-    let remaining = currentAmount;
-    while (remaining >= cost && count < 1000) { // Hardcap zur Sicherheit
-      remaining -= cost;
-      count++;
-      // nächster Preis (lineare Annahme: gleichbleibend)
-      // wenn du hier anders skalierst, ggf. anpassen
-    }
-    return count;
-  }
-
-  // Geometrische Reihe: Kosten ab aktueller Stufe
-  // cost_n = base * mult^(level + n - 1)
-  // Summe_k = base * mult^level * (mult^k - 1) / (mult - 1)
-  const level = upg.level || 0;
-  const factor = Math.pow(mult, level);
-  const A = base * factor;
-  const B = mult;
-
-  // Binäre Suche nach maximalem k mit Summe_k <= currentAmount
-  let low = 0;
-  let high = 1;
-
-  const sumCost = (k) => {
-    if (k <= 0) return 0;
-    return A * (Math.pow(B, k) - 1) / (B - 1);
-  };
-
-  while (sumCost(high) <= currentAmount && high < 1e6) {
-    high *= 2;
-  }
-
-  while (low < high) {
-    const mid = Math.floor((low + high + 1) / 2);
-    if (sumCost(mid) <= currentAmount) {
-      low = mid;
-    } else {
-      high = mid - 1;
-    }
-  }
-
-  return low;
-}
-
 
 // ========== Render All ==========
 
