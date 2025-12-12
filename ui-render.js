@@ -412,6 +412,9 @@ export function renderPrestigeContainer(game) {
   
   el.innerHTML = `
     <h3>🌟 Prestige</h3>
+    <p style="font-size: 12px; color: #9aa4b6; margin-top: 10px;">
+    Prestige setzt deine Ressourcen und Upgrades zurück, aber du behältst Prestige-Punkte und Prestige-Upgrades. Dein Prestige-Bonus multipliziert alle Produktionsraten.
+    </p>
     <p>Aktuelle Prestige-Punkte: <strong>${info.currentPoints}</strong></p>
     <p>Effektiver Bonus: <strong>×${info.effectiveBonus.toFixed(2)}</strong></p>
     <p>Bei Prestige erhältst du: <strong>+${info.gained}</strong> Punkte</p>
