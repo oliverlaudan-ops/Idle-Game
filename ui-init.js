@@ -32,33 +32,32 @@ function setupSaveButtons(game) {
   const exportBtn = document.getElementById('exportBtn');
   const importBtn = document.getElementById('importBtn');
   const resetBtn  = document.getElementById('resetBtn');
-    // Export-Button
-    if (exportBtn) {
+  const saveField = document.getElementById('saveString');
+   // Export-Button 
+  if (exportBtn) {
     exportBtn.addEventListener('click', () => {
-      game.syncToState();          // erst aktuellen Stand ins gameState schreiben
-      const encoded = gameState.export(); // zeigt Alert und gibt String zurück
-  
-      // Optional: zusätzlich in die Zwischenablage kopieren
-      navigator.clipboard.writeText(encoded).catch(() => {
-        console.warn('Kopieren in Zwischenablage fehlgeschlagen.');
-      });
+      game.syncToState();
+      const encoded = gameState.export();
+      if (saveField) saveField.value = encoded;
+      navigator.clipboard?.writeText(encoded).catch(() => {});
+      showNotification('Spielstand exportiert (in Feld & evtl. Zwischenablage).');
     });
-    }
-  
-    // Import-Button
-    if (importBtn) {
-      importBtn.addEventListener('click', () => {
-        const input = prompt('Füge hier den exportierten Spielstand ein:');
-        if (!input) return;
-    
-        gameState.import(input);   // lädt + speichert intern
-    
-        // danach Game aus dem neuen State aktualisieren
+  }
+  // Import-Button
+  if (importBtn) {
+    importBtn.addEventListener('click', () => {
+      if (!saveField || !saveField.value.trim()) return;
+      try {
+        gameState.import(saveField.value.trim());
         game.syncFromState();
         game.recalculateResourceBonuses();
         renderAll(game);
-      });
-    }
+        showNotification('Spielstand importiert!');
+      } catch (e) {
+        showNotification('Fehler: Ungültiger Spielstand.');
+      }
+    });
+  }
 
   if (resetBtn) {
   // ui-init.js – im setupSaveButtons(game)
