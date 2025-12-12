@@ -545,7 +545,7 @@ export function renderAchievements(game) {
   profileBox.className = 'achievement-profile-stats';
 
   const now = Date.now();
-  const playSeconds = Math.floor((now - game.startTime) / 1000);
+  // const playSeconds = Math.floor((now - game.startTime) / 1000);
   const prestigeCount = game.prestigeCount || 0;
   const totalPrestige = game.totalPrestigePoints || 0;
   const totalClicks = game.totalClicks || 0;
