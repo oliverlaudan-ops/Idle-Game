@@ -212,6 +212,44 @@ button.buy-btn, .buy-btn {
   margin-bottom: 18px;
 }
 
+/* Buy-Mode-Leiste über dem Kaufen-Button */
+.buy-mode-bar {
+  display: inline-flex;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  background: rgba(0,0,0,0.18);
+  padding: 4px 6px;
+  border-radius: 999px;
+}
+
+/* Kleine Modus-Buttons: x1 / x10 / Max */
+.buy-mode-btn {
+  border: none;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  transition: background .12s, color .12s, transform .06s;
+}
+
+.buy-mode-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.buy-mode-btn.active {
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  color: #133325;
+  box-shadow: 0 2px 8px rgba(44,210,134,0.25);
+}
+
 /* Prestige-Bereich und Blöcke */
 .prestige-section {
   display: flex;
