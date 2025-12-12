@@ -251,6 +251,13 @@ export function createUpgradeCard(game, upg) {
       return;
     }
 
+    // Für single-Upgrades immer nur Einzelkosten anzeigen
+    if (upg.single) {
+      const cost1 = upg.getCurrentCost();
+      costP.textContent = `Kosten: ${formatAmount(cost1)} ${costRes.name}`;
+      return;
+    }
+
     if (upg.buyMode === 'x1') {
       const cost1 = upg.getCurrentCost();
       costP.textContent = `Kosten: ${formatAmount(cost1)} ${costRes.name}`;
@@ -306,7 +313,8 @@ export function createUpgradeCard(game, upg) {
   }
 
   // NEU: Buy-Mode-Leiste
-  const modeBar = document.createElement('div');
+  let modeBar = null;
+  if (!upg.single)modeBar = document.createElement('div');
   modeBar.className = 'buy-mode-bar';
 
   const modes = [
@@ -372,7 +380,7 @@ export function createUpgradeCard(game, upg) {
   card.appendChild(desc);
   card.appendChild(costP);
   card.appendChild(owned);
-  card.appendChild(modeBar);   // NEU: Modus-Leiste
+  if (modeBar) card.appendChild(modeBar);   // NEU: Modus-Leiste
   card.appendChild(btn);
 
   // Progress Bar
