@@ -549,10 +549,21 @@ export function renderAchievements(game) {
   const prestigeCount = game.prestigeCount || 0;
   const totalPrestige = game.totalPrestigePoints || 0;
   const totalClicks = game.totalClicks || 0;
-
+    
+  // startTime stammt aus gameState und kann sehr alt sein.
+  // Besser: begrenzen und nur aktuelle Session grob anzeigen:
+  let playSeconds = 0;
+  if (game.startTime) {
+    const diffMs = now - game.startTime;
+    // Negative oder zu große Werte abfangen
+    if (diffMs > 0 && diffMs < 1000 * 60 * 60 * 24 * 365) {
+      playSeconds = Math.floor(diffMs / 1000);
+    }
+  }
+  
   profileBox.innerHTML = `
     <div class="profile-row">
-      <div><strong>Spielzeit</strong><span>${formatPlaytime(playSeconds)}</span></div>
+      <div><strong>Spielzeit (aktuelle Session)</strong><span>${formatPlaytime(playSeconds)}</span></div>
       <div><strong>Gesamt-Klicks</strong><span>${formatAmount(totalClicks)}</span></div>
       <div><strong>Prestiges</strong><span>${prestigeCount}</span></div>
       <div><strong>Prestige-Punkte gesamt</strong><span>${totalPrestige}</span></div>
