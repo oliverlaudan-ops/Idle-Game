@@ -215,9 +215,6 @@ export function renderUpgrades(game) {
     const col = document.createElement('div');
     col.className = 'upgrade-col';
     
-    const col = document.createElement('div');
-    col.className = 'upgrade-col';
-  
     const header = document.createElement('h4');
   
     const titleSpan = document.createElement('span');
