@@ -374,6 +374,42 @@ button.buy-btn, .buy-btn {
   font-size: 1.8em;
 }
 
+.achievement-profile-stats {
+  margin: 12px 0 20px 0;
+  background: #1f2431;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.achievement-profile-stats .profile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+}
+
+.achievement-profile-stats .profile-row > div {
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.achievement-profile-stats strong {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.achievement-profile-stats span {
+  font-size: 14px;
+  color: var(--accent-light);
+}
+
 .achievement-stats {
   display: flex;
   justify-content: center;
