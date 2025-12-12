@@ -15,6 +15,7 @@ let isShowingAchievement = false;
 // ========== Formatierungs-Hilfsfunktionen ==========
 
 export function formatAmount(n) {
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + 'G'
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
   if (n >= 1_000) return (n / 1_000).toFixed(2) + 'K';
   return n.toFixed(0);
