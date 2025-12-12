@@ -212,7 +212,7 @@ const achievementsList = [
   new Achievement({
     id: 'first_prestige',
     name: 'Neuanfang',
-    desc: 'Führe dein erstes Prestige durch',
+    desc: 'Führe dein erstes Prestige durch (Prestige gibt dir dauerhafte Bonuspunkte für schnellere Runs.)',
     category: 'prestige',
     icon: '🌟',
     checkFn: (game) => (game.prestigeCount || 0) >= 1
@@ -251,7 +251,7 @@ const achievementsList = [
   new Achievement({
     id: 'first_research',
     name: 'Forscher',
-    desc: 'Kaufe deine erste Forschung',
+    desc: 'Kaufe deine erste Forschung (Forschung verstärkt deine Klicks basierend auf deiner aktuellen Produktion.)',
     category: 'forschung',
     icon: '🔬',
     checkFn: (game) => game.upgrades.some(u => u.research && u.level > 0)
