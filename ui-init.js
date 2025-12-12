@@ -153,12 +153,19 @@ function updateActionsStickyTop() {
 
 // ========== Autosave ==========
 
+let autosaveCounter = 0;
+
 function setupAutosave(game) {
   setInterval(() => {
     game.syncToState();
-    gameState.save(); // ← WICHTIG!
-    console.log('✅ Autosave ausgeführt');
-  }, 30000); // Alle 30 Sekunden
+    gameState.save();
+    autosaveCounter++;
+
+    // Alle 2 Autosaves (1 Minute) kurzes Feedback
+    if (autosaveCounter % 2 === 0) {
+      showNotification('Spiel automatisch gespeichert.', 2000);
+    }
+  }, 30000);
 }
 
 // ========== Game Loop Callback ==========
