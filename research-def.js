@@ -6,7 +6,7 @@ const researchUpgradesList = [
   new Upgrade({
     id: "stein_research_rpc",
     name: "Stein-Forschung",
-    desc: "Erhöht Stein pro Klick um 25% deiner aktuellen Stein-pro-Sekunde-Rate.",
+    desc: "Erhöht Stein pro Klick dauerhaft um 25% deiner aktuellen Stein-pro-Sekunde-Rate.",
     costRes: "stein",
     costBase: 200,
     costMult: 1.5,
@@ -19,7 +19,7 @@ const researchUpgradesList = [
   new Upgrade({
    id: "holz_research_rpc",
    name: "Holz-Forschung",
-   desc: "Erhöht Holz pro Klick um 25% deiner aktuellen Holz-pro-Sekunde-Rate.",
+   desc: "Erhöht Holz pro Klick dauerhaft um 25% deiner aktuellen Holz-pro-Sekunde-Rate.",
    costRes: "holz",
    costBase: 500,
    costMult: 1.6,
@@ -32,7 +32,7 @@ const researchUpgradesList = [
   new Upgrade({
     id: "ton_research_rpc",
     name: "Ton-Forschung",
-    desc: "Erhöht Ton pro Klick um 20% deiner aktuellen Ton-pro-Sekunde-Rate.",
+    desc: "Erhöht Ton pro Klick dauerhaft um 20% deiner aktuellen Ton-pro-Sekunde-Rate.",
     costRes: "ton",
     costBase: 1000,
     costMult: 1.7,
@@ -45,7 +45,7 @@ const researchUpgradesList = [
   new Upgrade({
     id: "metall_research_rpc",
     name: "Metall-Forschung",
-    desc: "Erhöht Metall pro Klick um 15% deiner aktuellen Metall-pro-Sekunde-Rate.",
+    desc: "Erhöht Metall pro Klick dauerhaft um 15% deiner aktuellen Metall-pro-Sekunde-Rate.",
     costRes: "metall",
     costBase: 5000,
     costMult: 1.8,
@@ -58,7 +58,7 @@ const researchUpgradesList = [
   new Upgrade({
     id: "kristall_research_rpc",
     name: "Kristall-Forschung",
-    desc: "Erhöht Kristall pro Klick um 10% deiner aktuellen Kristall-pro-Sekunde-Rate.",
+    desc: "Erhöht Kristall pro Klick dauerhaft um 10% deiner aktuellen Kristall-pro-Sekunde-Rate.",
     costRes: "kristall",
     costBase: 10000,
     costMult: 1.9,
