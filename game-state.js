@@ -1,4 +1,5 @@
 // game-state.js
+import resourcesList from './resources-def.js'; // Liste aller Ressourcen
 
 export class GameState {
 constructor() {
