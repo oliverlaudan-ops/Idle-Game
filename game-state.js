@@ -58,21 +58,17 @@ constructor() {
     localStorage.setItem("gameState", JSON.stringify(this));
   }
 
-  // Spielstand zurücksetzen (alles außer Prestige)
-  reset() {
-    localStorage.removeItem("gameState");
-      // Alle Ressourcen anhand totalEarned zurücksetzen
-      if (this.totalEarned) {
-        for (const res in this.totalEarned) {
-          // aktuelle Menge
-          this[res] = 0;
-          // Gesamtverdienst
-          this.totalEarned[res] = 0;
-        }
+  // Spielstand zurücksetzen
+  // game-state.js – reset ohne removeItem
+reset() {
+  // Alle Ressourcen anhand totalEarned zurücksetzen
+  if (this.totalEarned) {
+    for (const res in this.totalEarned) {
+      this[res] = 0;
+      this.totalEarned[res] = 0;
+    }
   }
 
-  // Falls später neue Ressourcen ohne totalEarned hinzukommen:
-  // optionaler Fallback, alles was numerisch ist und kein spezielles Feld:
   for (const key of Object.keys(this)) {
     if (['prestige', 'prestigeBaseBonus', 'prestigeUpgradeMult'].includes(key)) continue;
     if (typeof this[key] === 'number' && !(key in (this.totalEarned || {}))) {
@@ -80,28 +76,23 @@ constructor() {
     }
   }
 
-  // Upgrades
   this.upgrades = [];
   this.prestigeUpgrades = [];
 
-  // Prestige komplett zurücksetzen
   this.prestige = 0;
   this.prestigeBaseBonus = 1;
   this.prestigeUpgradeMult = 1;
 
-  // Tracking / Achievements
   this.totalClicks = 0;
   this.prestigeCount = 0;
   this.totalPrestigePoints = 0;
   this.achievementPrestigeBonus = 1;
 
-  // Flags / Zeit
   this.hasOfflineBonus = false;
   this.lastOnline = Date.now();
 
   this.save();
 }
-
 
   // Export: Serialisiert und kodiert den Spielstand als Base64
   export() {
