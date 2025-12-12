@@ -64,25 +64,41 @@ function setupSaveButtons(game) {
   }
 
   if (resetBtn) {
-  resetBtn.addEventListener('click', () => {
-    if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
-
-    // Prestige & verwandte Werte zurücksetzen
-    gameState.prestige = 0;
-    gameState.prestigeBaseBonus = 1;
-    gameState.prestigeUpgradeMult = 1;
-    gameState.totalPrestigePoints = 0;
-
-    // Optional auch Achievement-/Tracking-Werte zurücksetzen
-    gameState.totalClicks = 0;
-    gameState.prestigeCount = 0;
-    gameState.achievementPrestigeBonus = 1;
-
-    // gespeicherten Stand löschen
-    localStorage.removeItem('gameState');
-
-    // Seite neu laden
-    location.reload();
+// ui-init.js – im setupSaveButtons(game)
+resetBtn.addEventListener('click', () => {
+      if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
+    
+      // 1. Kompletten gespeicherten State löschen
+      localStorage.removeItem('gameState');
+    
+      // 2. Laufende GameState-Instanz auf Defaults zurücksetzen
+      gameState.reset(); // setzt Prestige, totalEarned, Upgrades usw. auf Startwerte
+    
+      // 3. Game-Instanz hart neu aufbauen
+      game.resources = {};
+      game.upgrades = [];
+      game.prestigeUpgrades = [];
+      game.totalClicks = 0;
+      game.prestigeCount = 0;
+      game.totalPrestigePoints = 0;
+      game.achievementPrestigeBonus = 1;
+      game.startTime = Date.now();
+    
+      // frische Daten aus Definitionslisten laden
+      game.setupGameData();
+    
+      // State aus dem (gerade zurückgesetzten) gameState einlesen
+      game.syncFromState();
+    
+      // Boni neu berechnen
+      game.recalculateResourceBonuses();
+    
+      // 4. Speichern & UI neu rendern
+      game.syncToState();
+      gameState.save();
+      renderAll(game);
+    
+      alert('Spiel vollständig zurückgesetzt!');
     });
   }
 }
