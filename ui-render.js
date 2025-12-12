@@ -29,6 +29,13 @@ export function formatRate(n) {
   return formatAmount(n);
 }
 
+function formatPlaytime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
 // Buy-Mode button Hilfsfunktion
 function getMaxAffordableLevels(game, upg) {
   const res = game.getResource(upg.costRes);
