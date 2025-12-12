@@ -155,7 +155,7 @@ export function renderUpgrades(game) {
   if (!game.upgradeGridEl || !game.researchGridEl) return;
   
   game.upgradeGridEl.innerHTML = '';
-  game.researchGridEl.innerHTML = '<p>Forschung verstärkt bestehende Produktion und skaliert mit deiner aktuellen RPS.</p>';
+  game.researchGridEl.innerHTML = '<p style="font-size: 12px; color: #9aa4b6; margin-top: 10px;">Forschung verstärkt bestehende Produktion und skaliert mit deiner aktuellen RPS.</p>';
   
   // Upgrades nach Typ trennen
   const normalUpgrades = game.upgrades.filter(u => !u.research);
