@@ -32,66 +32,63 @@ function setupSaveButtons(game) {
   const exportBtn = document.getElementById('exportBtn');
   const importBtn = document.getElementById('importBtn');
   const resetBtn  = document.getElementById('resetBtn');
-
-  if (exportBtn) {
+    // Export-Button
+    if (exportBtn) {
     exportBtn.addEventListener('click', () => {
-      game.syncToState();
-      const data = JSON.stringify(gameState);
-      navigator.clipboard.writeText(data).then(() => {
-        alert('Spielstand in die Zwischenablage kopiert.');
-      }).catch(() => {
-        alert('Kopieren fehlgeschlagen. Bitte manuell speichern.');
-        console.log(data);
+      game.syncToState();          // erst aktuellen Stand ins gameState schreiben
+      const encoded = gameState.export(); // zeigt Alert und gibt String zurück
+  
+      // Optional: zusätzlich in die Zwischenablage kopieren
+      navigator.clipboard.writeText(encoded).catch(() => {
+        console.warn('Kopieren in Zwischenablage fehlgeschlagen.');
       });
     });
-  }
-
-  if (importBtn) {
-    importBtn.addEventListener('click', () => {
-      const input = prompt('Füge hier den exportierten Spielstand ein:');
-      if (!input) return;
-      try {
-        const loaded = JSON.parse(input);
-        Object.assign(gameState, loaded);
+    }
+  
+    // Import-Button
+    if (importBtn) {
+      importBtn.addEventListener('click', () => {
+        const input = prompt('Füge hier den exportierten Spielstand ein:');
+        if (!input) return;
+    
+        gameState.import(input);   // lädt + speichert intern
+    
+        // danach Game aus dem neuen State aktualisieren
         game.syncFromState();
+        game.recalculateResourceBonuses();
         renderAll(game);
-        alert('Spielstand erfolgreich importiert.');
-      } catch (e) {
-        console.error(e);
-        alert('Import fehlgeschlagen. Ungültiges Format.');
-      }
-    });
-  }
+      });
+    }
 
   if (resetBtn) {
-// ui-init.js – im setupSaveButtons(game)
-resetBtn.addEventListener('click', () => {
-  if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
-
-    localStorage.removeItem('gameState'); // nur hier
+  // ui-init.js – im setupSaveButtons(game)
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Spiel wirklich vollständig zurücksetzen?')) return;
   
-    gameState.reset();
-    game.resources = {};
-    game.upgrades = [];
-    game.prestigeUpgrades = [];
-    game.totalClicks = 0;
-    game.prestigeCount = 0;
-    game.totalPrestigePoints = 0;
-    game.achievementPrestigeBonus = 1;
-    game.startTime = Date.now();
-  
-    game.setupGameData();
-    game.syncFromState();
-    game.recalculateResourceBonuses();
-  
-    game.syncToState();
-    gameState.save();
-    console.log(gameState);
-    renderAll(game);
-  
-    alert('Spiel vollständig zurückgesetzt!');
-    });
-  }
+      localStorage.removeItem('gameState'); // nur hier
+    
+      gameState.reset();
+      game.resources = {};
+      game.upgrades = [];
+      game.prestigeUpgrades = [];
+      game.totalClicks = 0;
+      game.prestigeCount = 0;
+      game.totalPrestigePoints = 0;
+      game.achievementPrestigeBonus = 1;
+      game.startTime = Date.now();
+    
+      game.setupGameData();
+      game.syncFromState();
+      game.recalculateResourceBonuses();
+    
+      game.syncToState();
+      gameState.save();
+      console.log(gameState);
+      renderAll(game);
+    
+      alert('Spiel vollständig zurückgesetzt!');
+      });
+    }
 }
 
 // ========== Tab-System ==========
