@@ -238,9 +238,56 @@ export function createUpgradeCard(game, upg) {
   desc.textContent = upg.desc;
 
   // Kosten
+  // Kosten-Element vorbereiten
   const costP = document.createElement('p');
-  const cost = upg.getCurrentCost();
-  costP.textContent = costRes ? `Kosten: ${formatAmount(cost)} ${costRes.name}` : '';
+
+  function updateCostText() {
+    if (!costRes) {
+      costP.textContent = '';
+      return;
+    }
+
+    if (upg.buyMode === 'x1') {
+      const cost1 = upg.getCurrentCost();
+      costP.textContent = `Kosten: ${formatAmount(cost1)} ${costRes.name}`;
+      return;
+    }
+
+    // Gesamtkosten für x10 oder Max berechnen
+    let levels = 1;
+    if (upg.buyMode === 'x10') {
+      levels = 10;
+    } else if (upg.buyMode === 'max') {
+      levels = getMaxAffordableLevels(game, upg);
+      if (levels <= 0) levels = 0;
+    }
+
+    if (levels <= 0) {
+      const cost1 = upg.getCurrentCost();
+      costP.textContent = `Kosten: ${formatAmount(cost1)} ${costRes.name}`;
+      return;
+    }
+
+    const base = upg.costBase;
+    const mult = upg.costMult || 1;
+    const level = upg.level || 0;
+
+    let totalCost;
+    if (mult <= 1) {
+      // Fallback: linear schätzen
+      totalCost = base * levels;
+    } else {
+      const factor = Math.pow(mult, level);
+      const A = base * factor;
+      totalCost = A * (Math.pow(mult, levels) - 1) / (mult - 1);
+    }
+
+    costP.textContent =
+      `Kosten (${upg.buyMode.toUpperCase()}): ${formatAmount(totalCost)} ${costRes.name}`;
+  }
+
+  // Anfangs-Kosten setzen
+  updateCostText();
 
   // Besitzstatus
   const owned = document.createElement('p');
@@ -274,6 +321,7 @@ export function createUpgradeCard(game, upg) {
       upg.buyMode = m.key;
       modeBar.querySelectorAll('.buy-mode-btn').forEach(b => b.classList.remove('active'));
       mBtn.classList.add('active');
+      updateCostText(); // ← Kostenanzeige aktualisieren
     };
     modeBar.appendChild(mBtn);
   });
