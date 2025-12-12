@@ -237,6 +237,10 @@ export function createUpgradeCard(game, upg) {
   const desc = document.createElement('p');
   desc.textContent = upg.desc;
 
+  // NEU: Buy-Mode INITIAL direkt setzen
+  if (!upg.buyMode) {
+    upg.buyMode = 'x1';
+  }
   // Kosten
   // Kosten-Element vorbereiten
   const costP = document.createElement('p');
