@@ -10,7 +10,7 @@ const upgradesList = [
     desc:'+1 Stein pro Klick',
     costRes:'stein',
     costBase:10,
-    costMult:1.25,
+    costMult:1.2,
     apply:(game)=>{
       game.getResource('stein').rpc += 1;
     }
@@ -31,7 +31,7 @@ const upgradesList = [
     name:'Steinmine',
     desc:'+5 Stein / Sekunde',
     costRes:'stein',
-    costBase:120,
+    costBase:100,
     costMult:1.35,
     apply:(game)=>{
       game.getResource('stein').rps += 5;
@@ -84,7 +84,7 @@ const upgradesList = [
     desc:'+1 Holz pro Klick',
     costRes:'holz',
     costBase:50,
-    costMult:1.30,
+    costMult:1.20,
     apply:(game)=>{
       game.getResource('holz').rpc += 1;
     }
@@ -92,12 +92,12 @@ const upgradesList = [
   new Upgrade({
     id:'holzfaeller',
     name:'Holzfäller',
-    desc:'+0.8 Holz / Sekunde',
+    desc:'+1.2 Holz / Sekunde',
     costRes:'holz',
     costBase:120,
     costMult:1.30,
     apply:(game)=>{
-      game.getResource('holz').rps += 0.8;
+      game.getResource('holz').rps += 1.2;
     }
   }),
   new Upgrade({
@@ -241,12 +241,12 @@ const upgradesList = [
   new Upgrade({
     id:'schmelzofen',
     name:'Schmelzofen',
-    desc:'+1.5 Metall / Sekunde',
+    desc:'+2 Metall / Sekunde',
     costRes:'metall',
     costBase:600,
     costMult:1.35,
     apply:(game)=>{
-      game.getResource('metall').rps += 1.5;
+      game.getResource('metall').rps += 2;
     }
   }),
   new Upgrade({
@@ -362,7 +362,7 @@ const upgradesList = [
     desc:'+175 Kristall / Sekunde',
     costRes:'kristall',
     costBase:25000,
-    costMult:2.5,
+    costMult:1.8,
     apply:(game)=>{
       game.getResource('kristall').rps += 175;
     }
