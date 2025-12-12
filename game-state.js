@@ -1,8 +1,8 @@
 // game-state.js
 
 export class GameState {
-  constructor() {
-    let storageValue = localStorage.getItem("gameState");
+constructor() {
+    const storageValue = localStorage.getItem("gameState");
     let savedState = null;
 
     if (storageValue && storageValue !== "undefined") {
@@ -12,79 +12,99 @@ export class GameState {
       } catch (e) {
         // Ignoriere kaputte Saves, verwende Default
       }
-      // Offline-Progress Tracking
-      this.lastOnline = this.lastOnline ?? Date.now();
     }
 
-    // Fallback-Defaults (wird nur gesetzt, falls Werte nicht bereits existieren)
-    this.stein       = this.stein       ?? 0;
-    this.holz        = this.holz        ?? 0;
-    this.metall      = this.metall      ?? 0;
-    this.kristall    = this.kristall    ?? 0;
-    this.ton         = this.ton         ?? 0;
+    // Alle aktuell definierten Ressourcen initialisieren
+    const resIds = resourcesList.map(r => r.id);  // z.B. ['stein','holz',...]
+    resIds.forEach(id => {
+      this[id] = this[id] ?? 0;
+    });
 
-    // Optional: Gesamtverdienst-Tracking nach Ressource
-    this.totalEarned = this.totalEarned ?? {
-      stein: 0,
-      holz: 0,
-      metall: 0,
-      kristall: 0,
-      ton: 0
-    };
+    // Gesamtverdienst-Tracking dynamisch aufbauen
+    this.totalEarned = this.totalEarned ?? {};
+    resIds.forEach(id => {
+      if (typeof this.totalEarned[id] !== 'number') {
+        this.totalEarned[id] = 0;
+      }
+    });
 
-    this.upgrades          = this.upgrades          ?? [];
-    this.prestigeUpgrades  = this.prestigeUpgrades  ?? [];
+    this.upgrades         = this.upgrades         ?? [];
+    this.prestigeUpgrades = this.prestigeUpgrades ?? [];
 
     // Prestige-System
     this.prestige           = this.prestige           ?? 0;
-
-    // Basis-Bonus nur aus Prestige-Punkten (wird in doPrestige gesetzt)
     this.prestigeBaseBonus  = this.prestigeBaseBonus  ?? 1;
-
-    // Multiplikator aus Prestige-Upgrades (z. B. Globaler Multiplikator)
     this.prestigeUpgradeMult = this.prestigeUpgradeMult ?? 1;
 
-    // Sonstige Prestige-Flags
-    this.hasOfflineBonus    = this.hasOfflineBonus    ?? false;
+    // Sonstige Flags / Tracking
+    this.hasOfflineBonus        = this.hasOfflineBonus        ?? false;
+    this.totalClicks            = this.totalClicks            ?? 0;
+    this.prestigeCount          = this.prestigeCount          ?? 0;
+    this.totalPrestigePoints    = this.totalPrestigePoints    ?? 0;
+    this.achievementPrestigeBonus = this.achievementPrestigeBonus ?? 1;
+    this.startTime              = this.startTime              ?? Date.now();
 
     // Offline-Tracking
     this.lastOnline = this.lastOnline ?? Date.now();
 
-
     this.save();
   }
 
+
   // Spielstand speichern
   save() {
-    // this.lastOnline = Date.now(); // ← Zeitstempel aktualisieren
+    this.lastOnline = Date.now(); // ← Zeitstempel aktualisieren
     localStorage.setItem("gameState", JSON.stringify(this));
   }
 
   // Spielstand zurücksetzen (alles außer Prestige)
   reset() {
-    if (confirm("Wirklich alles zurücksetzen?")) {
-      localStorage.removeItem("gameState");
+  if (!confirm("Wirklich alles zurücksetzen?")) return;
 
-      this.stein    = 0;
-      this.holz     = 0;
-      this.metall   = 0;
-      this.kristall = 0;
-      this.ton      = 0;
+  localStorage.removeItem("gameState");
 
-      this.totalEarned = {
-        stein: 0,
-        holz: 0,
-        metall: 0,
-        kristall: 0,
-        ton: 0
-      };
-
-      this.upgrades         = [];
-      // Prestige-Punkte + Prestige-Upgrades bleiben erhalten
-      this.save();
-      alert("Zurückgesetzt!");
+  // Alle Ressourcen anhand totalEarned zurücksetzen
+  if (this.totalEarned) {
+    for (const res in this.totalEarned) {
+      // aktuelle Menge
+      this[res] = 0;
+      // Gesamtverdienst
+      this.totalEarned[res] = 0;
     }
   }
+
+  // Falls später neue Ressourcen ohne totalEarned hinzukommen:
+  // optionaler Fallback, alles was numerisch ist und kein spezielles Feld:
+  for (const key of Object.keys(this)) {
+    if (['prestige', 'prestigeBaseBonus', 'prestigeUpgradeMult'].includes(key)) continue;
+    if (typeof this[key] === 'number' && !(key in (this.totalEarned || {}))) {
+      this[key] = 0;
+    }
+  }
+
+  // Upgrades
+  this.upgrades = [];
+  this.prestigeUpgrades = [];
+
+  // Prestige komplett zurücksetzen
+  this.prestige = 0;
+  this.prestigeBaseBonus = 1;
+  this.prestigeUpgradeMult = 1;
+
+  // Tracking / Achievements
+  this.totalClicks = 0;
+  this.prestigeCount = 0;
+  this.totalPrestigePoints = 0;
+  this.achievementPrestigeBonus = 1;
+
+  // Flags / Zeit
+  this.hasOfflineBonus = false;
+  this.lastOnline = Date.now();
+
+  this.save();
+  alert("Spiel vollständig zurückgesetzt!");
+}
+
 
   // Export: Serialisiert und kodiert den Spielstand als Base64
   export() {
