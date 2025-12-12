@@ -201,21 +201,69 @@ export function createUpgradeCard(game, upg) {
     ? (upg.level > 0 ? 'Einmalig – bereits gekauft' : 'Einmalig')
     : `Stufe: ${upg.level}`;
   
+  // NEU: Kaufmodus-Status am Upgrade speichern (Fallback auf x1)
+  if (!upg.buyMode) {
+    upg.buyMode = 'x1'; // 'x1' | 'x10' | 'max'
+  }
+
+  // NEU: Kaufmodus-Leiste
+  const modeBar = document.createElement('div');
+  modeBar.className = 'buy-mode-bar';
+
+  const modes = [
+    { key: 'x1', label: 'x1' },
+    { key: 'x10', label: 'x10' },
+    { key: 'max', label: 'Max' }
+  ];
+
+  modes.forEach(m => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'buy-mode-btn' + (upg.buyMode === m.key ? ' active' : '');
+    btn.textContent = m.label;
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      upg.buyMode = m.key;
+      // Active-Styles aktualisieren
+      modeBar.querySelectorAll('.buy-mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    };
+    modeBar.appendChild(btn);
+  });
+
   // Kauf-Button
   const btn = document.createElement('button');
   btn.className = 'buy-btn';
+
   const canBuy = upg.canBuy(game);
   btn.disabled = !canBuy;
-  btn.textContent = upg.single && upg.level > 0 
-    ? 'Gekauft' 
+  btn.textContent = upg.single && upg.level > 0
+    ? 'Gekauft'
     : (canBuy ? 'Kaufen' : 'Nicht genug');
-  
+
   btn.onclick = () => {
-    if (upg.buy(game)) {
+    if (upg.single && upg.level > 0) return;
+
+    let timesToBuy = 1;
+    if (upg.buyMode === 'x10') {
+      timesToBuy = 10;
+    } else if (upg.buyMode === 'max') {
+      timesToBuy = getMaxAffordableLevels(game, upg);
+    }
+
+    if (timesToBuy <= 0) return;
+
+    let bought = 0;
+    for (let i = 0; i < timesToBuy; i++) {
+      if (!upg.canBuy(game)) break;
+      if (!upg.buy(game)) break;
+      bought++;
+      if (upg.single) break;
+    }
+
+    if (bought > 0) {
       game.recalculateResourceBonuses();
       renderAll(game);
-      
-      // Achievements prüfen nach Upgrade-Kauf
       game.checkAchievements();
     }
   };
