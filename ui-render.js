@@ -37,36 +37,30 @@ function getMaxAffordableLevels(game, upg) {
   const base = upg.costBase;
   const mult = upg.costMult || 1;
 
-  // Falls kein Multiplier (z.B. 1): fallback auf lineares Hochzählen
+  // Fallback für mult <= 1: defensiv linear hochzählen
   if (mult <= 1) {
     let count = 0;
     let cost = upg.getCurrentCost();
     let remaining = currentAmount;
-    while (remaining >= cost && count < 1000) { // Hardcap zur Sicherheit
+    while (remaining >= cost && count < 1000) {
       remaining -= cost;
       count++;
-      // nächster Preis (lineare Annahme: gleichbleibend)
-      // wenn du hier anders skalierst, ggf. anpassen
     }
     return count;
   }
 
-  // Geometrische Reihe: Kosten ab aktueller Stufe
-  // cost_n = base * mult^(level + n - 1)
-  // Summe_k = base * mult^level * (mult^k - 1) / (mult - 1)
   const level = upg.level || 0;
   const factor = Math.pow(mult, level);
   const A = base * factor;
   const B = mult;
 
-  // Binäre Suche nach maximalem k mit Summe_k <= currentAmount
-  let low = 0;
-  let high = 1;
-
   const sumCost = (k) => {
     if (k <= 0) return 0;
     return A * (Math.pow(B, k) - 1) / (B - 1);
   };
+
+  let low = 0;
+  let high = 1;
 
   while (sumCost(high) <= currentAmount && high < 1e6) {
     high *= 2;
