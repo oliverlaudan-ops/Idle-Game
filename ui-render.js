@@ -540,6 +540,26 @@ export function renderAchievements(game) {
   `;
   container.appendChild(header);
   
+  // NEU: Profil-/Session-Statistiken
+  const profileBox = document.createElement('div');
+  profileBox.className = 'achievement-profile-stats';
+
+  const now = Date.now();
+  const playSeconds = Math.floor((now - game.startTime) / 1000);
+  const prestigeCount = game.prestigeCount || 0;
+  const totalPrestige = game.totalPrestigePoints || 0;
+  const totalClicks = game.totalClicks || 0;
+
+  profileBox.innerHTML = `
+    <div class="profile-row">
+      <div><strong>Spielzeit</strong><span>${formatPlaytime(playSeconds)}</span></div>
+      <div><strong>Gesamt-Klicks</strong><span>${formatAmount(totalClicks)}</span></div>
+      <div><strong>Prestiges</strong><span>${prestigeCount}</span></div>
+      <div><strong>Prestige-Punkte gesamt</strong><span>${totalPrestige}</span></div>
+    </div>
+  `;
+  container.appendChild(profileBox);
+  
   // Nach Kategorien gruppieren
   for (let catKey in achievementManager.categories) {
     const category = achievementManager.categories[catKey];
