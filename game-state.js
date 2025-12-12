@@ -60,18 +60,15 @@ constructor() {
 
   // Spielstand zurücksetzen (alles außer Prestige)
   reset() {
-  if (!confirm("Wirklich alles zurücksetzen?")) return;
-
-  localStorage.removeItem("gameState");
-
-  // Alle Ressourcen anhand totalEarned zurücksetzen
-  if (this.totalEarned) {
-    for (const res in this.totalEarned) {
-      // aktuelle Menge
-      this[res] = 0;
-      // Gesamtverdienst
-      this.totalEarned[res] = 0;
-    }
+    localStorage.removeItem("gameState");
+      // Alle Ressourcen anhand totalEarned zurücksetzen
+      if (this.totalEarned) {
+        for (const res in this.totalEarned) {
+          // aktuelle Menge
+          this[res] = 0;
+          // Gesamtverdienst
+          this.totalEarned[res] = 0;
+        }
   }
 
   // Falls später neue Ressourcen ohne totalEarned hinzukommen:
@@ -103,7 +100,6 @@ constructor() {
   this.lastOnline = Date.now();
 
   this.save();
-  alert("Spiel vollständig zurückgesetzt!");
 }
 
 
